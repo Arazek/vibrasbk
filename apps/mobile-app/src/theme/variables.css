@@ -1,0 +1,263 @@
+/*
+ * Predictor de Sociales — Design System
+ * Foundation: LanguageGUI (https://figma.com/community/file/1334658200949332345)
+ * Brand palette: Dance/nightlife identity (coral + gold)
+ *
+ * Token layers:
+ *   1. LanguageGUI Core   — neutrals, spacing, radius, shadows
+ *   2. LanguageGUI Globals — semantic surfaces, borders, text
+ *   3. Brand              — Ionic primary/secondary (coral/gold)
+ *   4. App-specific       — ambiente status colors
+ */
+
+/* ─────────────────────────────────────────────────────
+   1. LANGUAGEGUI CORE — Neutral Color Scale (8 steps)
+   Neutrals Colors/100 → 800
+   ───────────────────────────────────────────────────── */
+:root {
+  --lgui-neutral-100: #FFFFFF;
+  --lgui-neutral-200: #F7F8FA;
+  --lgui-neutral-300: #F0F2F5;
+  --lgui-neutral-400: #E3E6EA;
+  --lgui-neutral-500: #BAC0CC;
+  --lgui-neutral-600: #666F8D;
+  --lgui-neutral-700: #353E5C;
+  --lgui-neutral-800: #19213D;
+
+  /* System / Status colors (LanguageGUI System Colors) */
+  --lgui-red-100:    #FFF5F6;
+  --lgui-red-400:    #FE566B;
+  --lgui-yellow-100: #FFFAE9;
+  --lgui-yellow-400: #EFC42C;
+  --lgui-green-100:  #EEF9F5;
+  --lgui-green-400:  #4AD562;
+  --lgui-blue-100:   #E3EFFF;
+  --lgui-blue-400:   #64A7FF;
+}
+
+/* ─────────────────────────────────────────────────────
+   2. LANGUAGEGUI GLOBALS — Semantic Tokens
+   Global Surfaces / Borders / Texts
+   ───────────────────────────────────────────────────── */
+:root {
+  /* Surfaces */
+  --lgui-surface-1: var(--lgui-neutral-100); /* cards, dialogs */
+  --lgui-surface-2: var(--lgui-neutral-200); /* page background */
+  --lgui-surface-3: var(--lgui-neutral-300); /* hover/pressed */
+  --lgui-surface-4: var(--lgui-neutral-500); /* disabled */
+  --lgui-surface-5: var(--lgui-neutral-600); /* subtle fills */
+  --lgui-surface-6: var(--lgui-neutral-700); /* dark elements */
+  --lgui-surface-7: var(--lgui-neutral-800); /* darkest */
+
+  /* Borders */
+  --lgui-border-1: var(--lgui-neutral-100); /* white border */
+  --lgui-border-2: var(--lgui-neutral-300); /* subtle separator */
+  --lgui-border-3: var(--lgui-neutral-400); /* default border */
+  --lgui-border-4: var(--lgui-neutral-500); /* medium border */
+  --lgui-border-5: var(--lgui-neutral-600); /* strong border */
+  --lgui-border-6: var(--lgui-neutral-800); /* darkest border */
+
+  /* Text */
+  --lgui-text-1: var(--lgui-neutral-100); /* white — on dark */
+  --lgui-text-2: var(--lgui-neutral-500); /* #BAC0CC — placeholder */
+  --lgui-text-3: var(--lgui-neutral-600); /* #666F8D — secondary */
+  --lgui-text-4: var(--lgui-neutral-800); /* #19213D — primary */
+}
+
+/* ─────────────────────────────────────────────────────
+   3. LANGUAGEGUI SPACING SCALE
+   Sizes/Size 0 → 11
+   ───────────────────────────────────────────────────── */
+:root {
+  --lgui-space-0:   2px;
+  --lgui-space-1:   6px;
+  --lgui-space-2:   8px;
+  --lgui-space-3:  12px;
+  --lgui-space-4:  16px;
+  --lgui-space-5:  24px;
+  --lgui-space-6:  32px;
+  --lgui-space-7:  40px;
+  --lgui-space-8:  48px;
+  --lgui-space-9:  64px;
+  --lgui-space-10: 80px;
+  --lgui-space-11: 120px;
+
+  /* Named gap aliases (Default/Gaps) */
+  --lgui-gap-xs:  var(--lgui-space-1);  /*  6px */
+  --lgui-gap-sm:  var(--lgui-space-2);  /*  8px */
+  --lgui-gap-md:  var(--lgui-space-3);  /* 12px */
+  --lgui-gap-lg:  var(--lgui-space-4);  /* 16px */
+  --lgui-gap-xl:  var(--lgui-space-5);  /* 24px */
+
+  /* Named padding aliases */
+  --lgui-pad-xs:  var(--lgui-space-2);  /*  8px */
+  --lgui-pad-sm:  var(--lgui-space-3);  /* 12px */
+  --lgui-pad-md:  var(--lgui-space-4);  /* 16px */
+  --lgui-pad-lg:  var(--lgui-space-5);  /* 24px */
+  --lgui-pad-xl:  var(--lgui-space-6);  /* 32px */
+}
+
+/* ─────────────────────────────────────────────────────
+   4. LANGUAGEGUI BORDER RADIUS SCALE
+   BR Size 1 → 9, BR Pill
+   ───────────────────────────────────────────────────── */
+:root {
+  --lgui-radius-none:    0;
+  --lgui-radius-xs:      2px;
+  --lgui-radius-sm:      4px;
+  --lgui-radius-md:      8px;   /* BR Size 3 — chips, tags */
+  --lgui-radius-default: 16px;  /* BR Size 4 — cards, modals */
+  --lgui-radius-lg:      24px;  /* BR Size 5 */
+  --lgui-radius-xl:      32px;  /* BR Size 6 — hero sections */
+  --lgui-radius-2xl:     48px;  /* BR Size 7 */
+  --lgui-radius-pill:    200px; /* BR Pill — full pill badges */
+}
+
+/* ─────────────────────────────────────────────────────
+   5. LANGUAGEGUI SHADOW SCALE
+   Neutral/BS Small → BS Large  +  Primary glow variant
+   ───────────────────────────────────────────────────── */
+:root {
+  --lgui-shadow-sm:  0 1px 3px  rgba(25, 33, 61, 0.10);
+  --lgui-shadow-md:  0 2px 4px  rgba(25, 33, 61, 0.08);
+  --lgui-shadow-lg:  0 8px 15px rgba(25, 33, 61, 0.10);
+  --lgui-shadow-xl:  0 8px 24px rgba(25, 33, 61, 0.12);
+
+  /* Primary (accent-tinted) shadow — for buttons, active cards */
+  --lgui-shadow-accent-sm: 0 0  2px rgba(232, 72, 85, 0.23);
+  --lgui-shadow-accent-md: 0 4px 8px rgba(232, 72, 85, 0.16);
+}
+
+/* ─────────────────────────────────────────────────────
+   6. BRAND PALETTE — Ionic overrides
+   Dance/nightlife identity (coral + gold)
+   ───────────────────────────────────────────────────── */
+:root {
+  /* Primary: Deep coral/rose — energetic, dance-oriented */
+  --ion-color-primary:              #E84855;
+  --ion-color-primary-rgb:          232, 72, 85;
+  --ion-color-primary-contrast:     #ffffff;
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade:        #cc3f4b;
+  --ion-color-primary-tint:         #ea5a66;
+
+  /* Secondary: Warm gold — Latin warmth */
+  --ion-color-secondary:              #F4A261;
+  --ion-color-secondary-rgb:          244, 162, 97;
+  --ion-color-secondary-contrast:     #000000;
+  --ion-color-secondary-contrast-rgb: 0, 0, 0;
+  --ion-color-secondary-shade:        #d78d55;
+  --ion-color-secondary-tint:         #f5ab71;
+
+  /* Tertiary: Teal accent */
+  --ion-color-tertiary:              #2a9d8f;
+  --ion-color-tertiary-rgb:          42, 157, 143;
+  --ion-color-tertiary-contrast:     #ffffff;
+  --ion-color-tertiary-contrast-rgb: 255, 255, 255;
+  --ion-color-tertiary-shade:        #258a7d;
+  --ion-color-tertiary-tint:         #3fa79a;
+
+  /* LanguageGUI medium (Text 3 = Neutrals/600) */
+  --ion-color-medium:     var(--lgui-neutral-600);
+  --ion-color-medium-rgb: 102, 111, 141;
+
+  /* Backgrounds — LanguageGUI Surface 2 */
+  --ion-background-color:     var(--lgui-surface-2);
+  --ion-background-color-rgb: 247, 248, 250;
+  --ion-card-background:      var(--lgui-surface-1);
+  --ion-item-background:      var(--lgui-surface-1);
+
+  /* Typography — Inter (LanguageGUI standard) */
+  --ion-font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  /* Text — LanguageGUI Text 4 (Neutrals/800) */
+  --ion-text-color:     var(--lgui-text-4);
+  --ion-text-color-rgb: 25, 33, 61;
+
+  /* Toolbar — matches surface (no primary color) */
+  --ion-toolbar-background: var(--lgui-surface-1);
+  --ion-toolbar-color:      var(--lgui-text-4);
+}
+
+/* ─────────────────────────────────────────────────────
+   7. APP-SPECIFIC — Ambiente status colors
+   Updated to LanguageGUI System Colors for consistency
+   ───────────────────────────────────────────────────── */
+:root {
+  --ambiente-flojo:     var(--lgui-neutral-500);  /* #BAC0CC — muted grey */
+  --ambiente-normal:    var(--lgui-yellow-400);   /* #EFC42C — amber */
+  --ambiente-animado:   var(--lgui-green-400);    /* #4AD562 — vibrant green */
+  --ambiente-muy-lleno: var(--lgui-red-400);      /* #FE566B — coral red */
+
+  --ambiente-bg-flojo:     var(--lgui-neutral-300);  /* #F0F2F5 */
+  --ambiente-bg-normal:    var(--lgui-yellow-100);   /* #FFFAE9 */
+  --ambiente-bg-animado:   var(--lgui-green-100);    /* #EEF9F5 */
+  --ambiente-bg-muy-lleno: var(--lgui-red-100);      /* #FFF5F6 */
+
+  /* Event tipo chip colors */
+  --tipo-social-color:    #4A90D9;
+  --tipo-social-bg:       #E3EFFF;
+  --tipo-taller-color:    #D07A2E;
+  --tipo-taller-bg:       #FFF3E6;
+  --tipo-congreso-color:  #7B52AB;
+  --tipo-congreso-bg:     #F3EEFF;
+}
+
+/* ─────────────────────────────────────────────────────
+   8. DARK THEME — automático (prefers-color-scheme: dark)
+   ───────────────────────────────────────────────────── */
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Surfaces — dark navy scale */
+    --lgui-surface-1: #1E2336;
+    --lgui-surface-2: #161B2C;
+    --lgui-surface-3: #262D44;
+    --lgui-surface-4: #2F3754;
+    --lgui-surface-5: #394265;
+    --lgui-surface-6: #464E72;
+    --lgui-surface-7: #50587C;
+
+    /* Borders — white with opacity */
+    --lgui-border-1: rgba(255,255,255,0.05);
+    --lgui-border-2: rgba(255,255,255,0.09);
+    --lgui-border-3: rgba(255,255,255,0.14);
+    --lgui-border-4: rgba(255,255,255,0.22);
+    --lgui-border-5: rgba(255,255,255,0.32);
+    --lgui-border-6: rgba(255,255,255,0.48);
+
+    /* Text */
+    --lgui-text-1: rgba(255,255,255,0.92);
+    --lgui-text-2: rgba(255,255,255,0.50);
+    --lgui-text-3: rgba(255,255,255,0.38);
+    --lgui-text-4: #FFFFFF;
+
+    /* Shadows — más sutiles en oscuro */
+    --lgui-shadow-sm:  0 1px 3px  rgba(0,0,0,0.40);
+    --lgui-shadow-md:  0 2px 6px  rgba(0,0,0,0.35);
+    --lgui-shadow-lg:  0 8px 16px rgba(0,0,0,0.40);
+    --lgui-shadow-xl:  0 8px 24px rgba(0,0,0,0.50);
+
+    /* Ambiente backgrounds — más oscuros */
+    --ambiente-bg-flojo:     rgba(186,192,204,0.12);
+    --ambiente-bg-normal:    rgba(239,196,44,0.12);
+    --ambiente-bg-animado:   rgba(74,213,98,0.12);
+    --ambiente-bg-muy-lleno: rgba(254,86,107,0.12);
+
+    /* Tipo chip backgrounds — más oscuros */
+    --tipo-social-bg:   rgba(74,144,217,0.18);
+    --tipo-taller-bg:   rgba(208,122,46,0.18);
+    --tipo-congreso-bg: rgba(123,82,171,0.18);
+
+    /* Ionic overrides */
+    --ion-background-color:     #161B2C;
+    --ion-background-color-rgb: 22,27,44;
+    --ion-text-color:           #FFFFFF;
+    --ion-text-color-rgb:       255,255,255;
+    --ion-card-background:      #1E2336;
+    --ion-item-background:      #1E2336;
+    --ion-toolbar-background:   var(--lgui-surface-1);
+    --ion-toolbar-color:        #FFFFFF;
+    --ion-tab-bar-background:   #1E2336;
+    --ion-tab-bar-border-color: rgba(255,255,255,0.09);
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../dist/out-tsc/app",
+    "types": [],
+    "lib": ["ES2020", "dom"]
+  },
+  "files": ["src/main.ts"],
+  "include": ["src/**/*.d.ts"],
+  "exclude": ["src/test.ts", "src/**/*.spec.ts", "jest.config.ts", "src/**/*.test.ts"]
+}

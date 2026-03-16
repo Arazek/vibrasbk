@@ -1,0 +1,14 @@
+{
+  "name": "mobile-app-template",
+  "appId": "com.example.mobileapp",
+  "appName": "Mobile App Template",
+  "webDir": "dist/apps/mobile-app",
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 0
+    }
+  },
+  "server": {
+    "androidScheme": "https"
+  }
+}

@@ -1,0 +1,141 @@
+/* Inter font — LanguageGUI standard typeface */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+/* Brand theme — must come before Ionic core */
+@import './theme/variables.css';
+
+/* Ionic core CSS — required for Ionic components to look correct */
+@import "@ionic/angular/css/core.css";
+@import "@ionic/angular/css/normalize.css";
+@import "@ionic/angular/css/structure.css";
+@import "@ionic/angular/css/typography.css";
+@import "@ionic/angular/css/display.css";
+
+/* Optional Ionic utility classes */
+@import "@ionic/angular/css/padding.css";
+@import "@ionic/angular/css/float-elements.css";
+@import "@ionic/angular/css/text-alignment.css";
+@import "@ionic/angular/css/text-transformation.css";
+@import "@ionic/angular/css/flex-utils.css";
+
+/* Tailwind */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Card elevation — LanguageGUI tokens */
+ion-card {
+  box-shadow: var(--lgui-shadow-xl);
+  border-radius: var(--lgui-radius-default);
+}
+
+/* Smooth momentum scrolling on iOS */
+ion-content {
+  --overflow: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Tap highlight suppression — let components define their own feedback */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Segment buttons — tighter, pill-like style */
+ion-segment {
+  --background: var(--lgui-surface-3);
+  border-radius: var(--lgui-radius-pill);
+  padding: 3px;
+}
+ion-segment-button {
+  --border-radius: var(--lgui-radius-pill);
+  --indicator-color: var(--lgui-surface-1);
+  --color: var(--lgui-text-3);
+  --color-checked: var(--lgui-text-4);
+  min-height: 36px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* Tab bar polish */
+ion-tab-bar {
+  --background: var(--lgui-surface-1);
+  border-top: 1px solid var(--lgui-border-2);
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+ion-tab-button {
+  --color: var(--lgui-text-3);
+  --color-selected: var(--ion-color-primary);
+}
+
+/* List / item polish */
+ion-item {
+  --background: var(--lgui-surface-1);
+  --border-color: var(--lgui-border-2);
+  --color: var(--lgui-text-4);
+}
+ion-list {
+  background: var(--lgui-surface-1);
+}
+
+/* ─── Form field contrast fixes ─────────────────────────────────────────── */
+
+/* ion-select: ensure selected value and placeholder are legible */
+ion-select {
+  --color: var(--lgui-text-4);
+  --placeholder-color: var(--lgui-text-3);
+}
+/* Pierce shadow DOM for the select text and icon */
+ion-select::part(text)        { color: var(--lgui-text-4); }
+ion-select::part(placeholder) { color: var(--lgui-text-3); }
+ion-select::part(icon)        { color: var(--lgui-text-3); }
+
+/* ion-input: text and placeholder */
+ion-input {
+  --color: var(--lgui-text-4);
+  --placeholder-color: var(--lgui-text-3);
+}
+
+/* ion-textarea */
+ion-textarea {
+  --color: var(--lgui-text-4);
+  --placeholder-color: var(--lgui-text-3);
+}
+
+/* ion-label inside items — force legible color */
+ion-item ion-label {
+  color: var(--lgui-text-4) !important;
+}
+
+/* ion-toggle — track and handle */
+ion-toggle {
+  --track-background-checked: var(--ion-color-primary);
+  --handle-background: #fff;
+}
+
+/* Action sheet — text contrast for option buttons */
+ion-action-sheet {
+  --color: var(--lgui-text-4);
+  --button-color: var(--lgui-text-4);
+  --background: var(--lgui-surface-1);
+}
+
+/* Alert dialogs */
+ion-alert {
+  --background: var(--lgui-surface-1);
+}
+ion-alert .alert-message,
+ion-alert .alert-title {
+  color: var(--lgui-text-4);
+}
