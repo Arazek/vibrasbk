@@ -1,0 +1,23 @@
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Traefik TLS certificates (sensitive — never commit)
+traefik/acme.json
+
+# Node
+node_modules/
+dist/
+
+# Nx cache
+.nx/cache
+.nx/workspace-data
+
+# Logs
+*.log
+/tmp/*.log
+
+# OS
+.DS_Store
+Thumbs.db

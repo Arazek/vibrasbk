@@ -15,6 +15,7 @@ PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BACKEND_PORT=3333
 FRONTEND_PORT=4200
 ENV_FILE="$PROJECT_DIR/.env.local"
+PROD_ENV_FILE="$PROJECT_DIR/.env"
 API_LOG=/tmp/api.log
 APP_LOG=/tmp/app.log
 
@@ -24,9 +25,9 @@ if [ -f "$ENV_FILE" ]; then
 fi
 DB_HOST="${DB_HOST:-localhost}"
 DB_PORT="${DB_PORT:-5432}"
-DB_NAME="${DB_NAME:-mobile_app}"
-DB_USER="${DB_USERNAME:-postgres}"
-DB_PASS="${DB_PASSWORD:-postgres}"
+DB_NAME="${POSTGRES_DB:-${DB_NAME:-mobile_app}}"
+DB_USER="${POSTGRES_USER:-${DB_USERNAME:-postgres}}"
+DB_PASS="${POSTGRES_PASSWORD:-${DB_PASSWORD:-postgres}}"
 
 # ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -190,17 +191,104 @@ cmd_status() {
     fi
 }
 
+INFRA_COMPOSE="$PROJECT_DIR/infra.docker-compose.yml"
+APP_COMPOSE="$PROJECT_DIR/docker-compose.app.yml"
+
+_prod_check_env() {
+    if [ ! -f "$PROD_ENV_FILE" ]; then
+        print_error ".env not found — copy .env.example to .env and fill in production values"
+        exit 1
+    fi
+    local api_host
+    api_host=$(grep -E '^API_HOST=' "$PROD_ENV_FILE" | cut -d= -f2)
+    if [ -z "$api_host" ]; then
+        print_error "API_HOST is not set in .env"; exit 1
+    fi
+}
+
+cmd_infra_up() {
+    _prod_check_env
+    print_info "Starting infrastructure (Traefik, PostgreSQL, Keycloak, pgAdmin, Webhook)..."
+    (cd "$PROJECT_DIR" && docker compose --env-file .env -f "$INFRA_COMPOSE" up -d)
+    print_success "Infrastructure is up"
+}
+
+cmd_infra_stop() {
+    print_info "Stopping infrastructure..."
+    (cd "$PROJECT_DIR" && docker compose -f "$INFRA_COMPOSE" down)
+    print_success "Infrastructure stopped"
+}
+
+cmd_prod_up() {
+    _prod_check_env
+
+    local api_host
+    api_host=$(grep -E '^API_HOST=' "$PROD_ENV_FILE" | cut -d= -f2)
+
+    print_info "Starting infrastructure (Traefik, PostgreSQL, Keycloak...)..."
+    (cd "$PROJECT_DIR" && docker compose --env-file .env -f "$INFRA_COMPOSE" up -d)
+
+    print_info "Building and starting API..."
+    (cd "$PROJECT_DIR" && docker compose --env-file .env -f "$APP_COMPOSE" up -d --build)
+
+    echo ""
+    print_success "Production stack is up"
+    print_info "  API:    https://$api_host/api/health"
+    print_info "  Logs:   ./run.sh prod:logs"
+    print_info "  Stop:   ./run.sh prod:stop"
+}
+
+cmd_prod_stop() {
+    print_info "Stopping API..."
+    (cd "$PROJECT_DIR" && docker compose -f "$APP_COMPOSE" down)
+    print_success "Application stopped (infrastructure still running)"
+    print_info "  To also stop infra: ./run.sh infra:stop"
+}
+
+cmd_prod_logs() {
+    print_info "Streaming production logs (Ctrl+C to stop)..."
+    (cd "$PROJECT_DIR" && docker compose -f "$APP_COMPOSE" logs -f)
+}
+
+cmd_prod_status() {
+    echo ""
+    echo -e "${BLUE}Infrastructure:${NC}"
+    (cd "$PROJECT_DIR" && docker compose -f "$INFRA_COMPOSE" ps)
+    echo ""
+    echo -e "${BLUE}Application:${NC}"
+    (cd "$PROJECT_DIR" && docker compose -f "$APP_COMPOSE" ps)
+}
+
+cmd_prod_rebuild() {
+    _prod_check_env
+    print_info "Rebuilding and restarting API..."
+    (cd "$PROJECT_DIR" && docker compose --env-file .env -f "$APP_COMPOSE" up -d --build --force-recreate)
+    print_success "Rebuild complete"
+}
+
 show_usage() {
     cat <<'EOF'
 Usage: ./run.sh [COMMAND]
 
-Commands:
-    start     Start API + frontend dev servers  (default)
-    stop      Stop all dev servers
-    rebuild   Production build of the Angular app
-    logs      Tail API and frontend logs
-    status    Show running status of all services
-    help      Show this help
+Development commands:
+    start          Start API + frontend dev servers  (default)
+    stop           Stop all dev servers
+    rebuild        Production build of the Angular app
+    logs           Tail API and frontend logs
+    status         Show running status of all services
+
+Production — full stack:
+    prod           Start infrastructure + API (builds images)
+    prod:stop      Stop API then infrastructure
+    prod:rebuild   Rebuild API image and restart (infra untouched)
+    prod:logs      Tail all production container logs
+    prod:status    Show status of all production containers
+
+Production — infrastructure only (Traefik / PostgreSQL / Keycloak / pgAdmin / Webhook):
+    infra          Start infrastructure containers  (infra.docker-compose.yml)
+    infra:stop     Stop infrastructure containers
+
+    help           Show this help
 
 EOF
 }
@@ -208,12 +296,19 @@ EOF
 # ─── Entry point ──────────────────────────────────────────────────────────────
 
 case "${1:-start}" in
-    start)          cmd_start   ;;
-    stop)           cmd_stop    ;;
-    rebuild)        cmd_rebuild ;;
-    logs)           cmd_logs    ;;
-    status)         cmd_status  ;;
-    help|--help|-h) show_usage  ;;
+    start)          cmd_start        ;;
+    stop)           cmd_stop         ;;
+    rebuild)        cmd_rebuild      ;;
+    logs)           cmd_logs         ;;
+    status)         cmd_status       ;;
+    prod)           cmd_prod_up      ;;
+    prod:stop)      cmd_prod_stop    ;;
+    prod:rebuild)   cmd_prod_rebuild ;;
+    prod:logs)      cmd_prod_logs    ;;
+    prod:status)    cmd_prod_status  ;;
+    infra)          cmd_infra_up     ;;
+    infra:stop)     cmd_infra_stop   ;;
+    help|--help|-h) show_usage       ;;
     *)
         print_error "Unknown command: $1"
         show_usage

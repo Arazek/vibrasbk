@@ -85,6 +85,8 @@ docker compose up -d postgres
 
 ## 🛠️ `run.sh` Commands
 
+**Development:**
+
 ```bash
 ./run.sh              # Start API + frontend dev servers (default)
 ./run.sh stop         # Stop all dev servers
@@ -92,6 +94,161 @@ docker compose up -d postgres
 ./run.sh status       # Show running status
 ./run.sh help         # Show usage
 ```
+
+**Production:**
+
+```bash
+./run.sh prod          # Build images and start production stack
+./run.sh prod:stop     # Stop all production containers
+./run.sh prod:rebuild  # Rebuild images and restart
+./run.sh prod:logs     # Tail production container logs
+./run.sh prod:status   # Show container status
+```
+
+---
+
+## 🚀 Production Deployment
+
+The stack runs fully containerised behind **Traefik v3** as a reverse proxy, with automatic TLS via Let's Encrypt.
+
+### Architecture
+
+```
+Internet
+   │
+   ▼ :80 / :443
+ Traefik (v3.6)  ─────────────────────────────────────────┐
+   │  (TLS termination via traefik.yml)        [proxy-network]
+   ├─▶ Host(api.yourdomain.com)     →  API (NestJS :3333)
+   ├─▶ Host(auth.yourdomain.com)    →  Keycloak (:8080)
+   ├─▶ Host(pgadmin.yourdomain.com) →  pgAdmin (:80)
+   ├─▶ Host(traefik.yourdomain.com) →  Traefik dashboard
+   └─▶ Host(webhook.yourdomain.com) →  Webhook (:9000)
+                                              │
+                                        PostgreSQL + Redis
+```
+
+The deployment is split into two compose files:
+
+| File | Contains | Restart frequency |
+|------|----------|-------------------|
+| `infra.docker-compose.yml` | Traefik, PostgreSQL, Keycloak, pgAdmin, Webhook | Once — stable infra |
+| `docker-compose.app.yml` | NestJS API + Redis | Every release |
+
+The app connects to `proxy-network` as an external network owned by the infra stack, so infra can stay up while the API is rebuilt.
+
+### Prerequisites
+
+- A Linux server with **Docker** and **Docker Compose v2**
+- Ports **80** and **443** open in your firewall
+- A DNS A record pointing `api.yourdomain.com` → your server IP
+
+### 1. Configure environment
+
+Create `.env` in the project root (this is the file Docker Compose reads by default in production):
+
+```bash
+cp .env.example .env   # then edit with real values
+```
+
+Minimum `.env` for production:
+
+```env
+# Traefik
+API_HOST=api.yourdomain.com
+TRAEFIK_DASHBOARD_HOST=traefik.yourdomain.com
+TRAEFIK_DASHBOARD_AUTH=admin:$$2y$$...   # see htpasswd note in .env.example
+
+# PostgreSQL (shared by app and Keycloak)
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=a-strong-random-password
+POSTGRES_DB=mobile_app
+
+# Keycloak
+KEYCLOAK_HOSTNAME=auth.yourdomain.com
+KEYCLOAK_REALM=vibras
+KEYCLOAK_ADMIN=admin
+KEYCLOAK_ADMIN_PASSWORD=change-me
+KC_DB_NAME=keycloak
+KC_DB_USERNAME=keycloak
+KC_DB_PASSWORD=change-me
+
+# pgAdmin
+PGADMIN_HOSTNAME=pgadmin.yourdomain.com
+PGADMIN_DEFAULT_EMAIL=admin@yourdomain.com
+PGADMIN_DEFAULT_PASSWORD=change-me
+PGADMIN_OAUTH_CLIENT_SECRET=change-me
+
+# Webhook
+WEBHOOK_HOSTNAME=webhook.yourdomain.com
+WEBHOOK_SECRET=change-me
+
+# API
+JWT_SECRET=a-very-long-random-secret-change-me
+```
+
+See `.env.example` for the full list including optional Google OAuth and Firebase vars.
+
+> **Note:** `.env` is gitignored. Never commit secrets.
+
+### 2. Deploy
+
+**First time — start everything:**
+
+```bash
+./run.sh prod
+```
+
+This will:
+1. Validate `.env` and required variables
+2. Create `traefik/acme.json` with `chmod 600` (required by Traefik)
+3. Start Traefik, PostgreSQL and Redis (`docker-compose.yml`)
+4. Build and start the API (`docker-compose.app.yml`)
+
+**Subsequent releases — rebuild only the API (infra stays up):**
+
+```bash
+git pull
+./run.sh prod:rebuild
+```
+
+**Infra only (initial server setup or infra changes):**
+
+```bash
+./run.sh infra          # start Traefik + DB + Redis
+./run.sh infra:stop     # stop infra
+```
+
+### 3. Verify
+
+```bash
+curl https://api.yourdomain.com/api/health
+./run.sh prod:status
+./run.sh prod:logs
+```
+
+### Configuring the Traefik domain
+
+The API domain is controlled by a single variable in `.env`:
+
+```env
+API_HOST=api.yourdomain.com
+```
+
+Traefik picks this up via the container label in `docker-compose.yml`:
+
+```yaml
+labels:
+  - "traefik.http.routers.api.rule=Host(`${API_HOST}`)"
+```
+
+To change the domain: update `API_HOST` in `.env` and run `./run.sh prod:rebuild`.
+
+### TLS notes
+
+- TLS is configured via `traefik/traefik.yml` (part of the infra repo)
+- Certificates are stored in the `traefik_certs` Docker volume (managed by Traefik)
+- HTTP → HTTPS redirect is enabled automatically
 
 ---
 
