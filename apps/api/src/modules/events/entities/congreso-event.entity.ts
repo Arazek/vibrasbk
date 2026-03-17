@@ -1,25 +1,25 @@
 import { ChildEntity, Column } from 'typeorm';
 import { RecurringEvent } from './recurring-event.entity';
 
-@ChildEntity('congreso')
+@ChildEntity('congress')
 export class CongresoEvent extends RecurringEvent {
-  @Column({ nullable: true })
-  titulo?: string;
+  @Column({ name: 'titulo', nullable: true })
+  title?: string;
 
-  @Column({ nullable: true })
-  localidad?: string;
+  @Column({ name: 'localidad', nullable: true })
+  locality?: string;
 
-  @Column({ nullable: true })
-  duracionDias?: number;
+  @Column({ name: 'duracion_dias', nullable: true })
+  durationDays?: number;
 
   // JSON string: [{label: string, precio: number}]
-  @Column({ type: 'text', nullable: true })
-  precios?: string;
+  @Column({ name: 'precios', type: 'text', nullable: true })
+  prices?: string;
 
-  @Column({ nullable: true })
-  enlaceWeb?: string;
+  @Column({ name: 'enlace_web', nullable: true })
+  websiteUrl?: string;
 
   // Fecha fin del congreso (YYYY-MM-DD)
-  @Column({ nullable: true })
-  fechaFin?: string;
+  @Column({ name: 'fecha_fin', nullable: true })
+  endDate?: string;
 }

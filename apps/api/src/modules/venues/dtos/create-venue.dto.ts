@@ -4,12 +4,12 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 export class CreateVenueDto {
   @ApiProperty()
   @IsString()
-  nombre: string;
+  name: string;
 
   @ApiPropertyOptional({ default: 'Cartagena' })
   @IsString()
   @IsOptional()
-  ciudad?: string;
+  city?: string;
 
   @ApiPropertyOptional()
   @IsNumber()
@@ -24,10 +24,10 @@ export class CreateVenueDto {
   @ApiPropertyOptional()
   @IsNumber()
   @IsOptional()
-  aforoMaximo?: number;
+  maxCapacity?: number;
 
   @ApiPropertyOptional({ type: [String] })
   @IsArray()
   @IsOptional()
-  estilos?: string[];
+  styles?: string[];
 }

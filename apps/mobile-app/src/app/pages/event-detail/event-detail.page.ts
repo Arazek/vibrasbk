@@ -5,7 +5,7 @@ import {
   IonHeader, IonToolbar, IonTitle, IonContent, IonBackButton, IonButtons,
   IonSpinner, IonText, IonChip, IonLabel, IonToast, IonButton,
 } from '@ionic/angular/standalone';
-import { WeeklyEvent, EventAnalytics, VoteEstado } from '@shared/types';
+import { WeeklyEvent, EventAnalytics, VoteStatus } from '@shared/types';
 import { EventsService } from '../../services/events.service';
 import { VotesService } from '../../services/votes.service';
 import { environment } from '../../../environments/environment';
@@ -14,10 +14,10 @@ import { ReplacePipe } from '../../pipes/replace.pipe';
 
 const DAY_NAMES = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
 
-const TIPO_LABEL: Record<string, string> = {
+const TYPE_LABEL: Record<string, string> = {
   social:    'Social',
-  intensivo: 'Intensivo',
-  congreso:  'Congreso',
+  intensive: 'Intensivo',
+  congress:  'Congreso',
 };
 
 @Component({
@@ -66,7 +66,7 @@ const TIPO_LABEL: Record<string, string> = {
       margin-bottom: var(--lgui-gap-md);
       flex-wrap: wrap;
     }
-    .tipo-badge {
+    .type-badge {
       font-size: 10px;
       font-weight: 700;
       padding: 3px 9px;
@@ -74,10 +74,10 @@ const TIPO_LABEL: Record<string, string> = {
       text-transform: uppercase;
       letter-spacing: 0.4px;
     }
-    .tipo-social    { color: var(--tipo-social-color);   background: var(--tipo-social-bg); }
-    .tipo-intensivo { color: var(--tipo-taller-color);   background: var(--tipo-taller-bg); }
-    .tipo-congreso  { color: var(--tipo-congreso-color); background: var(--tipo-congreso-bg); }
-    .aforo-info {
+    .type-social    { color: var(--type-social-color);    background: var(--type-social-bg); }
+    .type-intensive { color: var(--type-intensive-color); background: var(--type-intensive-bg); }
+    .type-congress  { color: var(--type-congress-color);  background: var(--type-congress-bg); }
+    .capacity-info {
       font-size: 12px;
       color: var(--lgui-text-3);
     }
@@ -130,9 +130,9 @@ const TIPO_LABEL: Record<string, string> = {
       -webkit-tap-highlight-color: transparent;
     }
     .vote-btn:disabled { opacity: 0.45; cursor: default; }
-    .vote-btn.active-voy     { background: #E84855; border-color: #E84855; color: #fff; }
-    .vote-btn.active-tal-vez { background: #EFC42C; border-color: #EFC42C; color: #fff; }
-    .vote-btn.active-no-voy  { background: #BAC0CC; border-color: #BAC0CC; color: #fff; }
+    .vote-btn.active-going     { background: #E84855; border-color: #E84855; color: #fff; }
+    .vote-btn.active-maybe     { background: #EFC42C; border-color: #EFC42C; color: #fff; }
+    .vote-btn.active-not-going { background: #BAC0CC; border-color: #BAC0CC; color: #fff; }
     .no-edit-note {
       font-size: 12px;
       color: var(--lgui-text-3);
@@ -167,7 +167,7 @@ const TIPO_LABEL: Record<string, string> = {
         <ion-buttons slot="start">
           <ion-back-button defaultHref="/tabs/home"></ion-back-button>
         </ion-buttons>
-        <ion-title>{{ event?.venue?.nombre ?? 'Evento' }}</ion-title>
+        <ion-title>{{ event?.venue?.name ?? 'Evento' }}</ion-title>
       </ion-toolbar>
     </ion-header>
 
@@ -179,55 +179,54 @@ const TIPO_LABEL: Record<string, string> = {
       <div *ngIf="event && !loading">
 
         <!-- Foto — edge-to-edge, bleeds into padding -->
-        <img *ngIf="photoSrc" class="event-photo" [src]="photoSrc" [alt]="event.venue.nombre" />
+        <img *ngIf="photoSrc" class="event-photo" [src]="photoSrc" [alt]="event.venue.name" />
         <div *ngIf="!photoSrc" class="photo-placeholder">🎵</div>
 
         <!-- Event info -->
-        <div class="event-venue">{{ event.venue.nombre }}</div>
-        <div class="event-when">{{ dayName }} · {{ event.horaInicio?.substring(0, 5) }}</div>
+        <div class="event-venue">{{ event.venue.name }}</div>
+        <div class="event-when">{{ dayName }} · {{ event.startTime?.substring(0, 5) }}</div>
 
-        <!-- Tipo + Aforo -->
+        <!-- Type + Capacity -->
         <div class="meta-row">
-          <span *ngIf="event.tipo" class="tipo-badge" [ngClass]="'tipo-' + event.tipo">{{ tipoLabel }}</span>
-          <span *ngIf="event.venue.aforoMaximo" class="aforo-info">
-            🏟 {{ event.venue.aforoMaximo }} aforo
+          <span *ngIf="event.type" class="type-badge" [ngClass]="'type-' + event.type">{{ typeLabel }}</span>
+          <span *ngIf="event.venue.maxCapacity" class="capacity-info">
+            🏟 {{ event.venue.maxCapacity }} aforo
           </span>
         </div>
 
         <div class="chips-row">
-          <ion-chip *ngFor="let e of event.estilos" color="secondary">
+          <ion-chip *ngFor="let e of event.styles" color="secondary">
             <ion-label>{{ e | replace:'_':' ' }}</ion-label>
           </ion-chip>
         </div>
 
         <!-- Social extras -->
-        <ng-container *ngIf="event.tipo === 'social'">
-          <div *ngIf="event.tallerIncluido" style="font-size:13px; color:var(--lgui-text-3); margin-bottom:4px;">🎓 Incluye taller</div>
-          <div *ngIf="event.precioEntrada" style="font-size:13px; color:var(--lgui-text-3); margin-bottom:4px;">🎟 Entrada: {{ event.precioEntrada }}€</div>
-          <div *ngIf="event.instructores?.length" style="font-size:13px; color:var(--lgui-text-3); margin-bottom:8px;">🎤 {{ event.instructores!.join(', ') }}</div>
+        <ng-container *ngIf="event.type === 'social'">
+          <div *ngIf="event.workshopIncluded" style="font-size:13px; color:var(--lgui-text-3); margin-bottom:4px;">🎓 Incluye taller</div>
+          <div *ngIf="event.entryPrice" style="font-size:13px; color:var(--lgui-text-3); margin-bottom:4px;">🎟 Entrada: {{ event.entryPrice }}€</div>
+          <div *ngIf="event.instructors?.length" style="font-size:13px; color:var(--lgui-text-3); margin-bottom:8px;">🎤 {{ event.instructors!.join(', ') }}</div>
         </ng-container>
 
-        <!-- Intensivo extras -->
-        <ng-container *ngIf="event.tipo === 'intensivo'">
-          <div *ngIf="event.titulo" style="font-size:16px; font-weight:600; color:var(--lgui-text-4); margin-bottom:4px;">{{ event.titulo }}</div>
-          <div *ngIf="event.nivel" style="font-size:13px; color:var(--lgui-text-3); margin-bottom:4px;">📊 Nivel: {{ event.nivel | replace:'_':' ' }}</div>
-          <div *ngIf="event.precio" style="font-size:13px; color:var(--lgui-text-3); margin-bottom:4px;">💶 {{ event.precio }}€</div>
-          <div *ngIf="event.profesores?.length" style="font-size:13px; color:var(--lgui-text-3); margin-bottom:4px;">👨‍🏫 {{ event.profesores!.join(', ') }}</div>
-          <div *ngIf="event.fechaInicio" style="font-size:13px; color:var(--lgui-text-3); margin-bottom:4px;">📅 {{ event.fechaInicio }}<span *ngIf="event.fechaFin"> → {{ event.fechaFin }}</span></div>
+        <!-- Intensive extras -->
+        <ng-container *ngIf="event.type === 'intensive'">
+          <div *ngIf="event.title" style="font-size:16px; font-weight:600; color:var(--lgui-text-4); margin-bottom:4px;">{{ event.title }}</div>
+          <div *ngIf="event.level" style="font-size:13px; color:var(--lgui-text-3); margin-bottom:4px;">📊 Nivel: {{ event.level | replace:'_':' ' }}</div>
+          <div *ngIf="event.instructors?.length" style="font-size:13px; color:var(--lgui-text-3); margin-bottom:4px;">👨‍🏫 {{ event.instructors!.join(', ') }}</div>
+          <div *ngIf="event.startDate" style="font-size:13px; color:var(--lgui-text-3); margin-bottom:4px;">📅 {{ event.startDate }}<span *ngIf="event.endDate"> → {{ event.endDate }}</span></div>
         </ng-container>
 
-        <!-- Congreso extras -->
-        <ng-container *ngIf="event.tipo === 'congreso'">
-          <div *ngIf="event.titulo" style="font-size:16px; font-weight:600; color:var(--lgui-text-4); margin-bottom:4px;">{{ event.titulo }}</div>
-          <div *ngIf="event.localidad" style="font-size:13px; color:var(--lgui-text-3); margin-bottom:4px;">📍 {{ event.localidad }}</div>
-          <div *ngIf="event.duracionDias" style="font-size:13px; color:var(--lgui-text-3); margin-bottom:4px;">📅 {{ event.duracionDias }} días</div>
-          <div *ngIf="event.precios" style="font-size:13px; color:var(--lgui-text-3); margin-bottom:4px;">💶 {{ event.precios }}</div>
-          <div *ngIf="event.enlaceWeb" style="margin-bottom:8px;">
-            <ion-button fill="outline" size="small" (click)="openLink(event.enlaceWeb!)">🌐 Web oficial</ion-button>
+        <!-- Congress extras -->
+        <ng-container *ngIf="event.type === 'congress'">
+          <div *ngIf="event.title" style="font-size:16px; font-weight:600; color:var(--lgui-text-4); margin-bottom:4px;">{{ event.title }}</div>
+          <div *ngIf="event.locality" style="font-size:13px; color:var(--lgui-text-3); margin-bottom:4px;">📍 {{ event.locality }}</div>
+          <div *ngIf="event.durationDays" style="font-size:13px; color:var(--lgui-text-3); margin-bottom:4px;">📅 {{ event.durationDays }} días</div>
+          <div *ngIf="event.prices" style="font-size:13px; color:var(--lgui-text-3); margin-bottom:4px;">💶 {{ event.prices }}</div>
+          <div *ngIf="event.websiteUrl" style="margin-bottom:8px;">
+            <ion-button fill="outline" size="small" (click)="openLink(event.websiteUrl!)">🌐 Web oficial</ion-button>
           </div>
         </ng-container>
 
-        <div class="interested-count">{{ event.totalInteresados }} personas interesadas</div>
+        <div class="interested-count">{{ event.totalInterested }} personas interesadas</div>
 
         <!-- Google Maps + WhatsApp share -->
         <div *ngIf="mapsUrl" class="maps-btn-row">
@@ -249,17 +248,17 @@ const TIPO_LABEL: Record<string, string> = {
 
           <div class="vote-buttons">
             <button class="vote-btn"
-              [class.active-voy]="event.userVote === 'voy'"
+              [class.active-going]="event.userVote === 'going'"
               [disabled]="voting || !canEdit"
-              (click)="vote('voy')">♥ Voy</button>
+              (click)="vote('going')">♥ Voy</button>
             <button class="vote-btn"
-              [class.active-tal-vez]="event.userVote === 'tal_vez'"
+              [class.active-maybe]="event.userVote === 'maybe'"
               [disabled]="voting || !canEdit"
-              (click)="vote('tal_vez')">~ Tal vez</button>
+              (click)="vote('maybe')">~ Tal vez</button>
             <button class="vote-btn"
-              [class.active-no-voy]="event.userVote === 'no_voy'"
+              [class.active-not-going]="event.userVote === 'not_going'"
               [disabled]="voting || !canEdit"
-              (click)="vote('no_voy')">✕ No iré</button>
+              (click)="vote('not_going')">✕ No iré</button>
           </div>
 
           <div *ngIf="!canEdit" class="no-edit-note">
@@ -267,7 +266,7 @@ const TIPO_LABEL: Record<string, string> = {
           </div>
         </div>
 
-        <!-- Analytics (unlocked after voy/tal_vez) -->
+        <!-- Analytics (unlocked after going/maybe) -->
         <app-analytics-panel *ngIf="analytics" [analytics]="analytics"></app-analytics-panel>
 
         <div *ngIf="analyticsLoading" class="ion-text-center">
@@ -317,7 +316,7 @@ export class EventDetailPage implements OnInit {
         this.event = ev as WeeklyEvent;
         this.loading = false;
         this.showAnalyticsHint = true;
-        if (ev.userVote === 'voy' || ev.userVote === 'tal_vez') {
+        if (ev.userVote === 'going' || ev.userVote === 'maybe') {
           this.loadAnalytics(id);
         }
       },
@@ -329,7 +328,7 @@ export class EventDetailPage implements OnInit {
   }
 
   get photoSrc(): string | null {
-    const url = this.event?.fotoUrl;
+    const url = this.event?.photoUrl;
     if (!url) return null;
     if (url.startsWith('http')) return url;
     return environment.socketUrl + url;
@@ -337,9 +336,9 @@ export class EventDetailPage implements OnInit {
 
   get mapsUrl(): string | null {
     if (!this.event?.venue) return null;
-    const { lat, lng, nombre, ciudad } = this.event.venue;
+    const { lat, lng, name, city } = this.event.venue;
     if (lat && lng) return `https://maps.google.com/?q=${lat},${lng}`;
-    const q = [nombre, ciudad].filter(Boolean).join(' ');
+    const q = [name, city].filter(Boolean).join(' ');
     return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}`;
   }
 
@@ -349,20 +348,20 @@ export class EventDetailPage implements OnInit {
 
   shareWhatsApp(): void {
     if (!this.event) return;
-    const venue = this.event.venue?.nombre ?? '';
-    const tipo  = this.tipoLabel;
-    // title: use event titulo if available, else venue name
-    const title = this.event.titulo || venue;
+    const venue = this.event.venue?.name ?? '';
+    const type  = this.typeLabel;
+    // title: use event title if available, else venue name
+    const title = this.event.title || venue;
     // trim seconds from "21:00:00" → "21:00"
-    const time  = (this.event.horaInicio ?? '').substring(0, 5);
+    const time  = (this.event.startTime ?? '').substring(0, 5);
     let desc = '';
-    if (this.event.diaSemana != null && this.event.horaInicio) {
-      desc = `${tipo} \u00B7 ${this.dayName} a las ${time}`;
-    } else if (this.event.fechaInicio) {
-      const range = this.event.fechaFin
-        ? `${this.event.fechaInicio} \u2014 ${this.event.fechaFin}`
-        : this.event.fechaInicio;
-      desc = `${tipo} \u00B7 ${range}`;
+    if (this.event.dayOfWeek != null && this.event.startTime) {
+      desc = `${type} \u00B7 ${this.dayName} a las ${time}`;
+    } else if (this.event.startDate) {
+      const range = this.event.endDate
+        ? `${this.event.startDate} \u2014 ${this.event.endDate}`
+        : this.event.startDate;
+      desc = `${type} \u00B7 ${range}`;
     }
     const textLines = [title, desc, this.mapsUrl, this.photoSrc].filter(Boolean) as string[];
     const fallbackText = textLines.join('\n');
@@ -408,26 +407,26 @@ export class EventDetailPage implements OnInit {
     return DAY_NAMES[d === 0 ? 6 : d - 1];
   }
 
-  get tipoLabel(): string {
-    return TIPO_LABEL[this.event?.tipo ?? ''] ?? (this.event?.tipo ?? '');
+  get typeLabel(): string {
+    return TYPE_LABEL[this.event?.type ?? ''] ?? (this.event?.type ?? '');
   }
 
-  vote(estado: VoteEstado) {
+  vote(status: VoteStatus) {
     if (!this.event || this.voting) return;
     this.voting = true;
     const existingVoteId = this.event.userVoteId;
 
     const request$ = existingVoteId
-      ? this.votesService.updateVote(existingVoteId, estado)
-      : this.votesService.castVote(this.event.id, estado);
+      ? this.votesService.updateVote(existingVoteId, status)
+      : this.votesService.castVote(this.event.id, status);
 
     request$.subscribe({
       next: (vote) => {
         this.voting = false;
         if (this.event) {
-          this.event = { ...this.event, userVote: estado, userVoteId: vote.id };
+          this.event = { ...this.event, userVote: status, userVoteId: vote.id };
         }
-        if (estado === 'voy' || estado === 'tal_vez') {
+        if (status === 'going' || status === 'maybe') {
           this.loadAnalytics(this.event!.id);
         } else {
           this.analytics = null;

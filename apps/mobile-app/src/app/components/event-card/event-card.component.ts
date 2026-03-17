@@ -3,59 +3,59 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { IonChip, IonLabel } from '@ionic/angular/standalone';
 import { ReplacePipe } from '../../pipes/replace.pipe';
-import { WeeklyEvent, Ambiente } from '@shared/types';
+import { WeeklyEvent, Vibe } from '@shared/types';
 import { environment } from '../../../environments/environment';
 
 /* LanguageGUI System Colors — matches CSS variables in theme/variables.css */
-const AMBIENTE_COLOR: Record<Ambiente, string> = {
-  flojo:     '#BAC0CC',
-  normal:    '#EFC42C',
-  animado:   '#4AD562',
-  muy_lleno: '#FE566B',
+const VIBE_COLOR: Record<Vibe, string> = {
+  quiet:  '#BAC0CC',
+  normal: '#EFC42C',
+  lively: '#4AD562',
+  packed: '#FE566B',
 };
 
-const AMBIENTE_LABEL: Record<Ambiente, string> = {
-  flojo:     'Flojo',
-  normal:    'Normal',
-  animado:   'Animado',
-  muy_lleno: 'Muy lleno',
+const VIBE_LABEL: Record<Vibe, string> = {
+  quiet:  'Flojo',
+  normal: 'Normal',
+  lively: 'Animado',
+  packed: 'Muy lleno',
 };
 
-const AMBIENTE_EMOJI: Record<Ambiente, string> = {
-  flojo:     '😴',
-  normal:    '🙂',
-  animado:   '🔥',
-  muy_lleno: '🎉',
+const VIBE_EMOJI: Record<Vibe, string> = {
+  quiet:  '😴',
+  normal: '🙂',
+  lively: '🔥',
+  packed: '🎉',
 };
 
 const VOTE_LABEL: Record<string, string> = {
-  voy:     '♥ Voy',
-  tal_vez: '~ Tal vez',
-  no_voy:  '✕ No iré',
+  going:     '♥ Voy',
+  maybe:     '~ Tal vez',
+  not_going: '✕ No iré',
 };
 
 const VOTE_COLOR: Record<string, string> = {
-  voy:     '#E84855',
-  tal_vez: '#EFC42C',
-  no_voy:  '#BAC0CC',
+  going:     '#E84855',
+  maybe:     '#EFC42C',
+  not_going: '#BAC0CC',
 };
 
-const TIPO_LABEL: Record<string, string> = {
+const TYPE_LABEL: Record<string, string> = {
   social:    'Social',
-  intensivo: 'Intensivo',
-  congreso:  'Congreso',
+  intensive: 'Intensivo',
+  congress:  'Congreso',
 };
 
-const TIPO_COLOR: Record<string, string> = {
-  social:    'var(--tipo-social-color, #4A90D9)',
-  intensivo: 'var(--tipo-taller-color, #D07A2E)',
-  congreso:  'var(--tipo-congreso-color, #7B52AB)',
+const TYPE_COLOR: Record<string, string> = {
+  social:    'var(--type-social-color, #4A90D9)',
+  intensive: 'var(--type-intensive-color, #D07A2E)',
+  congress:  'var(--type-congress-color, #7B52AB)',
 };
 
-const TIPO_BG: Record<string, string> = {
-  social:    'var(--tipo-social-bg, #E3EFFF)',
-  intensivo: 'var(--tipo-taller-bg, #FFF3E6)',
-  congreso:  'var(--tipo-congreso-bg, #F3EEFF)',
+const TYPE_BG: Record<string, string> = {
+  social:    'var(--type-social-bg, #E3EFFF)',
+  intensive: 'var(--type-intensive-bg, #FFF3E6)',
+  congress:  'var(--type-congress-bg, #F3EEFF)',
 };
 
 @Component({
@@ -149,7 +149,7 @@ const TIPO_BG: Record<string, string> = {
       font-size: 11px;
       color: var(--lgui-text-3);
     }
-    .ambiente-pill {
+    .vibe-pill {
       display: flex;
       align-items: center;
       gap: 3px;
@@ -163,7 +163,7 @@ const TIPO_BG: Record<string, string> = {
       border-radius: var(--lgui-radius-pill);
       white-space: nowrap;
     }
-    .tipo-chip {
+    .type-chip {
       font-size: 10px;
       font-weight: 700;
       padding: 2px 7px;
@@ -189,26 +189,26 @@ const TIPO_BG: Record<string, string> = {
     <div class="card-wrapper" (click)="open()">
 
       <!-- Photo spans full width at top (layout fixed: column direction) -->
-      <img *ngIf="photoSrc" class="event-photo" [src]="photoSrc" [alt]="event.venue.nombre" />
+      <img *ngIf="photoSrc" class="event-photo" [src]="photoSrc" [alt]="event.venue.name" />
       <div *ngIf="!photoSrc" class="photo-placeholder">🎵</div>
 
       <!-- Accent bar + body in a row -->
       <div class="card-row">
-        <div class="accent-bar" [style.background]="ambienteColor"></div>
+        <div class="accent-bar" [style.background]="vibeColor"></div>
         <div class="card-body">
 
           <div class="card-header-row">
             <div style="flex:1; min-width:0;">
-              <div class="venue-name">{{ event.venue.nombre }}</div>
-              <div class="event-time">{{ event.horaInicio?.substring(0, 5) }}</div>
+              <div class="venue-name">{{ event.venue.name }}</div>
+              <div class="event-time">{{ event.startTime?.substring(0, 5) }}</div>
             </div>
             <div style="display:flex; flex-direction:column; align-items:flex-end; gap:4px; flex-shrink:0;">
               <span
-                *ngIf="event.tipo"
-                class="tipo-chip"
-                [style.color]="tipoColor"
-                [style.background]="tipoBg">
-                {{ tipoLabel }}
+                *ngIf="event.type"
+                class="type-chip"
+                [style.color]="typeColor"
+                [style.background]="typeBg">
+                {{ typeLabel }}
               </span>
               <span
                 *ngIf="event.userVote"
@@ -221,15 +221,15 @@ const TIPO_BG: Record<string, string> = {
           </div>
 
           <div class="chips-row">
-            <ion-chip *ngFor="let e of event.estilos" style="height:20px; margin:0; --background: rgba(102,111,141,0.10); --color: var(--lgui-text-3); --border-radius: 200px;">
+            <ion-chip *ngFor="let e of event.styles" style="height:20px; margin:0; --background: rgba(102,111,141,0.10); --color: var(--lgui-text-3); --border-radius: 200px;">
               <ion-label style="font-size:10px; font-weight:600;">{{ e | replace:'_':' ' }}</ion-label>
             </ion-chip>
           </div>
 
           <div class="footer-row">
-            <span class="stats">{{ event.totalInteresados }} interesados</span>
-            <span class="ambiente-pill" [style.color]="ambienteColor">
-              {{ ambienteEmoji }} {{ ambienteLabel }}
+            <span class="stats">{{ event.totalInterested }} interesados</span>
+            <span class="vibe-pill" [style.color]="vibeColor">
+              {{ vibeEmoji }} {{ vibeLabel }}
             </span>
           </div>
 
@@ -249,14 +249,14 @@ export class EventCardComponent {
 
   constructor(private router: Router) {}
 
-  get ambienteColor(): string {
-    return AMBIENTE_COLOR[this.event.ambienteColor] ?? '#9e9e9e';
+  get vibeColor(): string {
+    return VIBE_COLOR[this.event.vibeColor] ?? '#9e9e9e';
   }
-  get ambienteLabel(): string {
-    return AMBIENTE_LABEL[this.event.ambienteColor] ?? '';
+  get vibeLabel(): string {
+    return VIBE_LABEL[this.event.vibeColor] ?? '';
   }
-  get ambienteEmoji(): string {
-    return AMBIENTE_EMOJI[this.event.ambienteColor] ?? '';
+  get vibeEmoji(): string {
+    return VIBE_EMOJI[this.event.vibeColor] ?? '';
   }
   get voteLabel(): string {
     return this.event.userVote ? VOTE_LABEL[this.event.userVote] : '';
@@ -268,26 +268,26 @@ export class EventCardComponent {
     const c = this.voteBadgeColor;
     return c + '1A'; /* 10% opacity tint */
   }
-  get tipoLabel(): string {
-    return TIPO_LABEL[this.event.tipo] ?? this.event.tipo;
+  get typeLabel(): string {
+    return TYPE_LABEL[this.event.type] ?? this.event.type;
   }
-  get tipoColor(): string {
-    return TIPO_COLOR[this.event.tipo] ?? 'var(--lgui-text-3)';
+  get typeColor(): string {
+    return TYPE_COLOR[this.event.type] ?? 'var(--lgui-text-3)';
   }
-  get tipoBg(): string {
-    return TIPO_BG[this.event.tipo] ?? 'var(--lgui-surface-2)';
+  get typeBg(): string {
+    return TYPE_BG[this.event.type] ?? 'var(--lgui-surface-2)';
   }
 
-  /** Resolves fotoUrl (relative /uploads/... or absolute http) to a full URL. */
+  /** Resolves photoUrl (relative /uploads/... or absolute http) to a full URL. */
   get photoSrc(): string | null {
-    const url = this.event.fotoUrl;
+    const url = this.event.photoUrl;
     if (!url) return null;
     if (url.startsWith('http')) return url;
     return environment.socketUrl + url;
   }
 
   get hasRoleData(): boolean {
-    return !!this.event.roleBalance && this.event.totalInteresados > 0;
+    return !!this.event.roleBalance && this.event.totalInterested > 0;
   }
   get roleLeader(): number   { return this.event.roleBalance?.leadersPercent   ?? 0; }
   get roleFollower(): number { return this.event.roleBalance?.followersPercent ?? 0; }

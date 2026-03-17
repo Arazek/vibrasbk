@@ -7,14 +7,14 @@ import {
   Unique,
 } from 'typeorm';
 
-export enum VoteEstado {
-  VOY = 'voy',
-  TAL_VEZ = 'tal_vez',
-  NO_VOY = 'no_voy',
+export enum VoteStatus {
+  GOING = 'going',
+  MAYBE = 'maybe',
+  NOT_GOING = 'not_going',
 }
 
 @Entity('intention_votes')
-@Unique(['userId', 'eventId', 'semanaIso'])
+@Unique(['userId', 'eventId', 'isoWeek'])
 export class IntentionVote {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -26,10 +26,10 @@ export class IntentionVote {
   eventId: string;
 
   @Column({ name: 'semana_iso' })
-  semanaIso: string;
+  isoWeek: string;
 
-  @Column({ type: 'enum', enum: VoteEstado })
-  estado: VoteEstado;
+  @Column({ type: 'enum', enum: VoteStatus, name: 'estado' })
+  status: VoteStatus;
 
   @CreateDateColumn()
   createdAt: Date;

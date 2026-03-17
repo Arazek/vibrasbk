@@ -6,19 +6,19 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-export enum Rol {
+export enum Role {
   LEADER = 'leader',
   FOLLOWER = 'follower',
   SWITCH = 'switch',
   ADMIN = 'admin',
 }
 
-export enum Nivel {
-  NUEVO = 'nuevo',
-  INICIACION = 'iniciacion',
-  SOCIAL_COMODO = 'social_comodo',
-  INTERMEDIO = 'intermedio',
-  AVANZADO = 'avanzado',
+export enum Level {
+  BEGINNER = 'beginner',
+  INITIATION = 'initiation',
+  COMFORTABLE = 'comfortable',
+  INTERMEDIATE = 'intermediate',
+  ADVANCED = 'advanced',
 }
 
 export enum Estilo {
@@ -42,23 +42,23 @@ export class User {
   @Column()
   passwordHash: string;
 
-  @Column({ default: 'Cartagena' })
-  ciudad: string;
+  @Column({ name: 'ciudad', default: 'Cartagena' })
+  city: string;
 
-  @Column({ type: 'enum', enum: Rol })
-  rol: Rol;
+  @Column({ type: 'enum', enum: Role, name: 'rol' })
+  role: Role;
 
-  @Column({ type: 'enum', enum: Nivel })
-  nivel: Nivel;
+  @Column({ type: 'enum', enum: Level, name: 'nivel' })
+  level: Level;
 
-  @Column({ type: 'simple-array' })
-  estilos: string[];
+  @Column({ name: 'estilos', type: 'simple-array' })
+  styles: string[];
 
   // UUID referencing the Academia entity
-  @Column({ nullable: true })
-  academiaId?: string;
+  @Column({ name: 'academia_id', nullable: true })
+  academyId?: string;
 
-  @Column({ nullable: true })
+  @Column({ name: 'fcm_token', nullable: true })
   fcmToken: string;
 
   @CreateDateColumn()

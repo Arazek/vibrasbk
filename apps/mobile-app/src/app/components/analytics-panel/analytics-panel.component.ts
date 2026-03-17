@@ -4,57 +4,57 @@ import {
   IonCard, IonCardHeader, IonCardTitle, IonCardContent,
   IonProgressBar,
 } from '@ionic/angular/standalone';
-import { EventAnalytics, Ambiente, Nivel } from '@shared/types';
+import { EventAnalytics, Vibe, Level } from '@shared/types';
 
 /* LanguageGUI System Colors — mirrors CSS variables in theme/variables.css */
-const AMBIENTE_HEX: Record<Ambiente, string> = {
-  flojo:     '#BAC0CC',  /* --lgui-neutral-500 */
-  normal:    '#EFC42C',  /* --lgui-yellow-400  */
-  animado:   '#4AD562',  /* --lgui-green-400   */
-  muy_lleno: '#FE566B',  /* --lgui-red-400     */
+const VIBE_HEX: Record<Vibe, string> = {
+  quiet:  '#BAC0CC',  /* --lgui-neutral-500 */
+  normal: '#EFC42C',  /* --lgui-yellow-400  */
+  lively: '#4AD562',  /* --lgui-green-400   */
+  packed: '#FE566B',  /* --lgui-red-400     */
 };
 
-const AMBIENTE_BG: Record<Ambiente, string> = {
-  flojo:     '#F0F2F5',  /* --lgui-neutral-300  */
-  normal:    '#FFFAE9',  /* --lgui-yellow-100   */
-  animado:   '#EEF9F5',  /* --lgui-green-100    */
-  muy_lleno: '#FFF5F6',  /* --lgui-red-100      */
+const VIBE_BG: Record<Vibe, string> = {
+  quiet:  '#F0F2F5',  /* --lgui-neutral-300  */
+  normal: '#FFFAE9',  /* --lgui-yellow-100   */
+  lively: '#EEF9F5',  /* --lgui-green-100    */
+  packed: '#FFF5F6',  /* --lgui-red-100      */
 };
 
-const AMBIENTE_EMOJI: Record<Ambiente, string> = {
-  flojo:     '😴',
-  normal:    '🙂',
-  animado:   '🔥',
-  muy_lleno: '🎉',
+const VIBE_EMOJI: Record<Vibe, string> = {
+  quiet:  '😴',
+  normal: '🙂',
+  lively: '🔥',
+  packed: '🎉',
 };
 
-const AMBIENTE_LABEL: Record<Ambiente, string> = {
-  flojo:     'Flojo',
-  normal:    'Normal',
-  animado:   'Animado',
-  muy_lleno: 'Muy lleno',
+const VIBE_LABEL: Record<Vibe, string> = {
+  quiet:  'Flojo',
+  normal: 'Normal',
+  lively: 'Animado',
+  packed: 'Muy lleno',
 };
 
-const NIVEL_LABELS: Record<Nivel, string> = {
-  nuevo:         'Nuevo',
-  iniciacion:    'Iniciación',
-  social_comodo: 'Social cómodo',
-  intermedio:    'Intermedio',
-  avanzado:      'Avanzado',
+const LEVEL_LABELS: Record<Level, string> = {
+  beginner:     'Nuevo',
+  initiation:   'Iniciación',
+  comfortable:  'Social cómodo',
+  intermediate: 'Intermedio',
+  advanced:     'Avanzado',
 };
 
-const NIVEL_ORDER: Nivel[] = ['nuevo', 'iniciacion', 'social_comodo', 'intermedio', 'avanzado'];
+const LEVEL_ORDER: Level[] = ['beginner', 'initiation', 'comfortable', 'intermediate', 'advanced'];
 
 const BALANCE_LABEL: Record<string, string> = {
-  equilibrado:       '⚖️ Equilibrado',
-  faltan_leaders:    '⚠️ Faltan leaders',
-  faltan_followers:  '⚠️ Faltan followers',
+  balanced:        '⚖️ Equilibrado',
+  need_leaders:    '⚠️ Faltan leaders',
+  need_followers:  '⚠️ Faltan followers',
 };
 
 const BALANCE_COLOR: Record<string, string> = {
-  equilibrado:       '#4AD562',  /* --lgui-green-400  */
-  faltan_leaders:    '#EFC42C',  /* --lgui-yellow-400 */
-  faltan_followers:  '#EFC42C',  /* --lgui-yellow-400 */
+  balanced:        '#4AD562',  /* --lgui-green-400  */
+  need_leaders:    '#EFC42C',  /* --lgui-yellow-400 */
+  need_followers:  '#EFC42C',  /* --lgui-yellow-400 */
 };
 
 @Component({
@@ -79,7 +79,7 @@ const BALANCE_COLOR: Record<string, string> = {
       text-transform: uppercase;
       color: var(--lgui-text-3) !important;
     }
-    .ambiente-row {
+    .vibe-row {
       display: flex;
       align-items: center;
       gap: var(--lgui-gap-md);
@@ -87,17 +87,17 @@ const BALANCE_COLOR: Record<string, string> = {
       border-radius: var(--lgui-radius-md);
       margin-bottom: var(--lgui-gap-lg);
     }
-    .ambiente-emoji {
+    .vibe-emoji {
       font-size: 32px;
       line-height: 1;
       flex-shrink: 0;
     }
-    .ambiente-name {
+    .vibe-name {
       font-size: 18px;
       font-weight: 700;
       line-height: 1.2;
     }
-    .ambiente-count {
+    .vibe-count {
       font-size: 12px;
       margin-top: 3px;
       opacity: 0.8;
@@ -161,19 +161,19 @@ const BALANCE_COLOR: Record<string, string> = {
     .section-gap {
       height: var(--lgui-gap-lg);
     }
-    .nivel-row {
+    .level-row {
       margin: 5px 0;
     }
-    .nivel-header {
+    .level-header {
       display: flex;
       justify-content: space-between;
       margin-bottom: 3px;
     }
-    .nivel-name {
+    .level-name {
       font-size: 12px;
       color: var(--lgui-text-3);
     }
-    .nivel-count {
+    .level-count {
       font-size: 12px;
       font-weight: 600;
       color: var(--lgui-text-4);
@@ -198,13 +198,13 @@ const BALANCE_COLOR: Record<string, string> = {
       </ion-card-header>
       <ion-card-content>
 
-        <!-- Ambiente row -->
-        <div class="ambiente-row" [style.background]="ambienteBg">
-          <div class="ambiente-emoji">{{ ambienteEmoji }}</div>
+        <!-- Vibe row -->
+        <div class="vibe-row" [style.background]="vibeBg">
+          <div class="vibe-emoji">{{ vibeEmoji }}</div>
           <div>
-            <div class="ambiente-name" [style.color]="ambienteHex">{{ ambienteLabel }}</div>
-            <div class="ambiente-count" [style.color]="ambienteHex">
-              ~{{ analytics.asistenciaEstimada | number:'1.0-0' }} personas esperadas
+            <div class="vibe-name" [style.color]="vibeHex">{{ vibeLabel }}</div>
+            <div class="vibe-count" [style.color]="vibeHex">
+              ~{{ analytics.estimatedAttendance | number:'1.0-0' }} personas esperadas
             </div>
           </div>
         </div>
@@ -241,19 +241,19 @@ const BALANCE_COLOR: Record<string, string> = {
         <!-- Level distribution -->
         <div class="section-gap"></div>
         <div class="section-label">Nivel de los asistentes</div>
-        <div *ngFor="let nivel of nivelOrder" class="nivel-row">
-          <div class="nivel-header">
-            <span class="nivel-name">{{ nivelLabels[nivel] }}</span>
-            <span class="nivel-count">{{ analytics.nivelDistribution[nivel] }}%</span>
+        <div *ngFor="let level of levelOrder" class="level-row">
+          <div class="level-header">
+            <span class="level-name">{{ levelLabels[level] }}</span>
+            <span class="level-count">{{ analytics.levelDistribution[level] }}%</span>
           </div>
-          <ion-progress-bar [value]="getBar(nivel)" color="secondary"></ion-progress-bar>
+          <ion-progress-bar [value]="getBar(level)" color="secondary"></ion-progress-bar>
         </div>
 
         <!-- Recommendation -->
         <div
           class="recommendation-box"
-          [style.border-left-color]="ambienteHex"
-          [style.background]="ambienteBg">
+          [style.border-left-color]="vibeHex"
+          [style.background]="vibeBg">
           <p class="recommendation-text">{{ analytics.recommendation }}</p>
         </div>
 
@@ -264,18 +264,18 @@ const BALANCE_COLOR: Record<string, string> = {
 export class AnalyticsPanelComponent {
   @Input() analytics!: EventAnalytics;
 
-  nivelOrder = NIVEL_ORDER;
-  nivelLabels = NIVEL_LABELS;
+  levelOrder = LEVEL_ORDER;
+  levelLabels = LEVEL_LABELS;
 
-  get ambienteHex(): string   { return AMBIENTE_HEX[this.analytics.ambiente]; }
-  get ambienteBg(): string    { return AMBIENTE_BG[this.analytics.ambiente]; }
-  get ambienteEmoji(): string { return AMBIENTE_EMOJI[this.analytics.ambiente]; }
-  get ambienteLabel(): string { return AMBIENTE_LABEL[this.analytics.ambiente]; }
+  get vibeHex(): string   { return VIBE_HEX[this.analytics.vibe]; }
+  get vibeBg(): string    { return VIBE_BG[this.analytics.vibe]; }
+  get vibeEmoji(): string { return VIBE_EMOJI[this.analytics.vibe]; }
+  get vibeLabel(): string { return VIBE_LABEL[this.analytics.vibe]; }
   get balanceLabel(): string  { return BALANCE_LABEL[this.analytics.roleBalance.balance] ?? ''; }
   get balanceColor(): string  { return BALANCE_COLOR[this.analytics.roleBalance.balance] ?? '#9e9e9e'; }
 
-  // nivelDistribution values are percentages (0-100), bar needs 0-1
-  getBar(nivel: Nivel): number {
-    return (this.analytics.nivelDistribution[nivel] ?? 0) / 100;
+  // levelDistribution values are percentages (0-100), bar needs 0-1
+  getBar(level: Level): number {
+    return (this.analytics.levelDistribution[level] ?? 0) / 100;
   }
 }

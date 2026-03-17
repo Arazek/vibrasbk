@@ -1,7 +1,6 @@
 # Implementation Context
 
 > Session log for the Social Predictor MVP.
-> Reference: `docs/IMPLEMENTATION_PLAN.md` for the full spec.
 
 ---
 

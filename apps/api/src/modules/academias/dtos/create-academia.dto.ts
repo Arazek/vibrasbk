@@ -4,10 +4,10 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 export class CreateAcademiaDto {
   @ApiProperty({ example: 'Academia de Salsa Cartagena' })
   @IsString()
-  nombre: string;
+  name: string;
 
   @ApiPropertyOptional({ example: 'Cartagena' })
   @IsOptional()
   @IsString()
-  ciudad?: string;
+  city?: string;
 }

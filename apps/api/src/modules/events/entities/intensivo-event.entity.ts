@@ -1,21 +1,21 @@
 import { ChildEntity, Column } from 'typeorm';
 import { RecurringEvent } from './recurring-event.entity';
 
-@ChildEntity('intensivo')
+@ChildEntity('intensive')
 export class IntensivoEvent extends RecurringEvent {
-  @Column({ nullable: true })
-  titulo?: string;
+  @Column({ name: 'titulo', nullable: true })
+  title?: string;
 
-  @Column({ nullable: true })
-  nivel?: string;
+  @Column({ name: 'nivel', nullable: true })
+  level?: string;
 
   @Column({ type: 'decimal', nullable: true })
-  precio?: number;
+  price?: number;
 
-  @Column({ type: 'simple-array', nullable: true })
-  profesores?: string[];
+  @Column({ name: 'profesores', type: 'simple-array', nullable: true })
+  instructors?: string[];
 
   // Fecha fin del intensivo (YYYY-MM-DD)
-  @Column({ nullable: true })
-  fechaFin?: string;
+  @Column({ name: 'fecha_fin', nullable: true })
+  endDate?: string;
 }

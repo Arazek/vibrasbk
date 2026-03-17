@@ -7,7 +7,7 @@ import {
 } from 'typeorm';
 
 @Entity('attendance_verifications')
-@Unique(['userId', 'eventId', 'semanaIso'])
+@Unique(['userId', 'eventId', 'isoWeek'])
 export class AttendanceVerification {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -19,14 +19,14 @@ export class AttendanceVerification {
   eventId: string;
 
   @Column({ name: 'semana_iso' })
-  semanaIso: string;
+  isoWeek: string;
 
   // null = pending response, true = attended, false = did not attend (or timed out)
-  @Column({ type: 'boolean', nullable: true })
-  asistio: boolean | null;
+  @Column({ name: 'asistio', type: 'boolean', nullable: true })
+  attended: boolean | null;
 
   @Column({ name: 'timestamp_respuesta', nullable: true })
-  timestampRespuesta: Date;
+  responseTimestamp: Date;
 
   @CreateDateColumn()
   createdAt: Date;

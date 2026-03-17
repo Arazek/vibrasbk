@@ -3,7 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
-import { User, Rol, Nivel } from '../users/entities/user.entity';
+import { User, Role, Level } from '../users/entities/user.entity';
 import { RegisterDto } from './dtos/register.dto';
 
 export interface AuthResponseData {
@@ -11,11 +11,11 @@ export interface AuthResponseData {
   user: {
     id: string;
     alias: string;
-    ciudad: string;
-    rol: string;
-    nivel: string;
-    estilos: string[];
-    academiaId?: string;
+    city: string;
+    role: string;
+    level: string;
+    styles: string[];
+    academyId?: string;
     createdAt: Date;
     updatedAt: Date;
   };
@@ -39,16 +39,16 @@ export class AuthService {
       throw new ConflictException(`Email "${dto.email}" is already registered`);
     }
 
-    const validRoles = Object.values(Rol);
-    const validNiveles = Object.values(Nivel);
+    const validRoles = Object.values(Role);
+    const validLevels = Object.values(Level);
 
-    if (!validRoles.includes(dto.rol as Rol)) {
-      throw new BadRequestException(`Invalid rol: ${dto.rol}`);
+    if (!validRoles.includes(dto.role as Role)) {
+      throw new BadRequestException(`Invalid role: ${dto.role}`);
     }
-    if (!validNiveles.includes(dto.nivel as Nivel)) {
-      throw new BadRequestException(`Invalid nivel: ${dto.nivel}`);
+    if (!validLevels.includes(dto.level as Level)) {
+      throw new BadRequestException(`Invalid level: ${dto.level}`);
     }
-    if (!Array.isArray(dto.estilos) || dto.estilos.length === 0) {
+    if (!Array.isArray(dto.styles) || dto.styles.length === 0) {
       throw new BadRequestException(`Se requiere al menos un estilo`);
     }
 
@@ -58,11 +58,11 @@ export class AuthService {
       alias: dto.alias,
       email: dto.email,
       passwordHash,
-      ciudad: 'Cartagena',
-      rol: dto.rol as Rol,
-      nivel: dto.nivel as Nivel,
-      estilos: dto.estilos,
-      academiaId: dto.academiaId,
+      city: 'Cartagena',
+      role: dto.role as Role,
+      level: dto.level as Level,
+      styles: dto.styles,
+      academyId: dto.academyId,
     });
     await this.usersRepository.save(user);
 
@@ -82,17 +82,17 @@ export class AuthService {
   }
 
   private signToken(user: User) {
-    const payload = { sub: user.id, alias: user.alias, rol: user.rol };
+    const payload = { sub: user.id, alias: user.alias, role: user.role };
     return {
       accessToken: this.jwtService.sign(payload),
       user: {
         id: user.id,
         alias: user.alias,
-        ciudad: user.ciudad,
-        rol: user.rol,
-        nivel: user.nivel,
-        estilos: user.estilos,
-        academiaId: user.academiaId || undefined,
+        city: user.city,
+        role: user.role,
+        level: user.level,
+        styles: user.styles,
+        academyId: user.academyId || undefined,
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
       },

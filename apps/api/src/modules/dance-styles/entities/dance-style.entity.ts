@@ -8,9 +8,9 @@ export class DanceStyle {
   @Column({ unique: true })
   slug: string;
 
-  @Column()
-  nombre: string;
+  @Column({ name: 'nombre' })
+  name: string;
 
-  @Column({ default: true })
-  activo: boolean;
+  @Column({ name: 'activo', default: true })
+  active: boolean;
 }

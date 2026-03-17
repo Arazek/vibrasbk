@@ -8,10 +8,10 @@ export class CreateDanceStyleDto {
 
   @ApiProperty({ example: 'Salsa Cubana' })
   @IsString()
-  nombre: string;
+  name: string;
 
   @ApiPropertyOptional()
   @IsOptional()
   @IsBoolean()
-  activo?: boolean;
+  active?: boolean;
 }

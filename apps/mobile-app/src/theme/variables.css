@@ -180,27 +180,27 @@
 }
 
 /* ─────────────────────────────────────────────────────
-   7. APP-SPECIFIC — Ambiente status colors
+   7. APP-SPECIFIC — Vibe status colors
    Updated to LanguageGUI System Colors for consistency
    ───────────────────────────────────────────────────── */
 :root {
-  --ambiente-flojo:     var(--lgui-neutral-500);  /* #BAC0CC — muted grey */
-  --ambiente-normal:    var(--lgui-yellow-400);   /* #EFC42C — amber */
-  --ambiente-animado:   var(--lgui-green-400);    /* #4AD562 — vibrant green */
-  --ambiente-muy-lleno: var(--lgui-red-400);      /* #FE566B — coral red */
+  --vibe-quiet:   var(--lgui-neutral-500);  /* #BAC0CC — muted grey */
+  --vibe-normal:  var(--lgui-yellow-400);   /* #EFC42C — amber */
+  --vibe-lively:  var(--lgui-green-400);    /* #4AD562 — vibrant green */
+  --vibe-packed:  var(--lgui-red-400);      /* #FE566B — coral red */
 
-  --ambiente-bg-flojo:     var(--lgui-neutral-300);  /* #F0F2F5 */
-  --ambiente-bg-normal:    var(--lgui-yellow-100);   /* #FFFAE9 */
-  --ambiente-bg-animado:   var(--lgui-green-100);    /* #EEF9F5 */
-  --ambiente-bg-muy-lleno: var(--lgui-red-100);      /* #FFF5F6 */
+  --vibe-bg-quiet:   var(--lgui-neutral-300);  /* #F0F2F5 */
+  --vibe-bg-normal:  var(--lgui-yellow-100);   /* #FFFAE9 */
+  --vibe-bg-lively:  var(--lgui-green-100);    /* #EEF9F5 */
+  --vibe-bg-packed:  var(--lgui-red-100);      /* #FFF5F6 */
 
-  /* Event tipo chip colors */
-  --tipo-social-color:    #4A90D9;
-  --tipo-social-bg:       #E3EFFF;
-  --tipo-taller-color:    #D07A2E;
-  --tipo-taller-bg:       #FFF3E6;
-  --tipo-congreso-color:  #7B52AB;
-  --tipo-congreso-bg:     #F3EEFF;
+  /* Event type chip colors */
+  --type-social-color:    #4A90D9;
+  --type-social-bg:       #E3EFFF;
+  --type-intensive-color: #D07A2E;
+  --type-intensive-bg:    #FFF3E6;
+  --type-congress-color:  #7B52AB;
+  --type-congress-bg:     #F3EEFF;
 }
 
 /* ─────────────────────────────────────────────────────
@@ -237,16 +237,16 @@
     --lgui-shadow-lg:  0 8px 16px rgba(0,0,0,0.40);
     --lgui-shadow-xl:  0 8px 24px rgba(0,0,0,0.50);
 
-    /* Ambiente backgrounds — más oscuros */
-    --ambiente-bg-flojo:     rgba(186,192,204,0.12);
-    --ambiente-bg-normal:    rgba(239,196,44,0.12);
-    --ambiente-bg-animado:   rgba(74,213,98,0.12);
-    --ambiente-bg-muy-lleno: rgba(254,86,107,0.12);
+    /* Vibe backgrounds — más oscuros */
+    --vibe-bg-quiet:   rgba(186,192,204,0.12);
+    --vibe-bg-normal:  rgba(239,196,44,0.12);
+    --vibe-bg-lively:  rgba(74,213,98,0.12);
+    --vibe-bg-packed:  rgba(254,86,107,0.12);
 
-    /* Tipo chip backgrounds — más oscuros */
-    --tipo-social-bg:   rgba(74,144,217,0.18);
-    --tipo-taller-bg:   rgba(208,122,46,0.18);
-    --tipo-congreso-bg: rgba(123,82,171,0.18);
+    /* Type chip backgrounds — más oscuros */
+    --type-social-bg:     rgba(74,144,217,0.18);
+    --type-intensive-bg:  rgba(208,122,46,0.18);
+    --type-congress-bg:   rgba(123,82,171,0.18);
 
     /* Ionic overrides */
     --ion-background-color:     #161B2C;

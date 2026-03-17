@@ -15,12 +15,12 @@ export class ReliabilityMetric {
   userId: string;
 
   @Column({ name: 'votos_voy_total', default: 0 })
-  votosVoyTotal: number;
+  totalGoingVotes: number;
 
   @Column({ name: 'asistencias_confirmadas', default: 0 })
-  asistenciasConfirmadas: number;
+  confirmedAttendances: number;
 
-  // fiabilidad = asistenciasConfirmadas / max(1, votosVoyTotal)
-  @Column({ type: 'decimal', precision: 4, scale: 3, default: 1.0 })
-  fiabilidad: number;
+  // reliability = confirmedAttendances / max(1, totalGoingVotes)
+  @Column({ name: 'fiabilidad', type: 'decimal', precision: 4, scale: 3, default: 1.0 })
+  reliability: number;
 }

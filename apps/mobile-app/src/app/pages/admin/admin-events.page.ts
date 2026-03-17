@@ -42,16 +42,16 @@ const DAY_NAMES = ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado'
       <ion-list *ngIf="!loading">
         <ion-item *ngFor="let ev of events">
           <!-- Thumbnail: shows uploaded photo or placeholder -->
-          <img *ngIf="ev.fotoUrl" slot="start" [src]="photoThumb(ev.fotoUrl)"
+          <img *ngIf="ev.photoUrl" slot="start" [src]="photoThumb(ev.photoUrl)"
             style="width:44px; height:44px; object-fit:cover; border-radius:8px; flex-shrink:0;" />
-          <div *ngIf="!ev.fotoUrl" slot="start"
+          <div *ngIf="!ev.photoUrl" slot="start"
             style="width:44px; height:44px; border-radius:8px; background:var(--lgui-surface-3); display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0;">🎵</div>
           <ion-label>
-            <h3>{{ ev.venue?.nombre }} - {{ ev.tipo }}</h3>
-            <p>{{ dayName(ev.diaSemana) }} {{ ev.horaInicio }}</p>
+            <h3>{{ ev.venue?.name }} - {{ ev.type }}</h3>
+            <p>{{ dayName(ev.dayOfWeek) }} {{ ev.startTime }}</p>
           </ion-label>
           <ion-button fill="clear" slot="end" (click)="openPhotoUpload(ev)"
-            [color]="ev.fotoUrl ? 'success' : 'medium'">
+            [color]="ev.photoUrl ? 'success' : 'medium'">
             <ion-icon name="camera"></ion-icon>
           </ion-button>
           <ion-button fill="clear" slot="end" (click)="openEdit(ev)">
@@ -115,7 +115,7 @@ export class AdminEventsPage implements OnInit {
       component: EventFormModal,
       componentProps: {
         editingId: null, venues: this.venues,
-        initial: { venueId: this.venues[0]?.id ?? '', tipo: 'social', diaSemana: 0, horaInicio: '21:00' },
+        initial: { venueId: this.venues[0]?.id ?? '', type: 'social', dayOfWeek: 0, startTime: '21:00' },
       },
     });
     await modal.present();
@@ -132,7 +132,7 @@ export class AdminEventsPage implements OnInit {
       component: EventFormModal,
       componentProps: {
         editingId: ev.id, venues: this.venues,
-        initial: { venueId: ev.venue?.id ?? '', tipo: ev.tipo, diaSemana: ev.diaSemana ?? 0, horaInicio: ev.horaInicio, nombre: ev.nombre, precio: ev.precio, profesores: ev.profesores, instructores: ev.instructores, fechaFin: ev.fechaFin, fechaInicio: ev.fechaInicio, titulo: ev.titulo, nivel: ev.nivel, precioEntrada: ev.precioEntrada, tallerIncluido: ev.tallerIncluido, localidad: ev.localidad, duracionDias: ev.duracionDias, precios: ev.precios, enlaceWeb: ev.enlaceWeb },
+        initial: { venueId: ev.venue?.id ?? '', type: ev.type, dayOfWeek: ev.dayOfWeek ?? 0, startTime: ev.startTime, name: ev.name, instructors: ev.instructors, endDate: ev.endDate, startDate: ev.startDate, title: ev.title, level: ev.level, entryPrice: ev.entryPrice, workshopIncluded: ev.workshopIncluded, locality: ev.locality, durationDays: ev.durationDays, prices: ev.prices, websiteUrl: ev.websiteUrl },
       },
     });
     await modal.present();

@@ -19,7 +19,7 @@ export class SchedulerService {
 
   /**
    * Runs every day at 11:00 AM.
-   * 1. Creates pending verification records for yesterday's voy voters.
+   * 1. Creates pending verification records for yesterday's going voters.
    * 2. Sends a push notification to each of those users asking "¿Fuiste?"
    */
   @Cron('0 11 * * *')
@@ -29,10 +29,10 @@ export class SchedulerService {
       // Create pending AttendanceVerification rows for yesterday's events
       await this.votesService.createPendingVerificationsForYesterday();
 
-      // Get the list of users who voted "voy" yesterday
-      const targets = await this.votesService.getVoyVotersForYesterday();
+      // Get the list of users who voted "going" yesterday
+      const targets = await this.votesService.getGoingVotersForYesterday();
       if (targets.length === 0) {
-        this.logger.log('No voy voters found for yesterday.');
+        this.logger.log('No going voters found for yesterday.');
         return;
       }
 
@@ -64,7 +64,7 @@ export class SchedulerService {
 
   /**
    * Runs every day at 11:05 AM (5 min after push window).
-   * Auto-closes verification records older than 24 h with no response (asistio = false).
+   * Auto-closes verification records older than 24 h with no response (attended = false).
    * Then updates reliability metrics for those users.
    */
   @Cron('5 11 * * *')

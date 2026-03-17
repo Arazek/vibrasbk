@@ -5,11 +5,11 @@ export class Venue {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
-  nombre: string;
+  @Column({ name: 'nombre' })
+  name: string;
 
-  @Column({ default: 'Cartagena' })
-  ciudad: string;
+  @Column({ name: 'ciudad', default: 'Cartagena' })
+  city: string;
 
   @Column({ type: 'decimal', nullable: true })
   lat: number;
@@ -17,9 +17,9 @@ export class Venue {
   @Column({ type: 'decimal', nullable: true })
   lng: number;
 
-  @Column({ type: 'int', nullable: true })
-  aforoMaximo: number;
+  @Column({ name: 'aforo_maximo', type: 'int', nullable: true })
+  maxCapacity: number;
 
-  @Column({ type: 'simple-array' })
-  estilos: string[];
+  @Column({ name: 'estilos', type: 'simple-array' })
+  styles: string[];
 }

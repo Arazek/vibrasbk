@@ -39,9 +39,9 @@ import { VenueFormModal } from './venue-form.modal';
       <ion-list *ngIf="!loading">
         <ion-item *ngFor="let venue of venues">
           <ion-label>
-            <h3>{{ venue.nombre }}</h3>
-            <p>{{ venue.ciudad }}</p>
-            <p *ngIf="venue.aforoMaximo">Aforo: {{ venue.aforoMaximo }}</p>
+            <h3>{{ venue.name }}</h3>
+            <p>{{ venue.city }}</p>
+            <p *ngIf="venue.maxCapacity">Aforo: {{ venue.maxCapacity }}</p>
           </ion-label>
           <ion-button fill="clear" slot="end" (click)="openEdit(venue)">
             <ion-icon name="pencil"></ion-icon>
@@ -87,7 +87,7 @@ export class AdminVenuesPage implements OnInit {
   async openCreate() {
     const modal = await this.modalCtrl.create({
       component: VenueFormModal,
-      componentProps: { editingId: null, initial: { nombre: '', ciudad: 'Cartagena' } },
+      componentProps: { editingId: null, initial: { name: '', city: 'Cartagena' } },
     });
     await modal.present();
     const { data } = await modal.onWillDismiss();
@@ -103,7 +103,7 @@ export class AdminVenuesPage implements OnInit {
       component: VenueFormModal,
       componentProps: {
         editingId: venue.id,
-        initial: { nombre: venue.nombre, ciudad: venue.ciudad, lat: venue.lat, lng: venue.lng, aforoMaximo: venue.aforoMaximo },
+        initial: { name: venue.name, city: venue.city, lat: venue.lat, lng: venue.lng, maxCapacity: venue.maxCapacity },
       },
     });
     await modal.present();
@@ -118,7 +118,7 @@ export class AdminVenuesPage implements OnInit {
   async confirmDelete(venue: Venue) {
     const alert = await this.alertCtrl.create({
       header: 'Eliminar local',
-      message: 'Eliminar ' + venue.nombre + '?',
+      message: 'Eliminar ' + venue.name + '?',
       buttons: [
         { text: 'Cancelar', role: 'cancel' },
         { text: 'Eliminar', role: 'destructive', handler: () => {

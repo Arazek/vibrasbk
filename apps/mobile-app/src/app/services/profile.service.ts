@@ -2,12 +2,12 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { UserProfile, Nivel } from '@shared/types';
+import { UserProfile, Level } from '@shared/types';
 
 export interface UpdateProfilePayload {
-  nivel?: Nivel;
-  estilos?: string[];
-  academiaId?: string;
+  level?: Level;
+  styles?: string[];
+  academyId?: string;
   fcmToken?: string;
 }
 

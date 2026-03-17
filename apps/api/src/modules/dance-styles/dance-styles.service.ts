@@ -5,10 +5,10 @@ import { DanceStyle } from './entities/dance-style.entity';
 import { CreateDanceStyleDto } from './dtos/create-dance-style.dto';
 
 const SEED_STYLES = [
-  { slug: 'bachata_sensual',     nombre: 'Bachata Sensual' },
-  { slug: 'bachata_tradicional', nombre: 'Bachata Tradicional' },
-  { slug: 'salsa_linea',         nombre: 'Salsa en Línea' },
-  { slug: 'salsa_cubana',        nombre: 'Salsa Cubana' },
+  { slug: 'bachata_sensual',     name: 'Bachata Sensual' },
+  { slug: 'bachata_tradicional', name: 'Bachata Tradicional' },
+  { slug: 'salsa_linea',         name: 'Salsa en Línea' },
+  { slug: 'salsa_cubana',        name: 'Salsa Cubana' },
 ];
 
 @Injectable()
@@ -26,7 +26,7 @@ export class DanceStylesService implements OnApplicationBootstrap {
   }
 
   findAll(): Promise<DanceStyle[]> {
-    return this.repo.find({ where: { activo: true }, order: { nombre: 'ASC' } });
+    return this.repo.find({ where: { active: true }, order: { name: 'ASC' } });
   }
 
   findOne(id: string): Promise<DanceStyle | null> {
@@ -34,7 +34,7 @@ export class DanceStylesService implements OnApplicationBootstrap {
   }
 
   async create(dto: CreateDanceStyleDto): Promise<DanceStyle> {
-    return this.repo.save(this.repo.create({ ...dto, activo: dto.activo ?? true }));
+    return this.repo.save(this.repo.create({ ...dto, active: dto.active ?? true }));
   }
 
   async update(id: string, dto: Partial<CreateDanceStyleDto>): Promise<DanceStyle> {

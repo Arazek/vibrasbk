@@ -1,22 +1,22 @@
 import { IsEnum, IsArray, IsOptional, IsString } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { Nivel } from '../entities/user.entity';
+import { Level } from '../entities/user.entity';
 
 export class UpdateUserDto {
-  @ApiPropertyOptional({ enum: Nivel })
+  @ApiPropertyOptional({ enum: Level })
   @IsOptional()
-  @IsEnum(Nivel)
-  nivel?: Nivel;
+  @IsEnum(Level)
+  level?: Level;
 
   @ApiPropertyOptional({ type: [String] })
   @IsOptional()
   @IsArray()
-  estilos?: string[];
+  styles?: string[];
 
   @ApiPropertyOptional({ description: 'UUID of the Academia entity' })
   @IsOptional()
   @IsString()
-  academiaId?: string;
+  academyId?: string;
 
   @ApiPropertyOptional()
   @IsOptional()

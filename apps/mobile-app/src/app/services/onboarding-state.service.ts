@@ -1,20 +1,20 @@
 import { Injectable } from '@angular/core';
-import { Rol, Nivel, Estilo } from '@shared/types';
+import { Role, Level, Estilo } from '@shared/types';
 
 export interface OnboardingState {
-  rol: Rol | null;
-  nivel: Nivel | null;
-  estilos: Estilo[];
-  academia: string;
+  role: Role | null;
+  level: Level | null;
+  styles: Estilo[];
+  academy: string;
 }
 
 @Injectable({ providedIn: 'root' })
 export class OnboardingStateService {
   private state: OnboardingState = {
-    rol: null,
-    nivel: null,
-    estilos: [],
-    academia: '',
+    role: null,
+    level: null,
+    styles: [],
+    academy: '',
   };
 
   get(): OnboardingState {
@@ -26,10 +26,10 @@ export class OnboardingStateService {
   }
 
   reset(): void {
-    this.state = { rol: null, nivel: null, estilos: [], academia: '' };
+    this.state = { role: null, level: null, styles: [], academy: '' };
   }
 
   isComplete(): boolean {
-    return !!this.state.rol && !!this.state.nivel && this.state.estilos.length > 0;
+    return !!this.state.role && !!this.state.level && this.state.styles.length > 0;
   }
 }

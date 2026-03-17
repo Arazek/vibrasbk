@@ -2,44 +2,43 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { Venue, WeeklyEvent, TipoEvento, DanceStyle, Academia } from '@shared/types';
+import { Venue, WeeklyEvent, EventType, DanceStyle, Academia } from '@shared/types';
 
 export interface CreateVenuePayload {
-  nombre: string;
-  ciudad?: string;
+  name: string;
+  city?: string;
   lat?: number;
   lng?: number;
-  aforoMaximo?: number;
-  estilos?: string[];
+  maxCapacity?: number;
+  styles?: string[];
 }
 
 export interface CreateEventPayload {
   venueId: string;
-  tipo: TipoEvento;
-  diaSemana?: number;
-  horaInicio?: string;
-  nombre?: string;
-  estilos?: string[];
-  fechaInicio?: string;
+  type: EventType;
+  dayOfWeek?: number;
+  startTime?: string;
+  name?: string;
+  styles?: string[];
+  startDate?: string;
   // Social
-  tallerIncluido?: boolean;
-  precioEntrada?: number;
-  instructores?: string[];
-  // Intensivo
-  titulo?: string;
-  nivel?: string;
-  precio?: number;
-  profesores?: string[];
-  fechaFin?: string;
-  // Congreso
-  localidad?: string;
-  duracionDias?: number;
-  precios?: string;
-  enlaceWeb?: string;
+  workshopIncluded?: boolean;
+  entryPrice?: number;
+  instructors?: string[];
+  // Intensive
+  title?: string;
+  level?: string;
+  price?: number;
+  endDate?: string;
+  // Congress
+  locality?: string;
+  durationDays?: number;
+  prices?: string;
+  websiteUrl?: string;
 }
 
-export interface CreateDanceStylePayload { slug: string; nombre: string }
-export interface CreateAcademiaPayload { nombre: string; ciudad?: string }
+export interface CreateDanceStylePayload { slug: string; name: string }
+export interface CreateAcademiaPayload { name: string; city?: string }
 
 @Injectable({ providedIn: 'root' })
 export class AdminService {

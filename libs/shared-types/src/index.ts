@@ -1,95 +1,94 @@
-export type Rol = 'leader' | 'follower' | 'switch' | 'admin';
-export type Nivel = 'nuevo' | 'iniciacion' | 'social_comodo' | 'intermedio' | 'avanzado';
-// Estilos are now managed dynamically via the DanceStyle entity
+export type Role = 'leader' | 'follower' | 'switch' | 'admin';
+export type Level = 'beginner' | 'initiation' | 'comfortable' | 'intermediate' | 'advanced';
+// Styles are now managed dynamically via the DanceStyle entity
 export type Estilo = string;
-export type VoteEstado = 'voy' | 'tal_vez' | 'no_voy';
-export type Ambiente = 'flojo' | 'normal' | 'animado' | 'muy_lleno';
-export type TipoEvento = 'social' | 'intensivo' | 'congreso';
+export type VoteStatus = 'going' | 'maybe' | 'not_going';
+export type Vibe = 'quiet' | 'normal' | 'lively' | 'packed';
+export type EventType = 'social' | 'intensive' | 'congress';
 
 export interface RoleBalanceDetail {
   leadersPercent: number;
   followersPercent: number;
   switchesPercent: number;
-  balance: 'equilibrado' | 'faltan_leaders' | 'faltan_followers';
+  balance: 'balanced' | 'need_leaders' | 'need_followers';
 }
 
 export interface DanceStyle {
   id: string;
   slug: string;
-  nombre: string;
-  activo: boolean;
+  name: string;
+  active: boolean;
 }
 
 export interface Academia {
   id: string;
-  nombre: string;
-  ciudad?: string;
+  name: string;
+  city?: string;
 }
 
 export interface UserProfile {
   id: string;
   alias: string;
-  ciudad: string;
-  rol: Rol;
-  nivel: Nivel;
-  estilos: string[];
-  academiaId?: string;
+  city: string;
+  role: Role;
+  level: Level;
+  styles: string[];
+  academyId?: string;
   createdAt: Date;
   updatedAt: Date;
 }
 
 export interface Venue {
   id: string;
-  nombre: string;
-  ciudad: string;
+  name: string;
+  city: string;
   lat?: number;
   lng?: number;
-  aforoMaximo?: number;
-  estilos: Estilo[];
+  maxCapacity?: number;
+  styles: Estilo[];
 }
 
 export interface WeeklyEvent {
   id: string;
   venue: Venue;
-  tipo: TipoEvento;
-  nombre?: string;
-  fotoUrl?: string | null;
+  type: EventType;
+  name?: string;
+  photoUrl?: string | null;
   eventDate: string;
   eventStart: string;
-  semanaIso: string;
-  horaInicio?: string;
-  diaSemana?: number | null;
-  fechaInicio?: string;
-  estilos: string[];
+  isoWeek: string;
+  startTime?: string;
+  dayOfWeek?: number | null;
+  startDate?: string;
+  styles: string[];
   // Social
-  tallerIncluido?: boolean;
-  precioEntrada?: number;
-  instructores?: string[];
-  // Intensivo
-  titulo?: string;
-  nivel?: string;
-  precio?: number;
-  profesores?: string[];
-  fechaFin?: string;
-  // Congreso
-  localidad?: string;
-  duracionDias?: number;
-  precios?: string;
-  enlaceWeb?: string;
+  workshopIncluded?: boolean;
+  entryPrice?: number;
+  instructors?: string[];
+  // Intensive
+  title?: string;
+  level?: string;
+  price?: number;
+  endDate?: string;
+  // Congress
+  locality?: string;
+  durationDays?: number;
+  prices?: string;
+  websiteUrl?: string;
   // Aggregates
-  totalInteresados: number;
-  ambienteColor: Ambiente;
+  totalInterested: number;
+  vibeColor: Vibe;
   roleBalance?: RoleBalanceDetail;
-  userVote: VoteEstado | null;
+  userVote: VoteStatus | null;
   userVoteId: string | null;
 }
 
 export interface EventAnalytics {
-  ambiente: Ambiente;
-  asistenciaEstimada: number;
-  aforoMaximo?: number;
-  aforoOcupacionPct?: number;
-  nivelDistribution: Record<Nivel, number>;
+  vibe: Vibe;
+  estimatedAttendance: number;
+  maxCapacity?: number;
+  capacityOccupancyPct?: number;
+  levelDistribution: Record<Level, number>;
   roleBalance: RoleBalanceDetail;
   recommendation: string;
 }
@@ -97,8 +96,8 @@ export interface EventAnalytics {
 export interface IntentionVote {
   id: string;
   eventId: string;
-  semanaIso: string;
-  estado: VoteEstado;
+  isoWeek: string;
+  status: VoteStatus;
 }
 
 export interface AuthResponse {

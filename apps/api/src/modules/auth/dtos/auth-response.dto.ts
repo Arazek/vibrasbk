@@ -8,16 +8,16 @@ export class UserProfileDto {
   alias: string;
 
   @ApiProperty()
-  ciudad: string;
+  city: string;
 
   @ApiProperty()
-  rol: string;
+  role: string;
 
   @ApiProperty()
-  nivel: string;
+  level: string;
 
   @ApiProperty({ type: [String] })
-  estilos: string[];
+  styles: string[];
 
   @ApiProperty({ required: false })
   academia?: string;

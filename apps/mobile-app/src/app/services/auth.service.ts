@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { tap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { AuthResponse, Rol, Nivel } from '@shared/types';
+import { AuthResponse, Role, Level } from '@shared/types';
 
 const TOKEN_KEY = 'auth_token';
 
@@ -11,10 +11,10 @@ export interface RegisterPayload {
   alias: string;
   email: string;
   password: string;
-  rol: Rol;
-  nivel: Nivel;
-  estilos: string[];
-  academiaId?: string;
+  role: Role;
+  level: Level;
+  styles: string[];
+  academyId?: string;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -47,18 +47,18 @@ export class AuthService {
     return !!this.getToken();
   }
 
-  getRol(): string | null {
+  getRole(): string | null {
     const token = this.getToken();
     if (!token) return null;
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));
-      return payload.rol ?? null;
+      return payload.role ?? null;
     } catch {
       return null;
     }
   }
 
   isAdmin(): boolean {
-    return this.getRol() === 'admin';
+    return this.getRole() === 'admin';
   }
 }

@@ -6,98 +6,93 @@ export class CreateEventDto {
   @IsString()
   venueId: string;
 
-  @ApiProperty({ enum: ['social', 'intensivo', 'congreso'] })
-  @IsIn(['social', 'intensivo', 'congreso'])
-  tipo: 'social' | 'intensivo' | 'congreso';
+  @ApiProperty({ enum: ['social', 'intensive', 'congress'] })
+  @IsIn(['social', 'intensive', 'congress'])
+  type: 'social' | 'intensive' | 'congress';
 
-  @ApiPropertyOptional({ description: '0=Lunes … 6=Domingo (solo para sociales recurrentes)', minimum: 0, maximum: 6 })
+  @ApiPropertyOptional({ description: '0=Monday … 6=Sunday (for recurring socials only)', minimum: 0, maximum: 6 })
   @IsNumber()
   @IsOptional()
   @Min(0)
   @Max(6)
-  diaSemana?: number;
+  dayOfWeek?: number;
 
-  @ApiPropertyOptional({ example: '21:00', description: 'Solo para sociales recurrentes' })
+  @ApiPropertyOptional({ example: '21:00', description: 'For recurring socials only' })
   @IsString()
   @IsOptional()
-  horaInicio?: string;
+  startTime?: string;
 
   @ApiPropertyOptional()
   @IsString()
   @IsOptional()
-  nombre?: string;
+  name?: string;
 
   @ApiPropertyOptional({ type: [String] })
   @IsArray()
   @IsOptional()
-  estilos?: string[];
+  styles?: string[];
 
-  // Fecha de inicio — para intensivos y congresos (YYYY-MM-DD)
-  @ApiPropertyOptional({ description: 'Fecha inicio YYYY-MM-DD (intensivos y congresos)' })
+  // Start date — for intensives and congresses (YYYY-MM-DD)
+  @ApiPropertyOptional({ description: 'Start date YYYY-MM-DD (intensive and congress)' })
   @IsString()
   @IsOptional()
-  fechaInicio?: string;
+  startDate?: string;
 
   // ─── Social ────────────────────────────────────────────────────────────────
   @ApiPropertyOptional()
   @IsBoolean()
   @IsOptional()
-  tallerIncluido?: boolean;
+  workshopIncluded?: boolean;
 
   @ApiPropertyOptional()
   @IsNumber()
   @IsOptional()
-  precioEntrada?: number;
+  entryPrice?: number;
 
   @ApiPropertyOptional({ type: [String] })
   @IsArray()
   @IsOptional()
-  instructores?: string[];
+  instructors?: string[];
 
-  // ─── Intensivo ─────────────────────────────────────────────────────────────
+  // ─── Intensive ─────────────────────────────────────────────────────────────
   @ApiPropertyOptional()
   @IsString()
   @IsOptional()
-  titulo?: string;
+  title?: string;
 
   @ApiPropertyOptional()
   @IsString()
   @IsOptional()
-  nivel?: string;
-
-  @ApiPropertyOptional()
-  @IsNumber()
-  @IsOptional()
-  precio?: number;
-
-  @ApiPropertyOptional({ type: [String] })
-  @IsArray()
-  @IsOptional()
-  profesores?: string[];
-
-  @ApiPropertyOptional({ description: 'Fecha fin YYYY-MM-DD' })
-  @IsString()
-  @IsOptional()
-  fechaFin?: string;
-
-  // ─── Congreso ──────────────────────────────────────────────────────────────
-  @ApiPropertyOptional()
-  @IsString()
-  @IsOptional()
-  localidad?: string;
+  level?: string;
 
   @ApiPropertyOptional()
   @IsNumber()
   @IsOptional()
-  duracionDias?: number;
+  price?: number;
 
-  @ApiPropertyOptional({ description: 'JSON: [{label, precio}]' })
+  @ApiPropertyOptional({ description: 'End date YYYY-MM-DD' })
   @IsString()
   @IsOptional()
-  precios?: string;
+  endDate?: string;
+
+  // ─── Congress ──────────────────────────────────────────────────────────────
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  locality?: string;
+
+  @ApiPropertyOptional()
+  @IsNumber()
+  @IsOptional()
+  durationDays?: number;
+
+  @ApiPropertyOptional({ description: 'JSON: [{label, price}]' })
+  @IsString()
+  @IsOptional()
+  prices?: string;
 
   @ApiPropertyOptional()
   @IsString()
   @IsOptional()
-  enlaceWeb?: string;
+  websiteUrl?: string;
 }

@@ -11,17 +11,17 @@ import {
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { logOutOutline } from 'ionicons/icons';
-import { UserProfile, Nivel, DanceStyle, Academia } from '@shared/types';
+import { UserProfile, Level, DanceStyle, Academia } from '@shared/types';
 import { ProfileService } from '../../services/profile.service';
 import { AuthService } from '../../services/auth.service';
 import { environment } from '../../../environments/environment';
 
-const NIVEL_OPTIONS: { value: Nivel; label: string }[] = [
-  { value: 'nuevo',         label: 'Nuevo' },
-  { value: 'iniciacion',    label: 'Iniciación' },
-  { value: 'social_comodo', label: 'Social cómodo' },
-  { value: 'intermedio',    label: 'Intermedio' },
-  { value: 'avanzado',      label: 'Avanzado' },
+const LEVEL_OPTIONS: { value: Level; label: string }[] = [
+  { value: 'beginner',     label: 'Nuevo' },
+  { value: 'initiation',   label: 'Iniciación' },
+  { value: 'comfortable',  label: 'Social cómodo' },
+  { value: 'intermediate', label: 'Intermedio' },
+  { value: 'advanced',     label: 'Avanzado' },
 ];
 
 @Component({
@@ -78,13 +78,13 @@ const NIVEL_OPTIONS: { value: Nivel; label: string }[] = [
       margin-bottom: var(--lgui-gap-sm);
       margin-top: var(--lgui-gap-xl);
     }
-    .estilos-grid {
+    .styles-grid {
       display: flex;
       flex-wrap: wrap;
       gap: var(--lgui-gap-sm);
       margin-bottom: var(--lgui-gap-xl);
     }
-    .estilo-chip { height: 36px; font-size: 13px; font-weight: 500; }
+    .style-chip { height: 36px; font-size: 13px; font-weight: 500; }
     .bottom-space { height: var(--lgui-space-8); }
   `],
   template: `
@@ -108,44 +108,44 @@ const NIVEL_OPTIONS: { value: Nivel; label: string }[] = [
           <div class="avatar">{{ initials }}</div>
           <div class="identity-info">
             <div class="identity-alias">{{ profile.alias }}</div>
-            <div class="identity-meta">{{ profile.ciudad }} · {{ rolLabel }}</div>
+            <div class="identity-meta">{{ profile.city }} · {{ roleLabel }}</div>
           </div>
         </div>
 
         <!-- Admin button -->
         <ion-button
-          *ngIf="profile.rol === 'admin'"
+          *ngIf="profile.role === 'admin'"
           expand="block"
           color="secondary"
           (click)="router.navigate(['/admin'])">
           Panel Admin
         </ion-button>
 
-        <!-- Nivel (editable) -->
+        <!-- Level (editable) -->
         <div class="section-title">Nivel</div>
         <ion-list style="border-radius: 10px; overflow: hidden; margin-bottom: 0;">
           <ion-item>
             <ion-label>Nivel actual</ion-label>
-            <ion-select [(ngModel)]="selectedNivel" interface="action-sheet">
-              <ion-select-option *ngFor="let n of nivelOptions" [value]="n.value">
+            <ion-select [(ngModel)]="selectedLevel" interface="action-sheet">
+              <ion-select-option *ngFor="let n of levelOptions" [value]="n.value">
                 {{ n.label }}
               </ion-select-option>
             </ion-select>
           </ion-item>
         </ion-list>
 
-        <!-- Estilos (editable, API-driven) -->
+        <!-- Styles (editable, API-driven) -->
         <div class="section-title">Estilos</div>
         <div *ngIf="loadingStyles" class="ion-text-center" style="margin-bottom: 16px;">
           <ion-spinner name="dots" color="primary"></ion-spinner>
         </div>
-        <div class="estilos-grid" *ngIf="!loadingStyles">
+        <div class="styles-grid" *ngIf="!loadingStyles">
           <ion-chip
-            *ngFor="let e of estiloOptions"
+            *ngFor="let e of styleOptions"
             [color]="isSelected(e.slug) ? 'primary' : 'medium'"
-            class="estilo-chip"
-            (click)="toggleEstilo(e.slug)">
-            <ion-label>{{ e.nombre }}</ion-label>
+            class="style-chip"
+            (click)="toggleStyle(e.slug)">
+            <ion-label>{{ e.name }}</ion-label>
           </ion-chip>
         </div>
 
@@ -154,14 +154,14 @@ const NIVEL_OPTIONS: { value: Nivel; label: string }[] = [
         <ion-list style="border-radius: 10px; overflow: hidden; margin-bottom: var(--lgui-gap-xl);">
           <ion-item>
             <ion-label>Academia</ion-label>
-            <ion-select [(ngModel)]="selectedAcademiaId" interface="action-sheet">
+            <ion-select [(ngModel)]="selectedAcademyId" interface="action-sheet">
               <ion-select-option [value]="null">Sin academia</ion-select-option>
-              <ion-select-option *ngFor="let a of academias" [value]="a.id">{{ a.nombre }}</ion-select-option>
+              <ion-select-option *ngFor="let a of academias" [value]="a.id">{{ a.name }}</ion-select-option>
             </ion-select>
           </ion-item>
         </ion-list>
 
-        <ion-button expand="block" [disabled]="!!(saving || selectedEstilos.length === 0)" (click)="save()">
+        <ion-button expand="block" [disabled]="!!(saving || selectedStyles.length === 0)" (click)="save()">
           {{ saving ? 'Guardando...' : 'Guardar cambios' }}
         </ion-button>
 
@@ -194,12 +194,12 @@ export class ProfilePage implements OnInit {
   saving = false;
   toastMsg = '';
 
-  selectedNivel: Nivel = 'social_comodo';
-  selectedEstilos: string[] = [];
-  selectedAcademiaId: string | null = null;
+  selectedLevel: Level = 'comfortable';
+  selectedStyles: string[] = [];
+  selectedAcademyId: string | null = null;
 
-  nivelOptions = NIVEL_OPTIONS;
-  estiloOptions: DanceStyle[] = [];
+  levelOptions = LEVEL_OPTIONS;
+  styleOptions: DanceStyle[] = [];
   academias: Academia[] = [];
 
   constructor(
@@ -216,9 +216,9 @@ export class ProfilePage implements OnInit {
     this.profileService.getProfile().subscribe({
       next: (p) => {
         this.profile = p;
-        this.selectedNivel = p.nivel;
-        this.selectedEstilos = [...p.estilos];
-        this.selectedAcademiaId = p.academiaId ?? null;
+        this.selectedLevel = p.level;
+        this.selectedStyles = [...p.styles];
+        this.selectedAcademyId = p.academyId ?? null;
         this.loading = false;
       },
       error: () => {
@@ -227,7 +227,7 @@ export class ProfilePage implements OnInit {
       },
     });
     this.http.get<DanceStyle[]>(`${environment.apiUrl}/dance-styles`).subscribe({
-      next: (s) => { this.estiloOptions = s; this.loadingStyles = false; },
+      next: (s) => { this.styleOptions = s; this.loadingStyles = false; },
       error: () => { this.loadingStyles = false; },
     });
     this.http.get<Academia[]>(`${environment.apiUrl}/academias`).subscribe({
@@ -239,29 +239,29 @@ export class ProfilePage implements OnInit {
     return (this.profile?.alias ?? '?').slice(0, 2).toUpperCase();
   }
 
-  get rolLabel(): string {
+  get roleLabel(): string {
     const map: Record<string, string> = { leader: 'Leader', follower: 'Follower', switch: 'Switch', admin: 'Admin' };
-    return map[this.profile?.rol ?? ''] ?? '';
+    return map[this.profile?.role ?? ''] ?? '';
   }
 
   isSelected(slug: string): boolean {
-    return this.selectedEstilos.includes(slug);
+    return this.selectedStyles.includes(slug);
   }
 
-  toggleEstilo(slug: string): void {
+  toggleStyle(slug: string): void {
     if (this.isSelected(slug)) {
-      this.selectedEstilos = this.selectedEstilos.filter((s) => s !== slug);
+      this.selectedStyles = this.selectedStyles.filter((s) => s !== slug);
     } else {
-      this.selectedEstilos = [...this.selectedEstilos, slug];
+      this.selectedStyles = [...this.selectedStyles, slug];
     }
   }
 
   save() {
     this.saving = true;
     this.profileService.updateProfile({
-      nivel: this.selectedNivel,
-      estilos: this.selectedEstilos,
-      academiaId: this.selectedAcademiaId ?? undefined,
+      level: this.selectedLevel,
+      styles: this.selectedStyles,
+      academyId: this.selectedAcademyId ?? undefined,
     }).subscribe({
       next: (p) => {
         this.profile = p;

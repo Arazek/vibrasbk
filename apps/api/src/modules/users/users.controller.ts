@@ -19,7 +19,7 @@ export class UsersController {
 
   @UseGuards(JwtAuthGuard)
   @Patch('profile')
-  @ApiOperation({ summary: 'Update nivel, estilos, academia, or fcmToken' })
+  @ApiOperation({ summary: 'Update level, styles, academy, or fcmToken' })
   updateProfile(@Request() req: any, @Body() dto: UpdateUserDto) {
     return this.usersService.update(req.user.id, dto);
   }

@@ -38,8 +38,8 @@ import { AdminService } from '../../services/admin.service';
       <ion-list *ngIf="!loading">
         <ion-item *ngFor="let academia of academias">
           <ion-label>
-            <h3>{{ academia.nombre }}</h3>
-            <p *ngIf="academia.ciudad">{{ academia.ciudad }}</p>
+            <h3>{{ academia.name }}</h3>
+            <p *ngIf="academia.city">{{ academia.city }}</p>
           </ion-label>
           <ion-button fill="clear" slot="end" (click)="openEdit(academia)">
             <ion-icon name="pencil"></ion-icon>
@@ -84,16 +84,16 @@ export class AdminAcademiasPage implements OnInit {
     const alert = await this.alertCtrl.create({
       header: 'Nueva academia',
       inputs: [
-        { name: 'nombre', type: 'text', placeholder: 'Nombre de la academia' },
-        { name: 'ciudad', type: 'text', placeholder: 'Ciudad (opcional)' },
+        { name: 'name', type: 'text', placeholder: 'Nombre de la academia' },
+        { name: 'city', type: 'text', placeholder: 'Ciudad (opcional)' },
       ],
       buttons: [
         { text: 'Cancelar', role: 'cancel' },
         {
           text: 'Crear',
           handler: (data): boolean => {
-            if (!data.nombre) return false;
-            this.admin.createAcademia({ nombre: data.nombre, ciudad: data.ciudad || undefined }).subscribe({
+            if (!data.name) return false;
+            this.admin.createAcademia({ name: data.name, city: data.city || undefined }).subscribe({
               next: () => { this.toast = 'Academia creada'; this.load(); },
               error: () => { this.toast = 'Error al crear academia'; },
             });
@@ -109,16 +109,16 @@ export class AdminAcademiasPage implements OnInit {
     const alert = await this.alertCtrl.create({
       header: 'Editar academia',
       inputs: [
-        { name: 'nombre', type: 'text', value: academia.nombre, placeholder: 'Nombre' },
-        { name: 'ciudad', type: 'text', value: academia.ciudad ?? '', placeholder: 'Ciudad' },
+        { name: 'name', type: 'text', value: academia.name, placeholder: 'Nombre' },
+        { name: 'city', type: 'text', value: academia.city ?? '', placeholder: 'Ciudad' },
       ],
       buttons: [
         { text: 'Cancelar', role: 'cancel' },
         {
           text: 'Guardar',
           handler: (data): boolean => {
-            if (!data.nombre) return false;
-            this.admin.updateAcademia(academia.id, { nombre: data.nombre, ciudad: data.ciudad || undefined }).subscribe({
+            if (!data.name) return false;
+            this.admin.updateAcademia(academia.id, { name: data.name, city: data.city || undefined }).subscribe({
               next: () => { this.toast = 'Academia actualizada'; this.load(); },
               error: () => { this.toast = 'Error al actualizar'; },
             });
@@ -133,7 +133,7 @@ export class AdminAcademiasPage implements OnInit {
   async confirmDelete(academia: Academia) {
     const alert = await this.alertCtrl.create({
       header: 'Eliminar academia',
-      message: `¿Eliminar "${academia.nombre}"?`,
+      message: `¿Eliminar "${academia.name}"?`,
       buttons: [
         { text: 'Cancelar', role: 'cancel' },
         {

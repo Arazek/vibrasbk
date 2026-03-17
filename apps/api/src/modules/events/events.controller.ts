@@ -42,9 +42,9 @@ export class EventsController {
   ) {}
 
   @Get('week')
-  @ApiOperation({ summary: 'Weekly agenda enriched with vote counts and ambiente color' })
-  getWeeklyEvents(@Request() req: any, @Query('tipo') tipo?: string) {
-    return this.eventsService.getWeeklyEvents(req.user.id, tipo);
+  @ApiOperation({ summary: 'Weekly agenda enriched with vote counts and vibe color' })
+  getWeeklyEvents(@Request() req: any, @Query('type') type?: string) {
+    return this.eventsService.getWeeklyEvents(req.user.id, type);
   }
 
   @Get(':id')
@@ -54,7 +54,7 @@ export class EventsController {
   }
 
   @Get(':id/analytics')
-  @ApiOperation({ summary: 'Full prediction analytics (requires voy or tal_vez vote)' })
+  @ApiOperation({ summary: 'Full prediction analytics (requires going or maybe vote)' })
   getAnalytics(@Param('id') id: string, @Request() req: any) {
     return this.votesService.getAnalytics(id, req.user.id);
   }
@@ -88,7 +88,7 @@ export class EventsController {
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(FileInterceptor('file', { storage: photoStorage }))
   async uploadPhoto(@Param('id') id: string, @UploadedFile() file: Express.Multer.File) {
-    const fotoUrl = `/uploads/events/${file.filename}`;
-    return this.eventsService.updateFoto(id, fotoUrl);
+    const photoUrl = `/uploads/events/${file.filename}`;
+    return this.eventsService.updatePhoto(id, photoUrl);
   }
 }

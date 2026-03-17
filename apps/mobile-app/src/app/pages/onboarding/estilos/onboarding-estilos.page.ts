@@ -39,7 +39,7 @@ import { environment } from '../../../../environments/environment';
       gap: 10px;
       margin-bottom: 28px;
     }
-    .estilo-chip {
+    .style-chip {
       height: 36px;
       font-size: 13px;
       font-weight: 500;
@@ -83,11 +83,11 @@ import { environment } from '../../../../environments/environment';
       </div>
       <div class="chips-grid" *ngIf="!loadingStyles">
         <ion-chip
-          *ngFor="let e of estilos"
+          *ngFor="let e of styles"
           [color]="isSelected(e.slug) ? 'primary' : 'medium'"
-          class="estilo-chip"
+          class="style-chip"
           (click)="toggle(e.slug)">
-          <ion-label>{{ e.nombre }}</ion-label>
+          <ion-label>{{ e.name }}</ion-label>
         </ion-chip>
       </div>
 
@@ -101,9 +101,9 @@ import { environment } from '../../../../environments/environment';
       <div class="field-label">Academia (opcional)</div>
       <ion-list lines="none" style="margin-bottom: 24px; border-radius: 10px; overflow: hidden;">
         <ion-item>
-          <ion-select [(ngModel)]="selectedAcademiaId" placeholder="Sin academia" interface="action-sheet">
+          <ion-select [(ngModel)]="selectedAcademyId" placeholder="Sin academia" interface="action-sheet">
             <ion-select-option [value]="null">Sin academia</ion-select-option>
-            <ion-select-option *ngFor="let a of academias" [value]="a.id">{{ a.nombre }}</ion-select-option>
+            <ion-select-option *ngFor="let a of academias" [value]="a.id">{{ a.name }}</ion-select-option>
           </ion-select>
         </ion-item>
       </ion-list>
@@ -166,10 +166,10 @@ import { environment } from '../../../../environments/environment';
   `,
 })
 export class OnboardingEstilosPage implements OnInit {
-  estilos: DanceStyle[] = [];
+  styles: DanceStyle[] = [];
   academias: Academia[] = [];
   selected: string[] = [];
-  selectedAcademiaId: string | null = null;
+  selectedAcademyId: string | null = null;
   alias = '';
   email = '';
   password = '';
@@ -184,12 +184,12 @@ export class OnboardingEstilosPage implements OnInit {
     private authService: AuthService,
     private http: HttpClient,
   ) {
-    this.selected = [...this.state.get().estilos];
+    this.selected = [...this.state.get().styles];
   }
 
   ngOnInit() {
     this.http.get<DanceStyle[]>(`${environment.apiUrl}/dance-styles`).subscribe({
-      next: (s) => { this.estilos = s; this.loadingStyles = false; },
+      next: (s) => { this.styles = s; this.loadingStyles = false; },
       error: () => { this.loadingStyles = false; },
     });
     this.http.get<Academia[]>(`${environment.apiUrl}/academias`).subscribe({
@@ -221,7 +221,7 @@ export class OnboardingEstilosPage implements OnInit {
 
   finish(): void {
     const onboarding = this.state.get();
-    if (!onboarding.rol || !onboarding.nivel || this.selected.length === 0 || !this.alias.trim()) {
+    if (!onboarding.role || !onboarding.level || this.selected.length === 0 || !this.alias.trim()) {
       this.error = 'Por favor completa todos los campos requeridos.';
       return;
     }
@@ -244,10 +244,10 @@ export class OnboardingEstilosPage implements OnInit {
         alias: this.alias.trim(),
         email: this.email.trim(),
         password: this.password,
-        rol: onboarding.rol,
-        nivel: onboarding.nivel,
-        estilos: this.selected,
-        academiaId: this.selectedAcademiaId ?? undefined,
+        role: onboarding.role,
+        level: onboarding.level,
+        styles: this.selected,
+        academyId: this.selectedAcademyId ?? undefined,
       })
       .subscribe({
         next: () => {

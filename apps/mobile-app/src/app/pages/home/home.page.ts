@@ -10,7 +10,7 @@ import {
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { musicalNotes, calendar } from 'ionicons/icons';
-import { WeeklyEvent, TipoEvento } from '@shared/types';
+import { WeeklyEvent, EventType } from '@shared/types';
 import { EventsService } from '../../services/events.service';
 import { EventCardComponent } from '../../components/event-card/event-card.component';
 
@@ -73,9 +73,9 @@ const MONTH_NAMES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'jul
       background: var(--ion-color-primary);
       color: #fff;
     }
-    .filter-chip.active.tipo-social   { background: var(--tipo-social-color, #4A90D9); }
-    .filter-chip.active.tipo-intensivo { background: var(--tipo-taller-color, #D07A2E); }
-    .filter-chip.active.tipo-congreso { background: var(--tipo-congreso-color, #7B52AB); }
+    .filter-chip.active.type-social     { background: var(--type-social-color, #4A90D9); }
+    .filter-chip.active.type-intensive  { background: var(--type-intensive-color, #D07A2E); }
+    .filter-chip.active.type-congress   { background: var(--type-congress-color, #7B52AB); }
     .day-header {
       padding: var(--lgui-space-5) var(--lgui-pad-md) var(--lgui-space-1);
       font-size: 11px;
@@ -141,27 +141,27 @@ const MONTH_NAMES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'jul
     <ion-content>
       <!-- Filtro por tipo — custom pills (not ion-chip to avoid Ionic override issues) -->
       <div class="filter-bar">
-        <button class="filter-chip" [class.active]="!selectedTipo" (click)="setTipo(null)">
+        <button class="filter-chip" [class.active]="!selectedType" (click)="setType(null)">
           Todos
         </button>
-        <button class="filter-chip tipo-social" [class.active]="selectedTipo === 'social'" (click)="setTipo('social')">
+        <button class="filter-chip type-social" [class.active]="selectedType === 'social'" (click)="setType('social')">
           Social
         </button>
-        <button class="filter-chip tipo-intensivo" [class.active]="selectedTipo === 'intensivo'" (click)="setTipo('intensivo')">
+        <button class="filter-chip type-intensive" [class.active]="selectedType === 'intensive'" (click)="setType('intensive')">
           Intensivo
         </button>
-        <button class="filter-chip tipo-congreso" [class.active]="selectedTipo === 'congreso'" (click)="setTipo('congreso')">
+        <button class="filter-chip type-congress" [class.active]="selectedType === 'congress'" (click)="setType('congress')">
           Congreso
         </button>
       </div>
 
       <!-- Filtro por ciudad — solo visible si hay más de 1 ciudad en los datos -->
       <div class="filter-bar" *ngIf="availableCities.length > 1">
-        <button class="filter-chip" [class.active]="!selectedCiudad" (click)="setCiudad(null)">
+        <button class="filter-chip" [class.active]="!selectedCity" (click)="setCity(null)">
           📍 Todas
         </button>
         <button class="filter-chip" *ngFor="let c of availableCities"
-          [class.active]="selectedCiudad === c" (click)="setCiudad(c)">
+          [class.active]="selectedCity === c" (click)="setCity(c)">
           {{ c }}
         </button>
       </div>
@@ -198,8 +198,8 @@ export class HomePage implements OnDestroy {
   loading = true;
   error = '';
   grouped: { dayName: string; events: WeeklyEvent[] }[] = [];
-  selectedTipo: TipoEvento | null = null;
-  selectedCiudad: string | null = null;
+  selectedType: EventType | null = null;
+  selectedCity: string | null = null;
   availableCities: string[] = [];
 
   private allLoadedEvents: WeeklyEvent[] = [];
@@ -221,27 +221,27 @@ export class HomePage implements OnDestroy {
     this.router.navigate(['/calendar']);
   }
 
-  setTipo(tipo: TipoEvento | null) {
-    this.selectedTipo = tipo;
+  setType(type: EventType | null) {
+    this.selectedType = type;
     this.load(null);
   }
 
-  setCiudad(ciudad: string | null) {
-    this.selectedCiudad = ciudad;
+  setCity(city: string | null) {
+    this.selectedCity = city;
     this.applyFilters();
   }
 
   load(refresher: any) {
     this.loading = !refresher;
     this.error = '';
-    this.eventsService.getWeeklyEvents(this.selectedTipo ?? undefined).subscribe({
+    this.eventsService.getWeeklyEvents(this.selectedType ?? undefined).subscribe({
       next: (events) => {
         this.allLoadedEvents = events;
         this.availableCities = [...new Set(
-          events.map(e => e.venue?.ciudad).filter((c): c is string => !!c)
+          events.map(e => e.venue?.city).filter((c): c is string => !!c)
         )];
-        if (this.selectedCiudad && !this.availableCities.includes(this.selectedCiudad)) {
-          this.selectedCiudad = null;
+        if (this.selectedCity && !this.availableCities.includes(this.selectedCity)) {
+          this.selectedCity = null;
         }
         this.applyFilters();
         this.loading = false;
@@ -256,8 +256,8 @@ export class HomePage implements OnDestroy {
   }
 
   private applyFilters() {
-    const filtered = this.selectedCiudad
-      ? this.allLoadedEvents.filter(e => e.venue?.ciudad === this.selectedCiudad)
+    const filtered = this.selectedCity
+      ? this.allLoadedEvents.filter(e => e.venue?.city === this.selectedCity)
       : this.allLoadedEvents;
     this.grouped = this.groupByDay(filtered);
   }

@@ -35,14 +35,14 @@ function getMondayOfWeek(date: Date): Date {
 }
 
 /**
- * Given a recurring event's diaSemana (0=Mon..6=Sun) and horaInicio ("HH:MM"),
+ * Given a recurring event's dayOfWeek (0=Mon..6=Sun) and startTime ("HH:MM"),
  * returns the concrete Date for the current ISO week.
  */
-export function projectToCurrentWeek(diaSemana: number, horaInicio: string): Date {
+export function projectToCurrentWeek(dayOfWeek: number, startTime: string): Date {
   const monday = getMondayOfWeek(new Date());
   const eventDate = new Date(monday);
-  eventDate.setDate(monday.getDate() + diaSemana);
-  const [hours, minutes] = horaInicio.split(':').map(Number);
+  eventDate.setDate(monday.getDate() + dayOfWeek);
+  const [hours, minutes] = startTime.split(':').map(Number);
   eventDate.setHours(hours, minutes, 0, 0);
   return eventDate;
 }
@@ -50,7 +50,7 @@ export function projectToCurrentWeek(diaSemana: number, horaInicio: string): Dat
 export type EnrichedEvent = RecurringEvent & {
   eventDate: string;
   eventStart: Date;
-  semanaIso: string;
+  isoWeek: string;
 } & EventAggregate;
 
 @Injectable()
@@ -67,21 +67,29 @@ export class EventsService implements OnApplicationBootstrap {
     if (count === 0) {
       await this.seedDefaults();
     }
-    await this.backfillNullTipo();
-    await this.refreshProximaFecha();
+    await this.backfillNullType();
+    await this.refreshNextDate();
   }
 
   /**
-   * Events seeded before STI was introduced have tipo = NULL.
+   * Events seeded before STI was introduced have type = NULL.
    * All default seeded events are social events, so backfill them.
    */
-  private async backfillNullTipo() {
+  private async backfillNullType() {
     await this.eventsRepository.query(
       `UPDATE recurring_events SET tipo = 'social' WHERE tipo IS NULL`
     );
-    // Rename legacy 'taller' discriminator to 'intensivo'
+    // Rename legacy 'taller' discriminator to 'intensive'
     await this.eventsRepository.query(
-      `UPDATE recurring_events SET tipo = 'intensivo' WHERE tipo = 'taller'`
+      `UPDATE recurring_events SET tipo = 'intensive' WHERE tipo = 'taller'`
+    );
+    // Rename legacy 'intensivo' discriminator to 'intensive'
+    await this.eventsRepository.query(
+      `UPDATE recurring_events SET tipo = 'intensive' WHERE tipo = 'intensivo'`
+    );
+    // Rename legacy 'congreso' discriminator to 'congress'
+    await this.eventsRepository.query(
+      `UPDATE recurring_events SET tipo = 'congress' WHERE tipo = 'congreso'`
     );
   }
 
@@ -89,54 +97,54 @@ export class EventsService implements OnApplicationBootstrap {
     const venues = await this.venuesService.findAll();
     if (venues.length === 0) return;
 
-    const defaults: Array<{ nombreVenue: string; diaSemana: number; horaInicio: string }> = [
-      { nombreVenue: 'Alma',           diaSemana: 4, horaInicio: '21:00' },
-      { nombreVenue: 'El Almacén',     diaSemana: 5, horaInicio: '22:00' },
-      { nombreVenue: 'El Musical',     diaSemana: 5, horaInicio: '21:30' },
-      { nombreVenue: 'Bondi',          diaSemana: 3, horaInicio: '22:00' },
-      { nombreVenue: 'Cabaña',         diaSemana: 4, horaInicio: '22:30' },
-      { nombreVenue: 'Blanco y Negro', diaSemana: 6, horaInicio: '21:00' },
+    const defaults: Array<{ venueName: string; dayOfWeek: number; startTime: string }> = [
+      { venueName: 'Alma',           dayOfWeek: 4, startTime: '21:00' },
+      { venueName: 'El Almacén',     dayOfWeek: 5, startTime: '22:00' },
+      { venueName: 'El Musical',     dayOfWeek: 5, startTime: '21:30' },
+      { venueName: 'Bondi',          dayOfWeek: 3, startTime: '22:00' },
+      { venueName: 'Cabaña',         dayOfWeek: 4, startTime: '22:30' },
+      { venueName: 'Blanco y Negro', dayOfWeek: 6, startTime: '21:00' },
     ];
 
     for (const def of defaults) {
-      const venue = venues.find((v) => v.nombre === def.nombreVenue);
+      const venue = venues.find((v) => v.name === def.venueName);
       if (!venue) continue;
       const ev = new SocialEvent();
       ev.venueId = venue.id;
-      ev.diaSemana = def.diaSemana;
-      ev.horaInicio = def.horaInicio;
-      ev.estilos = venue.estilos;
-      ev.activo = true;
+      ev.dayOfWeek = def.dayOfWeek;
+      ev.startTime = def.startTime;
+      ev.styles = venue.styles;
+      ev.active = true;
       await this.eventsRepository.save(ev);
     }
   }
 
   /**
-   * Calcula y persiste la fecha real de la semana actual para cada evento recurrente.
-   * Se llama al arrancar el API y puede llamarse también desde un cron semanal.
+   * Calculates and persists the real date of the current week for each recurring event.
+   * Called at API startup and can also be called from a weekly cron.
    */
-  async refreshProximaFecha() {
+  async refreshNextDate() {
     const events = await this.eventsRepository.find();
     for (const ev of events) {
-      // Only project recurring events (sociales) — puntuales use fechaInicio directly
-      if (ev.diaSemana != null && ev.horaInicio) {
-        const projected = projectToCurrentWeek(ev.diaSemana, ev.horaInicio);
-        ev.proximaFecha = projected.toISOString().split('T')[0];
-      } else if (ev.fechaInicio) {
-        ev.proximaFecha = ev.fechaInicio;
+      // Only project recurring events (socials) — one-offs use startDate directly
+      if (ev.dayOfWeek != null && ev.startTime) {
+        const projected = projectToCurrentWeek(ev.dayOfWeek, ev.startTime);
+        ev.nextDate = projected.toISOString().split('T')[0];
+      } else if (ev.startDate) {
+        ev.nextDate = ev.startDate;
       }
     }
     await this.eventsRepository.save(events);
   }
 
-  async findAllActive(tipo?: string): Promise<RecurringEvent[]> {
-    const where: Record<string, unknown> = { activo: true };
-    if (tipo) where['tipo'] = tipo;
+  async findAllActive(type?: string): Promise<RecurringEvent[]> {
+    const where: Record<string, unknown> = { active: true };
+    if (type) where['type'] = type;
     return this.eventsRepository.find({ where });
   }
 
   async findOne(id: string): Promise<RecurringEvent | null> {
-    return this.eventsRepository.findOne({ where: { id, activo: true } });
+    return this.eventsRepository.findOne({ where: { id, active: true } });
   }
 
   /**
@@ -146,67 +154,67 @@ export class EventsService implements OnApplicationBootstrap {
     const ev = await this.findOne(id);
     if (!ev) return null;
 
-    const semanaIso = toIsoWeek(new Date());
-    const eventStart = ev.diaSemana != null && ev.horaInicio
-      ? projectToCurrentWeek(ev.diaSemana, ev.horaInicio)
-      : new Date(ev.fechaInicio ?? new Date().toISOString().split('T')[0]);
-    const projected = { ...ev, eventDate: eventStart.toISOString().split('T')[0], eventStart, semanaIso };
+    const isoWeek = toIsoWeek(new Date());
+    const eventStart = ev.dayOfWeek != null && ev.startTime
+      ? projectToCurrentWeek(ev.dayOfWeek, ev.startTime)
+      : new Date(ev.startDate ?? new Date().toISOString().split('T')[0]);
+    const projected = { ...ev, eventDate: eventStart.toISOString().split('T')[0], eventStart, isoWeek };
 
-    const aforoMap = new Map([[ev.id, ev.venue?.aforoMaximo ?? 0]]);
-    const aggregates = await this.votesService.getAggregatesForEvents([ev.id], semanaIso, userId, aforoMap);
+    const capacityMap = new Map([[ev.id, ev.venue?.maxCapacity ?? 0]]);
+    const aggregates = await this.votesService.getAggregatesForEvents([ev.id], isoWeek, userId, capacityMap);
     return {
       ...projected,
       ...(aggregates.get(ev.id) ?? {
-        totalInteresados: 0,
-        voyCount: 0,
-        talVezCount: 0,
+        totalInterested: 0,
+        goingCount: 0,
+        maybeCount: 0,
         userVote: null,
         userVoteId: null,
-        ambienteColor: 'flojo' as const,
-        roleBalance: { leadersPercent: 0, followersPercent: 0, switchesPercent: 0, balance: 'equilibrado' as const },
+        vibeColor: 'quiet' as const,
+        roleBalance: { leadersPercent: 0, followersPercent: 0, switchesPercent: 0, balance: 'balanced' as const },
       }),
     };
   }
 
   /**
    * Projects all active recurring events to the current ISO week,
-   * enriched with vote aggregates and ambiente color.
+   * enriched with vote aggregates and vibe color.
    */
   // ─── Admin CRUD ────────────────────────────────────────────────────────────
 
   async createEvent(dto: CreateEventDto): Promise<RecurringEvent> {
     let ev: RecurringEvent;
-    if (dto.tipo === 'intensivo') {
+    if (dto.type === 'intensive') {
       const t = new IntensivoEvent();
-      t.titulo = dto.titulo;
-      t.nivel = dto.nivel;
-      t.precio = dto.precio;
-      t.profesores = dto.profesores;
-      t.fechaFin = dto.fechaFin;
+      t.title = dto.title;
+      t.level = dto.level;
+      t.price = dto.price;
+      t.instructors = dto.instructors;
+      t.endDate = dto.endDate;
       ev = t;
-    } else if (dto.tipo === 'congreso') {
+    } else if (dto.type === 'congress') {
       const c = new CongresoEvent();
-      c.titulo = dto.titulo;
-      c.localidad = dto.localidad;
-      c.duracionDias = dto.duracionDias;
-      c.precios = dto.precios;
-      c.enlaceWeb = dto.enlaceWeb;
-      c.fechaFin = dto.fechaFin;
+      c.title = dto.title;
+      c.locality = dto.locality;
+      c.durationDays = dto.durationDays;
+      c.prices = dto.prices;
+      c.websiteUrl = dto.websiteUrl;
+      c.endDate = dto.endDate;
       ev = c;
     } else {
       const s = new SocialEvent();
-      s.tallerIncluido = dto.tallerIncluido;
-      s.precioEntrada = dto.precioEntrada;
-      s.instructores = dto.instructores;
+      s.workshopIncluded = dto.workshopIncluded;
+      s.entryPrice = dto.entryPrice;
+      s.instructors = dto.instructors;
       ev = s;
     }
     ev.venueId = dto.venueId;
-    ev.diaSemana = dto.diaSemana ?? null;
-    ev.horaInicio = dto.horaInicio ?? '';
-    ev.fechaInicio = dto.fechaInicio;
-    ev.nombre = dto.nombre ?? '';
-    ev.estilos = dto.estilos ?? [];
-    ev.activo = true;
+    ev.dayOfWeek = dto.dayOfWeek ?? null;
+    ev.startTime = dto.startTime ?? '';
+    ev.startDate = dto.startDate;
+    ev.name = dto.name ?? '';
+    ev.styles = dto.styles ?? [];
+    ev.active = true;
     return this.eventsRepository.save(ev);
   }
 
@@ -220,48 +228,48 @@ export class EventsService implements OnApplicationBootstrap {
   async removeEvent(id: string): Promise<void> {
     const ev = await this.eventsRepository.findOne({ where: { id } });
     if (!ev) throw new NotFoundException(`Evento ${id} no encontrado.`);
-    ev.activo = false;
+    ev.active = false;
     await this.eventsRepository.save(ev);
   }
 
-  async updateFoto(id: string, fotoUrl: string): Promise<RecurringEvent> {
+  async updatePhoto(id: string, photoUrl: string): Promise<RecurringEvent> {
     const ev = await this.eventsRepository.findOne({ where: { id } });
     if (!ev) throw new NotFoundException(`Evento ${id} no encontrado.`);
-    ev.fotoUrl = fotoUrl;
+    ev.photoUrl = photoUrl;
     return this.eventsRepository.save(ev);
   }
 
   // ─── Weekly agenda ─────────────────────────────────────────────────────────
 
-  async getWeeklyEvents(userId: string, tipo?: string): Promise<EnrichedEvent[]> {
-    const events = await this.findAllActive(tipo);
-    const semanaIso = toIsoWeek(new Date());
+  async getWeeklyEvents(userId: string, type?: string): Promise<EnrichedEvent[]> {
+    const events = await this.findAllActive(type);
+    const isoWeek = toIsoWeek(new Date());
 
     const projected = events.map((ev) => {
-      const eventStart = ev.diaSemana != null && ev.horaInicio
-        ? projectToCurrentWeek(ev.diaSemana, ev.horaInicio)
-        : new Date(ev.fechaInicio ?? new Date().toISOString().split('T')[0]);
-      return { ...ev, eventDate: eventStart.toISOString().split('T')[0], eventStart, semanaIso };
+      const eventStart = ev.dayOfWeek != null && ev.startTime
+        ? projectToCurrentWeek(ev.dayOfWeek, ev.startTime)
+        : new Date(ev.startDate ?? new Date().toISOString().split('T')[0]);
+      return { ...ev, eventDate: eventStart.toISOString().split('T')[0], eventStart, isoWeek };
     });
 
-    const aforoMap = new Map(events.map((ev) => [ev.id, ev.venue?.aforoMaximo ?? 0]));
+    const capacityMap = new Map(events.map((ev) => [ev.id, ev.venue?.maxCapacity ?? 0]));
     const aggregates = await this.votesService.getAggregatesForEvents(
       events.map((e) => e.id),
-      semanaIso,
+      isoWeek,
       userId,
-      aforoMap
+      capacityMap
     );
 
     return projected.map((ev) => ({
       ...ev,
       ...(aggregates.get(ev.id) ?? {
-        totalInteresados: 0,
-        voyCount: 0,
-        talVezCount: 0,
+        totalInterested: 0,
+        goingCount: 0,
+        maybeCount: 0,
         userVote: null,
         userVoteId: null,
-        ambienteColor: 'flojo' as const,
-        roleBalance: { leadersPercent: 0, followersPercent: 0, switchesPercent: 0, balance: 'equilibrado' as const },
+        vibeColor: 'quiet' as const,
+        roleBalance: { leadersPercent: 0, followersPercent: 0, switchesPercent: 0, balance: 'balanced' as const },
       }),
     }));
   }

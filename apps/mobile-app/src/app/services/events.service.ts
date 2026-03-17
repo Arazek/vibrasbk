@@ -10,8 +10,8 @@ export class EventsService {
 
   constructor(private http: HttpClient) {}
 
-  getWeeklyEvents(tipo?: string): Observable<WeeklyEvent[]> {
-    const params = tipo ? { params: { tipo } } : {};
+  getWeeklyEvents(type?: string): Observable<WeeklyEvent[]> {
+    const params = type ? { params: { type } } : {};
     return this.http.get<WeeklyEvent[]>(`${this.base}/week`, params);
   }
 

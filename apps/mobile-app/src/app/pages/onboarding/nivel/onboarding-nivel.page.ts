@@ -5,15 +5,15 @@ import {
   IonContent, IonHeader, IonToolbar, IonTitle,
   IonButton, IonProgressBar, IonButtons, IonBackButton,
 } from '@ionic/angular/standalone';
-import { Nivel } from '@shared/types';
+import { Level } from '@shared/types';
 import { OnboardingStateService } from '../../../services/onboarding-state.service';
 
-const NIVELES: { value: Nivel; label: string; description: string; emoji: string }[] = [
-  { value: 'nuevo',         label: 'Nuevo',          description: 'Estoy empezando mis primeras clases', emoji: '🌱' },
-  { value: 'iniciacion',    label: 'Iniciación',      description: 'Tengo las bases, salgo con apoyo',   emoji: '📚' },
-  { value: 'social_comodo', label: 'Social cómodo',   description: 'Me manejo bien en la pista',         emoji: '😎' },
-  { value: 'intermedio',    label: 'Intermedio',      description: 'Aplico técnica y combos variados',   emoji: '⚡' },
-  { value: 'avanzado',      label: 'Avanzado',        description: 'Nivel alto, bailo con solvencia',    emoji: '🏆' },
+const LEVELS: { value: Level; label: string; description: string; emoji: string }[] = [
+  { value: 'beginner',     label: 'Nuevo',          description: 'Estoy empezando mis primeras clases', emoji: '🌱' },
+  { value: 'initiation',   label: 'Iniciación',      description: 'Tengo las bases, salgo con apoyo',   emoji: '📚' },
+  { value: 'comfortable',  label: 'Social cómodo',   description: 'Me manejo bien en la pista',         emoji: '😎' },
+  { value: 'intermediate', label: 'Intermedio',      description: 'Aplico técnica y combos variados',   emoji: '⚡' },
+  { value: 'advanced',     label: 'Avanzado',        description: 'Nivel alto, bailo con solvencia',    emoji: '🏆' },
 ];
 
 @Component({
@@ -27,7 +27,7 @@ const NIVELES: { value: Nivel; label: string; description: string; emoji: string
       color: var(--lgui-text-4);
       margin-bottom: 24px;
     }
-    .nivel-card {
+    .level-card {
       display: flex;
       align-items: center;
       gap: var(--lgui-gap-md);
@@ -39,22 +39,22 @@ const NIVELES: { value: Nivel; label: string; description: string; emoji: string
       background: var(--lgui-surface-1);
       transition: border-color 0.15s, background 0.15s, transform 0.1s;
     }
-    .nivel-card:active {
+    .level-card:active {
       transform: scale(0.98);
     }
-    .nivel-card.selected {
+    .level-card.selected {
       border-color: var(--ion-color-primary);
       background: var(--lgui-red-100, rgba(232, 72, 85, 0.06));
     }
-    .nivel-label {
+    .level-label {
       font-size: 15px;
       font-weight: 600;
       color: var(--lgui-text-4);
     }
-    .nivel-card.selected .nivel-label {
+    .level-card.selected .level-label {
       color: var(--ion-color-primary);
     }
-    .nivel-desc {
+    .level-desc {
       font-size: 12px;
       color: var(--lgui-text-4);
       margin-top: 2px;
@@ -80,14 +80,14 @@ const NIVELES: { value: Nivel; label: string; description: string; emoji: string
       <div class="question">¿Cómo describes tu nivel?</div>
 
       <div
-        *ngFor="let n of niveles"
-        class="nivel-card"
+        *ngFor="let n of levels"
+        class="level-card"
         [class.selected]="selected === n.value"
         (click)="selected = n.value">
         <span style="font-size:28px; line-height:1; flex-shrink:0;">{{ n.emoji }}</span>
         <div style="flex:1;">
-          <div class="nivel-label">{{ n.label }}</div>
-          <div class="nivel-desc">{{ n.description }}</div>
+          <div class="level-label">{{ n.label }}</div>
+          <div class="level-desc">{{ n.description }}</div>
         </div>
         <span *ngIf="selected === n.value" class="check">✓</span>
       </div>
@@ -99,16 +99,16 @@ const NIVELES: { value: Nivel; label: string; description: string; emoji: string
   `,
 })
 export class OnboardingNivelPage {
-  niveles = NIVELES;
-  selected: Nivel | null = null;
+  levels = LEVELS;
+  selected: Level | null = null;
 
   constructor(private router: Router, private state: OnboardingStateService) {
-    this.selected = this.state.get().nivel;
+    this.selected = this.state.get().level;
   }
 
   next() {
     if (!this.selected) return;
-    this.state.set({ nivel: this.selected });
+    this.state.set({ level: this.selected });
     this.router.navigate(['/onboarding/estilos']);
   }
 }

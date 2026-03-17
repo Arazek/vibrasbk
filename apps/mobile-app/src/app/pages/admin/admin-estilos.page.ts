@@ -39,7 +39,7 @@ import { AdminService } from '../../services/admin.service';
       <ion-list *ngIf="!loading">
         <ion-item *ngFor="let style of styles">
           <ion-label>
-            <h3>{{ style.nombre }}</h3>
+            <h3>{{ style.name }}</h3>
             <p>{{ style.slug }}</p>
           </ion-label>
           <ion-button fill="clear" slot="end" (click)="openEdit(style)">
@@ -86,7 +86,7 @@ export class AdminEstilosPage implements OnInit {
     const alert = await this.alertCtrl.create({
       header: 'Nuevo estilo',
       inputs: [
-        { name: 'nombre', type: 'text', placeholder: 'Nombre (ej: Salsa Cubana)' },
+        { name: 'name', type: 'text', placeholder: 'Nombre (ej: Salsa Cubana)' },
         { name: 'slug', type: 'text', placeholder: 'Slug (ej: salsa_cubana)' },
       ],
       buttons: [
@@ -94,8 +94,8 @@ export class AdminEstilosPage implements OnInit {
         {
           text: 'Crear',
           handler: (data): boolean => {
-            if (!data.nombre || !data.slug) return false;
-            this.admin.createDanceStyle({ nombre: data.nombre, slug: data.slug }).subscribe({
+            if (!data.name || !data.slug) return false;
+            this.admin.createDanceStyle({ name: data.name, slug: data.slug }).subscribe({
               next: () => { this.toast = 'Estilo creado'; this.load(); },
               error: () => { this.toast = 'Error al crear estilo'; },
             });
@@ -111,15 +111,15 @@ export class AdminEstilosPage implements OnInit {
     const alert = await this.alertCtrl.create({
       header: 'Editar estilo',
       inputs: [
-        { name: 'nombre', type: 'text', value: style.nombre, placeholder: 'Nombre' },
+        { name: 'name', type: 'text', value: style.name, placeholder: 'Nombre' },
       ],
       buttons: [
         { text: 'Cancelar', role: 'cancel' },
         {
           text: 'Guardar',
           handler: (data): boolean => {
-            if (!data.nombre) return false;
-            this.admin.updateDanceStyle(style.id, { nombre: data.nombre }).subscribe({
+            if (!data.name) return false;
+            this.admin.updateDanceStyle(style.id, { name: data.name }).subscribe({
               next: () => { this.toast = 'Estilo actualizado'; this.load(); },
               error: () => { this.toast = 'Error al actualizar'; },
             });
@@ -134,7 +134,7 @@ export class AdminEstilosPage implements OnInit {
   async confirmDelete(style: DanceStyle) {
     const alert = await this.alertCtrl.create({
       header: 'Eliminar estilo',
-      message: `¿Eliminar "${style.nombre}"?`,
+      message: `¿Eliminar "${style.name}"?`,
       buttons: [
         { text: 'Cancelar', role: 'cancel' },
         {

@@ -4,7 +4,7 @@ import { RecurringEvent } from './recurring-event.entity';
 @ChildEntity('taller')
 export class TallerEvent extends RecurringEvent {
   @Column({ type: 'decimal', nullable: true })
-  precio: number;
+  price: number;
 
   @Column({ nullable: true })
   instructor: string;

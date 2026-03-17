@@ -5,10 +5,10 @@ import {
   IonContent, IonHeader, IonToolbar, IonTitle,
   IonButton, IonProgressBar, IonButtons, IonBackButton,
 } from '@ionic/angular/standalone';
-import { Rol } from '@shared/types';
+import { Role } from '@shared/types';
 import { OnboardingStateService } from '../../../services/onboarding-state.service';
 
-const ROLES: { value: Rol; label: string; description: string; emoji: string }[] = [
+const ROLES: { value: Role; label: string; description: string; emoji: string }[] = [
   { value: 'leader',   label: 'Leader',   description: 'Llevo el compás en pista',     emoji: '🕺' },
   { value: 'follower', label: 'Follower', description: 'Me dejo llevar por el ritmo',   emoji: '💃' },
   { value: 'switch',   label: 'Switch',   description: 'Bailo ambos roles con soltura', emoji: '🔄' },
@@ -97,15 +97,15 @@ const ROLES: { value: Rol; label: string; description: string; emoji: string }[]
 })
 export class OnboardingRolPage {
   roles = ROLES;
-  selected: Rol | null = null;
+  selected: Role | null = null;
 
   constructor(private router: Router, private state: OnboardingStateService) {
-    this.selected = this.state.get().rol;
+    this.selected = this.state.get().role;
   }
 
   next() {
     if (!this.selected) return;
-    this.state.set({ rol: this.selected });
+    this.state.set({ role: this.selected });
     this.router.navigate(['/onboarding/nivel']);
   }
 }

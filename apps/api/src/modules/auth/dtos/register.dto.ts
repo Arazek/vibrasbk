@@ -17,19 +17,19 @@ export class RegisterDto {
 
   @ApiProperty({ example: 'leader' })
   @IsString()
-  rol: string;
+  role: string;
 
-  @ApiProperty({ example: 'social_comodo' })
+  @ApiProperty({ example: 'comfortable' })
   @IsString()
-  nivel: string;
+  level: string;
 
   @ApiProperty({ type: [String], example: ['salsa_cubana'] })
   @IsArray()
   @ArrayMinSize(1)
-  estilos: string[];
+  styles: string[];
 
   @ApiPropertyOptional({ description: 'UUID of the Academia entity' })
   @IsOptional()
   @IsString()
-  academiaId?: string;
+  academyId?: string;
 }

@@ -15,7 +15,7 @@ export class RecurringEvent {
   id: string;
 
   @Column({ name: 'tipo', type: 'varchar', nullable: true, update: false })
-  tipo: string;
+  type: string;
 
   @ManyToOne(() => Venue, { eager: true })
   @JoinColumn({ name: 'venue_id' })
@@ -24,34 +24,34 @@ export class RecurringEvent {
   @Column({ name: 'venue_id' })
   venueId: string;
 
-  @Column({ nullable: true })
-  nombre: string;
+  @Column({ name: 'nombre', nullable: true })
+  name: string;
 
-  @Column({ nullable: true })
-  fotoUrl: string;
+  @Column({ name: 'foto_url', nullable: true })
+  photoUrl: string;
 
   // 0 = Monday … 6 = Sunday. Null for puntuales (intensivos, congresos)
-  @Column({ type: 'smallint', nullable: true })
-  diaSemana: number | null;
+  @Column({ name: 'dia_semana', type: 'smallint', nullable: true })
+  dayOfWeek: number | null;
 
   // Fecha real proyectada de la próxima ocurrencia (YYYY-MM-DD)
-  @Column({ type: 'date', nullable: true })
-  proximaFecha: string | null;
+  @Column({ name: 'proxima_fecha', type: 'date', nullable: true })
+  nextDate: string | null;
 
   // Fecha de inicio para eventos puntuales (intensivos, congresos) — YYYY-MM-DD
-  @Column({ nullable: true })
-  fechaInicio?: string;
+  @Column({ name: 'fecha_inicio', nullable: true })
+  startDate?: string;
 
   // stored as HH:MM string, e.g. "21:00"
-  @Column({ type: 'time', nullable: true })
-  horaInicio: string;
+  @Column({ name: 'hora_inicio', type: 'time', nullable: true })
+  startTime: string;
 
-  @Column({ type: 'time', nullable: true })
-  horaPicoEstimado: string;
+  @Column({ name: 'hora_pico_estimado', type: 'time', nullable: true })
+  estimatedPeakTime: string;
 
-  @Column({ type: 'simple-array' })
-  estilos: string[];
+  @Column({ name: 'estilos', type: 'simple-array' })
+  styles: string[];
 
-  @Column({ default: true })
-  activo: boolean;
+  @Column({ name: 'activo', default: true })
+  active: boolean;
 }

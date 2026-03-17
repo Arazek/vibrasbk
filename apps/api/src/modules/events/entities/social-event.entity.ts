@@ -3,12 +3,12 @@ import { RecurringEvent } from './recurring-event.entity';
 
 @ChildEntity('social')
 export class SocialEvent extends RecurringEvent {
-  @Column({ nullable: true })
-  tallerIncluido?: boolean;
+  @Column({ name: 'taller_incluido', nullable: true })
+  workshopIncluded?: boolean;
 
-  @Column({ type: 'decimal', nullable: true })
-  precioEntrada?: number;
+  @Column({ name: 'precio_entrada', type: 'decimal', nullable: true })
+  entryPrice?: number;
 
-  @Column({ type: 'simple-array', nullable: true })
-  instructores?: string[];
+  @Column({ name: 'instructores', type: 'simple-array', nullable: true })
+  instructors?: string[];
 }

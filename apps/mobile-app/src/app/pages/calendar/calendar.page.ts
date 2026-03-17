@@ -35,10 +35,10 @@ function getMondayOfWeek(date: Date): Date {
   return d;
 }
 
-const TIPO_DOT_COLOR: Record<string, string> = {
-  social:   '#4A90D9',
-  intensivo: '#D07A2E',
-  congreso: '#7B52AB',
+const TYPE_DOT_COLOR: Record<string, string> = {
+  social:    '#4A90D9',
+  intensive: '#D07A2E',
+  congress:  '#7B52AB',
 };
 
 @Component({
@@ -359,10 +359,10 @@ export class CalendarPage {
     const normalised = jsDay === 0 ? 6 : jsDay - 1; // 0=Mon…6=Sun
 
     const colors: string[] = [];
-    const seen = new Set<string>(); // one dot per tipo
+    const seen = new Set<string>(); // one dot per type
     for (const ev of this.events) {
-      if ((ev.diaSemana ?? -1) === normalised) {
-        const color = TIPO_DOT_COLOR[ev.tipo] ?? '#BAC0CC';
+      if ((ev.dayOfWeek ?? -1) === normalised) {
+        const color = TYPE_DOT_COLOR[ev.type] ?? '#BAC0CC';
         if (!seen.has(color)) {
           seen.add(color);
           colors.push(color);
@@ -376,6 +376,6 @@ export class CalendarPage {
   private eventsForDate(date: Date): WeeklyEvent[] {
     const jsDay = date.getDay();
     const normalised = jsDay === 0 ? 6 : jsDay - 1;
-    return this.events.filter(ev => (ev.diaSemana ?? -1) === normalised);
+    return this.events.filter(ev => (ev.dayOfWeek ?? -1) === normalised);
   }
 }

@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, In } from 'typeorm';
-import { IntentionVote, VoteEstado } from './entities/intention-vote.entity';
+import { IntentionVote, VoteStatus } from './entities/intention-vote.entity';
 import { AttendanceVerification } from './entities/attendance-verification.entity';
 import { ReliabilityMetric } from './entities/reliability-metric.entity';
 import { RecurringEvent } from '../events/entities/recurring-event.entity';
@@ -19,12 +19,12 @@ import { PredictionService, VoterData, PredictionResult } from './prediction.ser
 import { toIsoWeek, projectToCurrentWeek } from '../events/events.service';
 
 export interface EventAggregate {
-  totalInteresados: number;
-  voyCount: number;
-  talVezCount: number;
-  userVote: VoteEstado | null;
+  totalInterested: number;
+  goingCount: number;
+  maybeCount: number;
+  userVote: VoteStatus | null;
   userVoteId: string | null;
-  ambienteColor: import('./prediction.service').Ambiente;
+  vibeColor: import('./prediction.service').Vibe;
   roleBalance: import('./prediction.service').RoleBalanceDetail;
 }
 
@@ -47,9 +47,9 @@ export class VotesService {
   // ─── Casting & updating votes ─────────────────────────────────────────────
 
   async castVote(userId: string, dto: CreateVoteDto): Promise<IntentionVote> {
-    const semanaIso = toIsoWeek(new Date());
+    const isoWeek = toIsoWeek(new Date());
     const existing = await this.votesRepo.findOne({
-      where: { userId, eventId: dto.eventId, semanaIso },
+      where: { userId, eventId: dto.eventId, isoWeek },
     });
     if (existing) {
       throw new ConflictException('Ya has votado para este evento esta semana. Usa PATCH para cambiar.');
@@ -57,8 +57,8 @@ export class VotesService {
     const vote = this.votesRepo.create({
       userId,
       eventId: dto.eventId,
-      semanaIso,
-      estado: dto.estado,
+      isoWeek,
+      status: dto.status,
     });
     return this.votesRepo.save(vote);
   }
@@ -73,15 +73,15 @@ export class VotesService {
       throw new ForbiddenException('No se puede cambiar el voto menos de 2 horas antes del evento.');
     }
 
-    vote.estado = dto.estado;
+    vote.status = dto.status;
     return this.votesRepo.save(vote);
   }
 
   private async canEditVote(eventId: string): Promise<boolean> {
     const event = await this.eventsRepo.findOne({ where: { id: eventId } });
     if (!event) return false;
-    if (event.diaSemana == null || !event.horaInicio) return true;
-    const eventStart = projectToCurrentWeek(event.diaSemana, event.horaInicio);
+    if (event.dayOfWeek == null || !event.startTime) return true;
+    const eventStart = projectToCurrentWeek(event.dayOfWeek, event.startTime);
     const twoHoursBefore = new Date(eventStart.getTime() - 2 * 60 * 60 * 1000);
     return new Date() < twoHoursBefore;
   }
@@ -90,14 +90,14 @@ export class VotesService {
 
   async getAggregatesForEvents(
     eventIds: string[],
-    semanaIso: string,
+    isoWeek: string,
     userId: string,
-    aforoMap?: Map<string, number>
+    capacityMap?: Map<string, number>
   ): Promise<Map<string, EventAggregate>> {
     if (eventIds.length === 0) return new Map();
 
     const votes = await this.votesRepo.find({
-      where: { eventId: In(eventIds), semanaIso },
+      where: { eventId: In(eventIds), isoWeek },
     });
 
     const voterIds = [...new Set(votes.map((v) => v.userId))];
@@ -107,17 +107,17 @@ export class VotesService {
     ]);
 
     const userMap = new Map(users.map((u) => [u.id, u]));
-    const reliabilityMap = new Map(metrics.map((m) => [m.userId, Number(m.fiabilidad)]));
+    const reliabilityMap = new Map(metrics.map((m) => [m.userId, Number(m.reliability)]));
 
     const result = new Map<string, EventAggregate>();
 
     for (const eventId of eventIds) {
       const eventVotes = votes.filter((v) => v.eventId === eventId);
       const interested = eventVotes.filter(
-        (v) => v.estado === VoteEstado.VOY || v.estado === VoteEstado.TAL_VEZ
+        (v) => v.status === VoteStatus.GOING || v.status === VoteStatus.MAYBE
       );
       const userVoteRecord = eventVotes.find((v) => v.userId === userId) ?? null;
-      const userVote = userVoteRecord?.estado ?? null;
+      const userVote = userVoteRecord?.status ?? null;
       const userVoteId = userVoteRecord?.id ?? null;
 
       const voterData: VoterData[] = eventVotes
@@ -126,26 +126,26 @@ export class VotesService {
           if (!user) return null;
           return {
             userId: v.userId,
-            estado: v.estado,
-            rol: user.rol,
-            nivel: user.nivel,
-            fiabilidad: reliabilityMap.get(v.userId) ?? 1.0,
+            status: v.status,
+            role: user.role,
+            level: user.level,
+            reliability: reliabilityMap.get(v.userId) ?? 1.0,
           } as VoterData;
         })
         .filter((v): v is VoterData => v !== null);
 
-      const aforo = aforoMap?.get(eventId);
+      const capacity = capacityMap?.get(eventId);
       const score = this.predictionService.estimateAttendance(voterData);
-      const ambienteColor = this.predictionService.classifyAmbiente(score, interested.length > 0, aforo);
+      const vibeColor = this.predictionService.classifyVibe(score, interested.length > 0, capacity);
       const roleBalance = this.predictionService.getRoleBalance(voterData);
 
       result.set(eventId, {
-        totalInteresados: interested.length,
-        voyCount: eventVotes.filter((v) => v.estado === VoteEstado.VOY).length,
-        talVezCount: eventVotes.filter((v) => v.estado === VoteEstado.TAL_VEZ).length,
+        totalInterested: interested.length,
+        goingCount: eventVotes.filter((v) => v.status === VoteStatus.GOING).length,
+        maybeCount: eventVotes.filter((v) => v.status === VoteStatus.MAYBE).length,
         userVote,
         userVoteId,
-        ambienteColor,
+        vibeColor,
         roleBalance,
       });
     }
@@ -153,23 +153,23 @@ export class VotesService {
     return result;
   }
 
-  // ─── Full analytics (gated: user must have voted voy/tal_vez) ─────────────
+  // ─── Full analytics (gated: user must have voted going/maybe) ─────────────
 
   async getAnalytics(eventId: string, userId: string): Promise<PredictionResult> {
-    const semanaIso = toIsoWeek(new Date());
+    const isoWeek = toIsoWeek(new Date());
 
     const userVote = await this.votesRepo.findOne({
-      where: { userId, eventId, semanaIso },
+      where: { userId, eventId, isoWeek },
     });
-    if (!userVote || userVote.estado === VoteEstado.NO_VOY) {
+    if (!userVote || userVote.status === VoteStatus.NOT_GOING) {
       throw new UnauthorizedException('Debes votar "Voy" o "Tal vez" para ver la analítica.');
     }
 
-    // Load event to get venue aforo
+    // Load event to get venue capacity
     const event = await this.eventsRepo.findOne({ where: { id: eventId } });
-    const aforoMaximo = event?.venue?.aforoMaximo ?? undefined;
+    const maxCapacity = event?.venue?.maxCapacity ?? undefined;
 
-    const votes = await this.votesRepo.find({ where: { eventId, semanaIso } });
+    const votes = await this.votesRepo.find({ where: { eventId, isoWeek } });
     const voterIds = [...new Set(votes.map((v) => v.userId))];
 
     const [users, metrics] = await Promise.all([
@@ -178,7 +178,7 @@ export class VotesService {
     ]);
 
     const userMap = new Map(users.map((u) => [u.id, u]));
-    const reliabilityMap = new Map(metrics.map((m) => [m.userId, Number(m.fiabilidad)]));
+    const reliabilityMap = new Map(metrics.map((m) => [m.userId, Number(m.reliability)]));
 
     const voterData: VoterData[] = votes
       .map((v) => {
@@ -186,52 +186,52 @@ export class VotesService {
         if (!user) return null;
         return {
           userId: v.userId,
-          estado: v.estado,
-          rol: user.rol,
-          nivel: user.nivel,
-          fiabilidad: reliabilityMap.get(v.userId) ?? 1.0,
+          status: v.status,
+          role: user.role,
+          level: user.level,
+          reliability: reliabilityMap.get(v.userId) ?? 1.0,
         } as VoterData;
       })
       .filter((v): v is VoterData => v !== null);
 
-    return this.predictionService.predict(voterData, aforoMaximo);
+    return this.predictionService.predict(voterData, maxCapacity);
   }
 
   // ─── Attendance verification ───────────────────────────────────────────────
 
   async verifyAttendance(userId: string, dto: VerifyAttendanceDto): Promise<AttendanceVerification> {
     const existing = await this.verificationsRepo.findOne({
-      where: { userId, eventId: dto.eventId, semanaIso: dto.semanaIso },
+      where: { userId, eventId: dto.eventId, isoWeek: dto.isoWeek },
     });
     if (existing) {
-      existing.asistio = dto.asistio;
-      existing.timestampRespuesta = new Date();
+      existing.attended = dto.attended;
+      existing.responseTimestamp = new Date();
       const saved = await this.verificationsRepo.save(existing);
-      await this.updateReliability(userId, dto.asistio);
+      await this.updateReliability(userId, dto.attended);
       return saved;
     }
     const verification = this.verificationsRepo.create({
       userId,
       eventId: dto.eventId,
-      semanaIso: dto.semanaIso,
-      asistio: dto.asistio,
-      timestampRespuesta: new Date(),
+      isoWeek: dto.isoWeek,
+      attended: dto.attended,
+      responseTimestamp: new Date(),
     });
     const saved = await this.verificationsRepo.save(verification);
-    await this.updateReliability(userId, dto.asistio);
+    await this.updateReliability(userId, dto.attended);
     return saved;
   }
 
   // ─── Reliability update (called after verification) ───────────────────────
 
-  async updateReliability(userId: string, asistio: boolean): Promise<void> {
+  async updateReliability(userId: string, attended: boolean): Promise<void> {
     let metric = await this.reliabilityRepo.findOne({ where: { userId } });
     if (!metric) {
-      metric = this.reliabilityRepo.create({ userId, votosVoyTotal: 0, asistenciasConfirmadas: 0, fiabilidad: 1.0 });
+      metric = this.reliabilityRepo.create({ userId, totalGoingVotes: 0, confirmedAttendances: 0, reliability: 1.0 });
     }
-    metric.votosVoyTotal += 1;
-    if (asistio) metric.asistenciasConfirmadas += 1;
-    metric.fiabilidad = metric.asistenciasConfirmadas / Math.max(1, metric.votosVoyTotal);
+    metric.totalGoingVotes += 1;
+    if (attended) metric.confirmedAttendances += 1;
+    metric.reliability = metric.confirmedAttendances / Math.max(1, metric.totalGoingVotes);
     await this.reliabilityRepo.save(metric);
   }
 
@@ -240,43 +240,43 @@ export class VotesService {
   async getPendingVerifications(cutoffDate: Date): Promise<AttendanceVerification[]> {
     return this.verificationsRepo
       .createQueryBuilder('v')
-      .where('v.asistio IS NULL')
+      .where('v.attended IS NULL')
       .andWhere('v.createdAt < :cutoff', { cutoff: cutoffDate })
       .getMany();
   }
 
   async closeVerification(verificationId: string): Promise<void> {
     await this.verificationsRepo.update(verificationId, {
-      asistio: false,
-      timestampRespuesta: new Date(),
+      attended: false,
+      responseTimestamp: new Date(),
     });
   }
 
   async createPendingVerificationsForYesterday(): Promise<void> {
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
-    const semanaIso = toIsoWeek(yesterday);
+    const isoWeek = toIsoWeek(yesterday);
     const dayOfWeek = yesterday.getDay() === 0 ? 6 : yesterday.getDay() - 1; // 0=Mon
 
     const events = await this.eventsRepo.find({
-      where: { diaSemana: dayOfWeek, activo: true },
+      where: { dayOfWeek: dayOfWeek, active: true },
     });
 
     for (const event of events) {
-      const voyVotes = await this.votesRepo.find({
-        where: { eventId: event.id, semanaIso, estado: VoteEstado.VOY },
+      const goingVotes = await this.votesRepo.find({
+        where: { eventId: event.id, isoWeek, status: VoteStatus.GOING },
       });
-      for (const vote of voyVotes) {
+      for (const vote of goingVotes) {
         const exists = await this.verificationsRepo.findOne({
-          where: { userId: vote.userId, eventId: event.id, semanaIso },
+          where: { userId: vote.userId, eventId: event.id, isoWeek },
         });
         if (!exists) {
           await this.verificationsRepo.save(
             this.verificationsRepo.create({
               userId: vote.userId,
               eventId: event.id,
-              semanaIso,
-              asistio: null,
+              isoWeek,
+              attended: null,
             })
           );
         }
@@ -284,23 +284,23 @@ export class VotesService {
     }
   }
 
-  async getVoyVotersForYesterday(): Promise<Array<{ userId: string; eventName: string }>> {
+  async getGoingVotersForYesterday(): Promise<Array<{ userId: string; eventName: string }>> {
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
-    const semanaIso = toIsoWeek(yesterday);
+    const isoWeek = toIsoWeek(yesterday);
     const dayOfWeek = yesterday.getDay() === 0 ? 6 : yesterday.getDay() - 1;
 
     const events = await this.eventsRepo.find({
-      where: { diaSemana: dayOfWeek, activo: true },
+      where: { dayOfWeek: dayOfWeek, active: true },
     });
 
     const result: Array<{ userId: string; eventName: string }> = [];
     for (const event of events) {
-      const voyVotes = await this.votesRepo.find({
-        where: { eventId: event.id, semanaIso, estado: VoteEstado.VOY },
+      const goingVotes = await this.votesRepo.find({
+        where: { eventId: event.id, isoWeek, status: VoteStatus.GOING },
       });
-      for (const vote of voyVotes) {
-        result.push({ userId: vote.userId, eventName: event.venue?.nombre ?? event.id });
+      for (const vote of goingVotes) {
+        result.push({ userId: vote.userId, eventName: event.venue?.name ?? event.id });
       }
     }
     return result;

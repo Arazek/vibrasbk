@@ -8,9 +8,9 @@ export class VerifyAttendanceDto {
 
   @ApiProperty()
   @IsString()
-  semanaIso: string;
+  isoWeek: string;
 
   @ApiProperty()
   @IsBoolean()
-  asistio: boolean;
+  attended: boolean;
 }

@@ -12,7 +12,7 @@ export class AcademiasService {
   ) {}
 
   findAll(): Promise<Academia[]> {
-    return this.repo.find({ order: { nombre: 'ASC' } });
+    return this.repo.find({ order: { name: 'ASC' } });
   }
 
   findOne(id: string): Promise<Academia | null> {

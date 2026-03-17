@@ -42,7 +42,7 @@ import { CreateVenuePayload } from '../../services/admin.service';
         <ion-input
           label="Nombre del local"
           labelPlacement="stacked"
-          [(ngModel)]="form.nombre"
+          [(ngModel)]="form.name"
           placeholder="Ej: El Almacén">
         </ion-input>
       </div>
@@ -50,7 +50,7 @@ import { CreateVenuePayload } from '../../services/admin.service';
         <ion-input
           label="Ciudad"
           labelPlacement="stacked"
-          [(ngModel)]="form.ciudad"
+          [(ngModel)]="form.city"
           placeholder="Cartagena">
         </ion-input>
       </div>
@@ -71,7 +71,7 @@ import { CreateVenuePayload } from '../../services/admin.service';
           label="Aforo máximo"
           labelPlacement="stacked"
           type="number"
-          [(ngModel)]="form.aforoMaximo"
+          [(ngModel)]="form.maxCapacity"
           placeholder="100">
         </ion-input>
       </div>
@@ -83,9 +83,9 @@ import { CreateVenuePayload } from '../../services/admin.service';
 })
 export class VenueFormModal {
   @Input() editingId: string | null = null;
-  @Input() initial: CreateVenuePayload = { nombre: '', ciudad: 'Cartagena' };
+  @Input() initial: CreateVenuePayload = { name: '', city: 'Cartagena' };
 
-  form: CreateVenuePayload = { nombre: '', ciudad: 'Cartagena' };
+  form: CreateVenuePayload = { name: '', city: 'Cartagena' };
   mapsLink = '';
   coordsOk = false;
   coordsErr = false;
@@ -160,7 +160,7 @@ export class VenueFormModal {
   }
 
   submit() {
-    if (!this.form.nombre?.trim()) return;
+    if (!this.form.name?.trim()) return;
     this.modalCtrl.dismiss({ form: this.form });
   }
 }
