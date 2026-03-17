@@ -17,7 +17,11 @@
     "lint": "nx run-many --target=lint --all",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md}\"",
-    "db:setup": "cd apps/api && npm run db:setup",
+    "migration:generate": "cd apps/api && TS_NODE_PROJECT=tsconfig.migrations.json node_modules/.bin/typeorm-ts-node-commonjs migration:generate src/migrations/InitialSchema -d src/data-source.ts",
+    "migration:run":      "cd apps/api && TS_NODE_PROJECT=tsconfig.migrations.json node_modules/.bin/typeorm-ts-node-commonjs migration:run -d src/data-source.ts",
+    "migration:revert":   "cd apps/api && TS_NODE_PROJECT=tsconfig.migrations.json node_modules/.bin/typeorm-ts-node-commonjs migration:revert -d src/data-source.ts",
+    "migration:show":     "cd apps/api && TS_NODE_PROJECT=tsconfig.migrations.json node_modules/.bin/typeorm-ts-node-commonjs migration:show -d src/data-source.ts",
+    "db:setup": "npm run migration:run",
     "docker:up": "docker compose up -d postgres",
     "docker:down": "docker compose down",
     "nx": "nx"

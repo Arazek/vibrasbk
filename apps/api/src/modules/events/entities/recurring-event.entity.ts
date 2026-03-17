@@ -14,9 +14,6 @@ export class RecurringEvent {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ name: 'tipo', type: 'varchar', nullable: true, update: false })
-  type: string;
-
   @ManyToOne(() => Venue, { eager: true })
   @JoinColumn({ name: 'venue_id' })
   venue: Venue;

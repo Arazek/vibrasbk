@@ -194,6 +194,23 @@ cmd_status() {
 INFRA_COMPOSE="$PROJECT_DIR/infra.docker-compose.yml"
 APP_COMPOSE="$PROJECT_DIR/docker-compose.app.yml"
 
+_check_infra() {
+    # proxy-network is created by the external infra stack (separate repo).
+    # This repo cannot start it — verify it exists before attempting to deploy.
+    if ! docker network inspect proxy-network >/dev/null 2>&1; then
+        print_error "proxy-network does not exist."
+        print_info  "  The infrastructure stack (Traefik, PostgreSQL, Keycloak…) is managed"
+        print_info  "  in a separate repository and must be deployed on the server first."
+        print_info  "  Once the infra stack is running, proxy-network will be available."
+        exit 1
+    fi
+    if ! docker ps --format '{{.Names}}' | grep -q '^postgresdb$'; then
+        print_warning "Container 'postgresdb' is not running — the API may fail to connect."
+        print_info    "  Ensure the infrastructure stack is up before starting the application."
+    fi
+    print_success "Infrastructure network (proxy-network) detected"
+}
+
 _prod_check_env() {
     if [ ! -f "$PROD_ENV_FILE" ]; then
         print_error ".env not found — copy .env.example to .env and fill in production values"
@@ -207,26 +224,22 @@ _prod_check_env() {
 }
 
 cmd_infra_up() {
-    _prod_check_env
-    print_info "Starting infrastructure (Traefik, PostgreSQL, Keycloak, pgAdmin, Webhook)..."
-    (cd "$PROJECT_DIR" && docker compose --env-file .env -f "$INFRA_COMPOSE" up -d)
-    print_success "Infrastructure is up"
+    print_error "The infrastructure stack is external to this repository and cannot be started here."
+    print_info  "  Deploy the infra repo on the server first, then use './run.sh prod' to start the app."
+    exit 1
 }
 
 cmd_infra_stop() {
-    print_info "Stopping infrastructure..."
-    (cd "$PROJECT_DIR" && docker compose -f "$INFRA_COMPOSE" down)
-    print_success "Infrastructure stopped"
+    print_error "The infrastructure stack is external to this repository and cannot be stopped here."
+    exit 1
 }
 
 cmd_prod_up() {
     _prod_check_env
+    _check_infra
 
     local api_host
     api_host=$(grep -E '^API_HOST=' "$PROD_ENV_FILE" | cut -d= -f2)
-
-    print_info "Starting infrastructure (Traefik, PostgreSQL, Keycloak...)..."
-    (cd "$PROJECT_DIR" && docker compose --env-file .env -f "$INFRA_COMPOSE" up -d)
 
     print_info "Building and starting API..."
     (cd "$PROJECT_DIR" && docker compose --env-file .env -f "$APP_COMPOSE" up -d --build)
@@ -242,7 +255,6 @@ cmd_prod_stop() {
     print_info "Stopping API..."
     (cd "$PROJECT_DIR" && docker compose -f "$APP_COMPOSE" down)
     print_success "Application stopped (infrastructure still running)"
-    print_info "  To also stop infra: ./run.sh infra:stop"
 }
 
 cmd_prod_logs() {
@@ -252,15 +264,13 @@ cmd_prod_logs() {
 
 cmd_prod_status() {
     echo ""
-    echo -e "${BLUE}Infrastructure:${NC}"
-    (cd "$PROJECT_DIR" && docker compose -f "$INFRA_COMPOSE" ps)
-    echo ""
     echo -e "${BLUE}Application:${NC}"
     (cd "$PROJECT_DIR" && docker compose -f "$APP_COMPOSE" ps)
 }
 
 cmd_prod_rebuild() {
     _prod_check_env
+    _check_infra
     print_info "Rebuilding and restarting API..."
     (cd "$PROJECT_DIR" && docker compose --env-file .env -f "$APP_COMPOSE" up -d --build --force-recreate)
     print_success "Rebuild complete"
@@ -277,16 +287,16 @@ Development commands:
     logs           Tail API and frontend logs
     status         Show running status of all services
 
-Production — full stack:
-    prod           Start infrastructure + API (builds images)
-    prod:stop      Stop API then infrastructure
-    prod:rebuild   Rebuild API image and restart (infra untouched)
+Production — application (requires external infra stack to be running first):
+    prod           Build and start the API container (checks infra is up)
+    prod:stop      Stop the API container
+    prod:rebuild   Rebuild API image and restart
     prod:logs      Tail all production container logs
-    prod:status    Show status of all production containers
+    prod:status    Show status of production containers
 
-Production — infrastructure only (Traefik / PostgreSQL / Keycloak / pgAdmin / Webhook):
-    infra          Start infrastructure containers  (infra.docker-compose.yml)
-    infra:stop     Stop infrastructure containers
+NOTE: Infrastructure (Traefik, PostgreSQL, Keycloak, pgAdmin, Webhook) is managed
+      in a separate repository and must be deployed on the server independently.
+      'infra' and 'infra:stop' are disabled here.
 
     help           Show this help
 

@@ -32,6 +32,9 @@ import { AppService } from './app.service';
       autoLoadEntities: true,
       synchronize: process.env.NODE_ENV !== 'production',
       logging: process.env.NODE_ENV !== 'production',
+      migrations: [__dirname + '/migrations/*.js'],
+      migrationsRun: process.env.NODE_ENV === 'production',
+      migrationsTableName: 'typeorm_migrations',
     }),
     JwtModule.register({
       global: true,

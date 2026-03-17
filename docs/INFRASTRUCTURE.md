@@ -4,6 +4,13 @@
 > It is intentionally explicit and machine-friendly: every section resolves to concrete values,
 > file paths, or copy-paste configuration blocks. No assumptions are left implicit.
 
+> **IMPORTANT — Infrastructure is external to this repository.**
+> `infra.docker-compose.yml` (Traefik, PostgreSQL, Keycloak, pgAdmin, Webhook) lives in a
+> **separate server-side repository** and is **not present here**. Do not attempt to create,
+> run, or modify it from this repo. This application (`docker-compose.app.yml`) only needs the
+> `proxy-network` Docker network to already exist, which the external infra stack creates.
+> To bring up the full stack on the server, the infra repo must be deployed independently first.
+
 ---
 
 ## 1. Infrastructure Overview
