@@ -121,8 +121,8 @@ services:
       - "traefik.http.services.pgadmin.loadbalancer.server.port=80"
       # Rate limiting
       - "traefik.http.routers.pgadmin.middlewares=pgadmin-ratelimit"
-      - "traefik.http.middlewares.pgadmin-ratelimit.ratelimit.average=20"
-      - "traefik.http.middlewares.pgadmin-ratelimit.ratelimit.burst=50"
+      - "traefik.http.middlewares.pgadmin-ratelimit.ratelimit.average=200"
+      - "traefik.http.middlewares.pgadmin-ratelimit.ratelimit.burst=300"
       - "traefik.http.middlewares.pgadmin-ratelimit.ratelimit.period=1m"
 
   # ===========================================================================

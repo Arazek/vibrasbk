@@ -20,4 +20,5 @@ dist/
 
 # OS
 .DS_Store
-Thumbs.db
+Thumbs.dbandroid/local.properties
+.env.local

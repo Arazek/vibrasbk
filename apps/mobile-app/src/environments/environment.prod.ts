@@ -1,5 +1,5 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://api.example.com/api',
-  socketUrl: 'https://api.example.com',
+  apiUrl: 'https://vibrasbk.duckdns.org/api',
+  socketUrl: 'https://vibrasbk.duckdns.org',
 };

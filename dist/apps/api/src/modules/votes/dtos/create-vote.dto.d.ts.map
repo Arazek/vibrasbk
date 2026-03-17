@@ -1,1 +1,0 @@
-{"version":3,"file":"create-vote.dto.d.ts","sourceRoot":"","sources":["../../../../../../../apps/api/src/modules/votes/dtos/create-vote.dto.ts"],"names":[],"mappings":"AAEA,OAAO,EAAE,UAAU,EAAE,MAAM,mCAAmC,CAAC;AAE/D,qBAAa,aAAa;IAGxB,OAAO,EAAE,MAAM,CAAC;IAIhB,MAAM,EAAE,UAAU,CAAC;CACpB"}

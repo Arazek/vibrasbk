@@ -1,7 +1,7 @@
 {
-  "name": "mobile-app-template",
-  "appId": "com.example.mobileapp",
-  "appName": "Mobile App Template",
+  "name": "vibrasbk",
+  "appId": "com.vibras.app",
+  "appName": "Vibras",
   "webDir": "dist/apps/mobile-app",
   "plugins": {
     "SplashScreen": {
