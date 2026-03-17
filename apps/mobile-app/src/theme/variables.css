@@ -248,6 +248,12 @@
     --type-intensive-bg:  rgba(208,122,46,0.18);
     --type-congress-bg:   rgba(123,82,171,0.18);
 
+    /* Status colors — dark-compatible overrides */
+    --lgui-red-100:    rgba(232, 72, 85, 0.15);
+    --lgui-yellow-100: rgba(239, 196, 44, 0.15);
+    --lgui-green-100:  rgba(74, 213, 98, 0.15);
+    --lgui-blue-100:   rgba(100, 167, 255, 0.15);
+
     /* Ionic overrides */
     --ion-background-color:     #161B2C;
     --ion-background-color-rgb: 22,27,44;
@@ -259,5 +265,30 @@
     --ion-toolbar-color:        #FFFFFF;
     --ion-tab-bar-background:   #1E2336;
     --ion-tab-bar-border-color: rgba(255,255,255,0.09);
+
+    /* Medium color contrast — ensure chip/badge text is white on medium background */
+    --ion-color-medium-contrast:     #ffffff;
+    --ion-color-medium-contrast-rgb: 255,255,255;
+
+    /* Ionic step colors — used internally by action sheets, selects, alerts */
+    --ion-color-step-50:   #1e2336;
+    --ion-color-step-100:  #222840;
+    --ion-color-step-150:  #272d4a;
+    --ion-color-step-200:  #2b3254;
+    --ion-color-step-250:  #30375e;
+    --ion-color-step-300:  #343c68;
+    --ion-color-step-350:  #394272;
+    --ion-color-step-400:  #3d477c;
+    --ion-color-step-450:  #424c86;
+    --ion-color-step-500:  #575f8a;
+    --ion-color-step-550:  #6c7398;
+    --ion-color-step-600:  #8188a6;
+    --ion-color-step-650:  #969cb4;
+    --ion-color-step-700:  #abb1c2;
+    --ion-color-step-750:  #c0c5d0;
+    --ion-color-step-800:  #d5d9de;
+    --ion-color-step-850:  #eaecec;
+    --ion-color-step-900:  #f2f3f5;
+    --ion-color-step-950:  #f9f9fa;
   }
 }

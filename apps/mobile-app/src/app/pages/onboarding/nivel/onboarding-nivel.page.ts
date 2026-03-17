@@ -56,7 +56,7 @@ const LEVELS: { value: Level; label: string; description: string; emoji: string 
     }
     .level-desc {
       font-size: 12px;
-      color: var(--lgui-text-4);
+      color: var(--lgui-text-3);
       margin-top: 2px;
     }
     .check {

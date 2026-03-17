@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "paths": {
+      "@mobile-app/*": [
+        "apps/mobile-app/src/*"
+      ],
+      "@mobile-app/shared": [
+        "apps/mobile-app/src/app/shared"
+      ],
+      "@api/*": [
+        "apps/api/src/*"
+      ],
+      "@shared/types": [
+        "libs/shared-types/src/index.ts"
+      ],
+      "@shared/*": [
+        "libs/shared/*"
+      ]
+    }
+  },
+  "extends": "../../../apps/api/tsconfig.json"
+}

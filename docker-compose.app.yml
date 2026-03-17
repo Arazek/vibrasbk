@@ -25,6 +25,8 @@ services:
       JWT_SECRET: ${JWT_SECRET}
       # Firebase (FCM push notifications)
       FIREBASE_PROJECT_ID: ${FIREBASE_PROJECT_ID:-}
+    ports:
+      - "3333:3333"
     volumes:
       - uploads:/app/apps/api/uploads
     networks:
