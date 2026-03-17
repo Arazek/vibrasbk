@@ -6,7 +6,7 @@ import { HttpClient } from '@angular/common/http';
 import {
   IonContent, IonHeader, IonToolbar, IonTitle, IonButton,
   IonChip, IonLabel, IonItem, IonInput, IonList, IonToast, IonProgressBar,
-  IonSelect, IonSelectOption, IonSpinner,
+  IonSelect, IonSelectOption, IonSpinner, IonButtons, IonBackButton,
 } from '@ionic/angular/standalone';
 import { DanceStyle, Academia } from '@shared/types';
 import { OnboardingStateService } from '../../../services/onboarding-state.service';
@@ -19,7 +19,7 @@ import { environment } from '../../../../environments/environment';
   imports: [
     CommonModule, FormsModule, IonContent, IonHeader, IonToolbar, IonTitle,
     IonButton, IonChip, IonLabel, IonItem, IonInput, IonList, IonToast, IonProgressBar,
-    IonSelect, IonSelectOption, IonSpinner,
+    IonSelect, IonSelectOption, IonSpinner, IonButtons, IonBackButton,
   ],
   styles: [`
     .question {
@@ -66,6 +66,9 @@ import { environment } from '../../../../environments/environment';
   template: `
     <ion-header>
       <ion-toolbar>
+        <ion-buttons slot="start">
+          <ion-back-button defaultHref="/onboarding/nivel"></ion-back-button>
+        </ion-buttons>
         <ion-title>Paso 4 de 4 — Estilos</ion-title>
       </ion-toolbar>
       <ion-progress-bar value="1.0" color="secondary"></ion-progress-bar>

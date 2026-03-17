@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import {
   IonContent, IonHeader, IonToolbar, IonTitle,
-  IonButton, IonProgressBar,
+  IonButton, IonProgressBar, IonButtons, IonBackButton,
 } from '@ionic/angular/standalone';
 import { Rol } from '@shared/types';
 import { OnboardingStateService } from '../../../services/onboarding-state.service';
@@ -17,7 +17,7 @@ const ROLES: { value: Rol; label: string; description: string; emoji: string }[]
 @Component({
   selector: 'app-onboarding-rol',
   standalone: true,
-  imports: [CommonModule, IonContent, IonHeader, IonToolbar, IonTitle, IonButton, IonProgressBar],
+  imports: [CommonModule, IonContent, IonHeader, IonToolbar, IonTitle, IonButton, IonProgressBar, IonButtons, IonBackButton],
   styles: [`
     .question {
       font-size: 22px;
@@ -66,6 +66,9 @@ const ROLES: { value: Rol; label: string; description: string; emoji: string }[]
   template: `
     <ion-header>
       <ion-toolbar>
+        <ion-buttons slot="start">
+          <ion-back-button defaultHref="/onboarding/ciudad"></ion-back-button>
+        </ion-buttons>
         <ion-title>Paso 2 de 4 — Tu rol</ion-title>
       </ion-toolbar>
       <ion-progress-bar value="0.5" color="secondary"></ion-progress-bar>
