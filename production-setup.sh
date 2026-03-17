@@ -114,15 +114,15 @@ preflight() {
         print_success "Docker network 'proxy-network' exists"
     fi
 
-    if ! docker ps --format '{{.Names}}' | grep -q '^postgresdb$'; then
-        print_warning "Infrastructure PostgreSQL container (postgresdb) is not running."
+    if ! docker ps --format '{{.Names}}' | grep -q '^postgres$'; then
+        print_warning "Infrastructure PostgreSQL container (postgres) is not running."
         print_info    "Start it with:  ./run.sh infra"
         echo ""
         if ! ask_yn "Continue anyway?" "n"; then
             echo ""; exit 0
         fi
     else
-        print_success "Infrastructure PostgreSQL is running (postgresdb)"
+        print_success "Infrastructure PostgreSQL is running (postgres)"
     fi
 }
 
@@ -159,7 +159,7 @@ collect_api_host() {
 collect_database() {
     print_header "Database (existing PostgreSQL in infra stack)"
     print_info "These must match the credentials used in infra.docker-compose.yml."
-    print_info "The API connects to container 'postgresdb' on the proxy-network."
+    print_info "The API connects to container 'postgres' on the proxy-network."
     echo ""
     ask POSTGRES_USER     "POSTGRES_USER"     "postgres"
     ask POSTGRES_PASSWORD "POSTGRES_PASSWORD" ""         secret
@@ -235,7 +235,7 @@ write_env() {
 # ── API routing (Traefik) ─────────────────────────────────────────────────────
 API_HOST=${API_HOST}
 
-# ── PostgreSQL (infra stack — container: postgresdb) ──────────────────────────
+# ── PostgreSQL (infra stack — container: postgres) ──────────────────────────
 POSTGRES_USER=${POSTGRES_USER}
 POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
 POSTGRES_DB=${POSTGRES_DB}
@@ -257,14 +257,14 @@ EOF
 validate_db() {
     print_header "Validating database connection"
 
-    if docker exec postgresdb pg_isready -U "$POSTGRES_USER" -q 2>/dev/null; then
+    if docker exec postgres pg_isready -U "$POSTGRES_USER" -q 2>/dev/null; then
         print_success "PostgreSQL is accepting connections"
 
         # Try to create the app database if it doesn't exist
-        if ! docker exec -e PGPASSWORD="$POSTGRES_PASSWORD" postgresdb \
+        if ! docker exec -e PGPASSWORD="$POSTGRES_PASSWORD" postgres \
                 psql -U "$POSTGRES_USER" -lqt 2>/dev/null | cut -d'|' -f1 | grep -qw "$POSTGRES_DB"; then
             print_info "Database '$POSTGRES_DB' not found — creating..."
-            docker exec -e PGPASSWORD="$POSTGRES_PASSWORD" postgresdb \
+            docker exec -e PGPASSWORD="$POSTGRES_PASSWORD" postgres \
                 psql -U "$POSTGRES_USER" -c "CREATE DATABASE \"${POSTGRES_DB}\";" >/dev/null \
                 && print_success "Database '$POSTGRES_DB' created" \
                 || print_warning "Could not create database — check permissions"
@@ -272,7 +272,7 @@ validate_db() {
             print_success "Database '$POSTGRES_DB' exists"
         fi
     else
-        print_warning "Could not connect to postgresdb — skipping DB validation"
+        print_warning "Could not connect to postgres — skipping DB validation"
         print_info    "The API will attempt to connect on startup"
     fi
 }
