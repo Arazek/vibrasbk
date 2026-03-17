@@ -86,7 +86,7 @@ const ROLES: { value: Rol; label: string; description: string; emoji: string }[]
         </div>
       </div>
 
-      <ion-button expand="block" [disabled]="!selected" (click)="next()" style="margin-top: 24px;">
+      <ion-button expand="block" [disabled]="!!(!selected)" (click)="next()" style="margin-top: 24px;">
         Siguiente
       </ion-button>
     </ion-content>

@@ -161,7 +161,7 @@ const NIVEL_OPTIONS: { value: Nivel; label: string }[] = [
           </ion-item>
         </ion-list>
 
-        <ion-button expand="block" [disabled]="saving || selectedEstilos.length === 0" (click)="save()">
+        <ion-button expand="block" [disabled]="!!(saving || selectedEstilos.length === 0)" (click)="save()">
           {{ saving ? 'Guardando...' : 'Guardar cambios' }}
         </ion-button>
 

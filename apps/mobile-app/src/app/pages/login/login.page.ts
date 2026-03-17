@@ -110,7 +110,7 @@ import { AuthService } from '../../services/auth.service';
         <ion-button
           expand="block"
           style="width: 100%; margin-top: 8px;"
-          [disabled]="!canSubmit || loading"
+          [disabled]="!!(!canSubmit || loading)"
           (click)="login()">
           {{ loading ? 'Entrando...' : 'Entrar' }}
         </ion-button>

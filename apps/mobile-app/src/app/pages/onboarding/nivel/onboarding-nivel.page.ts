@@ -89,7 +89,7 @@ const NIVELES: { value: Nivel; label: string; description: string; emoji: string
         <span *ngIf="selected === n.value" class="check">✓</span>
       </div>
 
-      <ion-button expand="block" [disabled]="!selected" (click)="next()" style="margin-top: 24px;">
+      <ion-button expand="block" [disabled]="!!(!selected)" (click)="next()" style="margin-top: 24px;">
         Siguiente
       </ion-button>
     </ion-content>

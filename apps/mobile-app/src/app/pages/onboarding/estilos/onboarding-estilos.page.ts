@@ -147,7 +147,7 @@ import { environment } from '../../../../environments/environment';
 
       <ion-button
         expand="block"
-        [disabled]="!canSubmit || loading"
+        [disabled]="!!(!canSubmit || loading)"
         (click)="finish()">
         {{ loading ? 'Creando perfil...' : 'Entrar a la app 🎵' }}
       </ion-button>
