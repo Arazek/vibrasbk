@@ -17,7 +17,7 @@ import { CreateEventDto } from './dtos/create-event.dto';
 import { UpdateEventDto } from './dtos/update-event.dto';
 
 @ApiTags('Calendar')
-@Controller('api/calendar')
+@Controller('calendar')
 @ApiBearerAuth()
 export class CalendarController {
   constructor(private calendarService: CalendarService) {}

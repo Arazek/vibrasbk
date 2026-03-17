@@ -7,7 +7,7 @@ import { DanceStylesService } from './dance-styles.service';
 import { CreateDanceStyleDto } from './dtos/create-dance-style.dto';
 
 @ApiTags('Dance Styles')
-@Controller('api/dance-styles')
+@Controller('dance-styles')
 export class DanceStylesController {
   constructor(private service: DanceStylesService) {}
 

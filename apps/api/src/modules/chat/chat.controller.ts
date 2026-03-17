@@ -5,7 +5,7 @@ import { ChatService } from './chat.service';
 import { CreateMessageDto } from './dtos/create-message.dto';
 
 @ApiTags('Chat')
-@Controller('api/chat')
+@Controller('chat')
 @ApiBearerAuth()
 export class ChatController {
   constructor(private chatService: ChatService) {}

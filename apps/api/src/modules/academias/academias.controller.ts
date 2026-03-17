@@ -7,7 +7,7 @@ import { AcademiasService } from './academias.service';
 import { CreateAcademiaDto } from './dtos/create-academia.dto';
 
 @ApiTags('Academias')
-@Controller('api/academias')
+@Controller('academias')
 export class AcademiasController {
   constructor(private service: AcademiasService) {}
 

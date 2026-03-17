@@ -34,7 +34,7 @@ const photoStorage = diskStorage({
 @ApiTags('Events')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
-@Controller('api/events')
+@Controller('events')
 export class EventsController {
   constructor(
     private eventsService: EventsService,

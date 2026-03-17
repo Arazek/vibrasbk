@@ -9,7 +9,7 @@ import { VerifyAttendanceDto } from './dtos/verify-attendance.dto';
 @ApiTags('Votes')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
-@Controller('api/votes')
+@Controller('votes')
 export class VotesController {
   constructor(private votesService: VotesService) {}
 

@@ -9,7 +9,7 @@ import { UpdateVenueDto } from './dtos/update-venue.dto';
 @ApiTags('Venues')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
-@Controller('api/venues')
+@Controller('venues')
 export class VenuesController {
   constructor(private venuesService: VenuesService) {}
 
