@@ -43,7 +43,7 @@
     "@nestjs/microservices": "^10.2.0",
     "@nestjs/passport": "^10.0.0",
     "@nestjs/platform-express": "^10.2.0",
-    "@nestjs/platform-socket.io": "^11.1.14",
+    "@nestjs/platform-socket.io": "^10.2.0",
     "@nestjs/schedule": "^6.1.1",
     "@nestjs/swagger": "^7.1.0",
     "@nestjs/typeorm": "^10.0.0",
