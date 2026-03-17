@@ -1,6 +1,6 @@
 version: '3.8'
 
-# Application layer — NestJS API + Redis
+# Application layer — NestJS API
 # Requires the infrastructure stack (infra.docker-compose.yml) to be running first.
 #
 # To start:   docker compose -f docker-compose.app.yml up -d --build
@@ -34,8 +34,6 @@ services:
       - uploads:/app/apps/api/uploads
     networks:
       - proxy-network
-    depends_on:
-      - redis
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.api.rule=Host(`${API_HOST}`)"
@@ -43,15 +41,6 @@ services:
       - "traefik.http.routers.api.tls=true"
       - "traefik.http.routers.api.tls.certresolver=letsencrypt"
       - "traefik.http.services.api.loadbalancer.server.port=3333"
-
-  redis:
-    image: redis:7-alpine
-    container_name: dance-app-redis
-    restart: unless-stopped
-    volumes:
-      - redis_data:/data
-    networks:
-      - proxy-network
 
 # proxy-network is owned by infra.docker-compose.yml
 networks:
@@ -61,4 +50,3 @@ networks:
 
 volumes:
   uploads:
-  redis_data:
