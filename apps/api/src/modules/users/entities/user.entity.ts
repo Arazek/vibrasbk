@@ -6,11 +6,16 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-export enum Role {
+export enum DancingRole {
   LEADER = 'leader',
   FOLLOWER = 'follower',
   SWITCH = 'switch',
+}
+
+export enum ApplicationRole {
+  USER = 'user',
   ADMIN = 'admin',
+  SUPERADMIN = 'superadmin',
 }
 
 export enum Level {
@@ -45,8 +50,11 @@ export class User {
   @Column({ name: 'ciudad', default: 'Cartagena' })
   city: string;
 
-  @Column({ type: 'enum', enum: Role, name: 'rol' })
-  role: Role;
+  @Column({ type: 'enum', enum: DancingRole, name: 'dancing_role', default: DancingRole.LEADER })
+  dancingRole: DancingRole;
+
+  @Column({ type: 'enum', enum: ApplicationRole, name: 'application_role', default: ApplicationRole.USER })
+  applicationRole: ApplicationRole;
 
   @Column({ type: 'enum', enum: Level, name: 'nivel' })
   level: Level;

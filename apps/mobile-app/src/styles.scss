@@ -1,5 +1,5 @@
 /* Inter font — LanguageGUI standard typeface */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
 
 /* Brand theme — must come before Ionic core */
 @import './theme/variables.css';
@@ -56,22 +56,22 @@ ion-content {
 ion-segment {
   --background: var(--lgui-surface-3);
   border-radius: var(--lgui-radius-pill);
-  padding: 3px;
+  padding: 0.1875rem;
 }
 ion-segment-button {
   --border-radius: var(--lgui-radius-pill);
   --indicator-color: var(--lgui-surface-1);
   --color: var(--lgui-text-3);
   --color-checked: var(--lgui-text-4);
-  min-height: 36px;
-  font-size: 13px;
-  font-weight: 600;
+  min-height: 2.25rem;
+  font-size: var(--lgui-fs-body);
+  font-weight: var(--lgui-fw-semibold);
 }
 
 /* Tab bar polish */
 ion-tab-bar {
   --background: var(--lgui-surface-1);
-  border-top: 1px solid var(--lgui-border-2);
+  border-top: 0.0625rem solid var(--lgui-border-2);
   padding-bottom: env(safe-area-inset-bottom, 0);
 }
 ion-tab-button {
@@ -106,7 +106,6 @@ ion-input {
   --color: var(--lgui-text-4);
   --placeholder-color: var(--lgui-text-3);
 }
-
 /* ion-textarea */
 ion-textarea {
   --color: var(--lgui-text-4);
@@ -129,6 +128,84 @@ ion-action-sheet {
   --color: var(--lgui-text-4);
   --button-color: var(--lgui-text-4);
   --background: var(--lgui-surface-1);
+}
+
+/* Toolbar — align start padding with ion-content's ion-padding (16px) */
+ion-toolbar {
+  --padding-start: max(1rem, env(safe-area-inset-left));
+  --padding-end: max(1rem, env(safe-area-inset-right));
+}
+
+/* Breadcrumb — page title in toolbar start slot */
+.breadcrumb {
+  font-size: 1.25rem;
+  font-weight: var(--lgui-fw-bold);
+  color: var(--lgui-text-4);
+}
+
+/* ─── Shared UI patterns ─────────────────────────────────────────────────── */
+
+/* Section title — uppercase label above content groups */
+.section-title {
+  font-size: var(--lgui-fs-micro);
+  font-weight: var(--lgui-fw-bold);
+  letter-spacing: 0.0375rem;
+  text-transform: uppercase;
+  color: var(--lgui-text-3);
+  margin-bottom: var(--lgui-gap-sm);
+  margin-top: var(--lgui-gap-xl);
+}
+
+/* Field label — above individual form inputs */
+.field-label {
+  font-size: var(--lgui-fs-caption);
+  font-weight: var(--lgui-fw-semibold);
+  color: var(--lgui-text-3);
+  letter-spacing: 0.0313rem;
+  text-transform: uppercase;
+  margin-bottom: 0.25rem;
+  padding-left: 0.25rem;
+}
+
+/* Form list — ion-list wrapper for inputs */
+.form-list {
+  border-radius: 0.625rem;
+  overflow: hidden;
+  margin-bottom: var(--lgui-gap-lg);
+}
+
+/* Loading container — centered spinner */
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: var(--lgui-space-9) 0;
+}
+
+/* Empty state — no data placeholder */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--lgui-space-10) var(--lgui-space-6);
+  text-align: center;
+}
+.empty-state .empty-icon {
+  font-size: 3.5rem;
+  margin-bottom: var(--lgui-gap-lg);
+  line-height: 1;
+}
+.empty-state .empty-title {
+  font-size: var(--lgui-fs-heading);
+  font-weight: var(--lgui-fw-semibold);
+  color: var(--lgui-text-4);
+  margin-bottom: var(--lgui-gap-sm);
+}
+.empty-state .empty-subtitle {
+  font-size: var(--lgui-fs-body-lg);
+  color: var(--lgui-text-3);
+  line-height: 1.6;
 }
 
 /* Alert dialogs */

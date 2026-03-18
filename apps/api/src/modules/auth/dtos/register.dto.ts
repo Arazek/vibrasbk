@@ -17,7 +17,7 @@ export class RegisterDto {
 
   @ApiProperty({ example: 'leader' })
   @IsString()
-  role: string;
+  dancingRole: string;
 
   @ApiProperty({ example: 'comfortable' })
   @IsString()

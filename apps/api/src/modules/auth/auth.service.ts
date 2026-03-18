@@ -3,7 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
-import { User, Role, Level } from '../users/entities/user.entity';
+import { User, DancingRole, ApplicationRole, Level } from '../users/entities/user.entity';
 import { RegisterDto } from './dtos/register.dto';
 
 export interface AuthResponseData {
@@ -12,7 +12,8 @@ export interface AuthResponseData {
     id: string;
     alias: string;
     city: string;
-    role: string;
+    dancingRole: string;
+    applicationRole: string;
     level: string;
     styles: string[];
     academyId?: string;
@@ -39,11 +40,11 @@ export class AuthService {
       throw new ConflictException(`Email "${dto.email}" is already registered`);
     }
 
-    const validRoles = Object.values(Role);
+    const validDancingRoles = Object.values(DancingRole);
     const validLevels = Object.values(Level);
 
-    if (!validRoles.includes(dto.role as Role)) {
-      throw new BadRequestException(`Invalid role: ${dto.role}`);
+    if (!validDancingRoles.includes(dto.dancingRole as DancingRole)) {
+      throw new BadRequestException(`Invalid dancing role: ${dto.dancingRole}`);
     }
     if (!validLevels.includes(dto.level as Level)) {
       throw new BadRequestException(`Invalid level: ${dto.level}`);
@@ -59,7 +60,8 @@ export class AuthService {
       email: dto.email,
       passwordHash,
       city: 'Cartagena',
-      role: dto.role as Role,
+      dancingRole: dto.dancingRole as DancingRole,
+      applicationRole: ApplicationRole.USER,
       level: dto.level as Level,
       styles: dto.styles,
       academyId: dto.academyId,
@@ -82,14 +84,15 @@ export class AuthService {
   }
 
   private signToken(user: User) {
-    const payload = { sub: user.id, alias: user.alias, role: user.role };
+    const payload = { sub: user.id, alias: user.alias, applicationRole: user.applicationRole };
     return {
       accessToken: this.jwtService.sign(payload),
       user: {
         id: user.id,
         alias: user.alias,
         city: user.city,
-        role: user.role,
+        dancingRole: user.dancingRole,
+        applicationRole: user.applicationRole,
         level: user.level,
         styles: user.styles,
         academyId: user.academyId || undefined,

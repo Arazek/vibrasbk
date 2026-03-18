@@ -77,14 +77,6 @@ export const routes: Routes = [
     ],
   },
 
-  // Calendar — full-screen, no tab bar
-  {
-    path: 'calendar',
-    canActivate: [authGuard],
-    loadComponent: () =>
-      import('./pages/calendar/calendar.page').then((m) => m.CalendarPage),
-  },
-
   // Event detail — full-screen, no tab bar
   {
     path: 'event/:id',

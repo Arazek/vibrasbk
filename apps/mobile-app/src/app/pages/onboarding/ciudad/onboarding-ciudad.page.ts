@@ -1,14 +1,14 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import {
-  IonContent, IonHeader, IonToolbar, IonTitle,
-  IonButton, IonProgressBar,
+  IonContent, IonHeader, IonToolbar,
+  IonButton, IonButtons, IonProgressBar,
 } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-onboarding-ciudad',
   standalone: true,
-  imports: [IonContent, IonHeader, IonToolbar, IonTitle, IonButton, IonProgressBar],
+  imports: [IonContent, IonHeader, IonToolbar, IonButton, IonButtons, IonProgressBar],
   styles: [`
     .hero {
       display: flex;
@@ -16,59 +16,54 @@ import {
       align-items: center;
       justify-content: center;
       min-height: 70vh;
-      padding: 32px 24px;
+      padding: 2rem 1.5rem;
       text-align: center;
     }
-    .hero-emoji {
-      font-size: 64px;
-      margin-bottom: 24px;
-      line-height: 1;
-    }
-    .hero-title {
-      font-size: 28px;
-      font-weight: 700;
-      color: var(--ion-text-color, #1a1a2e);
-      margin-bottom: 12px;
+    .hero-logo {
+      height: 3.5rem;
+      width: auto;
+      margin-bottom: 1.5rem;
     }
     .hero-subtitle {
-      font-size: 15px;
+      font-size: var(--lgui-fs-subheading);
       color: var(--ion-color-medium);
       line-height: 1.6;
-      margin-bottom: 8px;
+      margin-bottom: 0.5rem;
     }
     .city-badge {
       display: inline-block;
       background: var(--ion-color-primary, #E84855);
       color: #fff;
-      font-weight: 600;
-      font-size: 14px;
-      padding: 6px 16px;
-      border-radius: 20px;
-      margin: 16px 0 32px;
+      font-weight: var(--lgui-fw-semibold);
+      font-size: var(--lgui-fs-body-lg);
+      padding: 0.375rem 1rem;
+      border-radius: 1.25rem;
+      margin: 1rem 0 2rem;
     }
     .login-link {
-      margin-top: 16px;
-      font-size: 14px;
+      margin-top: 1rem;
+      font-size: var(--lgui-fs-body-lg);
       color: var(--ion-color-medium);
     }
     .login-link span {
       color: var(--ion-color-primary, #E84855);
-      font-weight: 600;
+      font-weight: var(--lgui-fw-semibold);
       cursor: pointer;
     }
   `],
   template: `
     <ion-header>
       <ion-toolbar>
-        <ion-title>Bienvenido</ion-title>
+        <ion-buttons slot="start">
+          <span class="breadcrumb">Bienvenido</span>
+        </ion-buttons>
       </ion-toolbar>
       <ion-progress-bar value="0.25" color="secondary"></ion-progress-bar>
     </ion-header>
 
     <ion-content>
       <div class="hero">
-        <div class="hero-emoji">💃🕺</div>
-        <div class="hero-title">Predictor de Sociales</div>
+        <img src="assets/vibrasbk.png" class="hero-logo" alt="VibraSBK" />
         <div class="hero-subtitle">
           Descubre cómo será el ambiente antes de salir a bailar.
           Sabe si la pista estará animada, el nivel de los bailarines

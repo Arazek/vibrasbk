@@ -1,7 +1,7 @@
 /*
  * Predictor de Sociales — Design System
  * Foundation: LanguageGUI (https://figma.com/community/file/1334658200949332345)
- * Brand palette: Dance/nightlife identity (coral + gold)
+ * Brand palette: VibraSBK identity (hot pink + gold)
  *
  * Token layers:
  *   1. LanguageGUI Core   — neutrals, spacing, radius, shadows
@@ -15,6 +15,7 @@
    Neutrals Colors/100 → 800
    ───────────────────────────────────────────────────── */
 :root {
+
   --lgui-neutral-100: #FFFFFF;
   --lgui-neutral-200: #F7F8FA;
   --lgui-neutral-300: #F0F2F5;
@@ -69,32 +70,32 @@
    Sizes/Size 0 → 11
    ───────────────────────────────────────────────────── */
 :root {
-  --lgui-space-0:   2px;
-  --lgui-space-1:   6px;
-  --lgui-space-2:   8px;
-  --lgui-space-3:  12px;
-  --lgui-space-4:  16px;
-  --lgui-space-5:  24px;
-  --lgui-space-6:  32px;
-  --lgui-space-7:  40px;
-  --lgui-space-8:  48px;
-  --lgui-space-9:  64px;
-  --lgui-space-10: 80px;
-  --lgui-space-11: 120px;
+  --lgui-space-0:   0.125rem;
+  --lgui-space-1:   0.375rem;
+  --lgui-space-2:   0.5rem;
+  --lgui-space-3:  0.75rem;
+  --lgui-space-4:  1rem;
+  --lgui-space-5:  1.5rem;
+  --lgui-space-6:  2rem;
+  --lgui-space-7:  2.5rem;
+  --lgui-space-8:  3rem;
+  --lgui-space-9:  4rem;
+  --lgui-space-10: 5rem;
+  --lgui-space-11: 7.5rem;
 
   /* Named gap aliases (Default/Gaps) */
-  --lgui-gap-xs:  var(--lgui-space-1);  /*  6px */
-  --lgui-gap-sm:  var(--lgui-space-2);  /*  8px */
-  --lgui-gap-md:  var(--lgui-space-3);  /* 12px */
-  --lgui-gap-lg:  var(--lgui-space-4);  /* 16px */
-  --lgui-gap-xl:  var(--lgui-space-5);  /* 24px */
+  --lgui-gap-xs:  var(--lgui-space-1);  /*  0.375rem */
+  --lgui-gap-sm:  var(--lgui-space-2);  /*  0.5rem */
+  --lgui-gap-md:  var(--lgui-space-3);  /* 0.75rem */
+  --lgui-gap-lg:  var(--lgui-space-4);  /* 1rem */
+  --lgui-gap-xl:  var(--lgui-space-5);  /* 1.5rem */
 
   /* Named padding aliases */
-  --lgui-pad-xs:  var(--lgui-space-2);  /*  8px */
-  --lgui-pad-sm:  var(--lgui-space-3);  /* 12px */
-  --lgui-pad-md:  var(--lgui-space-4);  /* 16px */
-  --lgui-pad-lg:  var(--lgui-space-5);  /* 24px */
-  --lgui-pad-xl:  var(--lgui-space-6);  /* 32px */
+  --lgui-pad-xs:  var(--lgui-space-2);  /*  0.5rem */
+  --lgui-pad-sm:  var(--lgui-space-3);  /* 0.75rem */
+  --lgui-pad-md:  var(--lgui-space-4);  /* 1rem */
+  --lgui-pad-lg:  var(--lgui-space-5);  /* 1.5rem */
+  --lgui-pad-xl:  var(--lgui-space-6);  /* 2rem */
 }
 
 /* ─────────────────────────────────────────────────────
@@ -103,14 +104,14 @@
    ───────────────────────────────────────────────────── */
 :root {
   --lgui-radius-none:    0;
-  --lgui-radius-xs:      2px;
-  --lgui-radius-sm:      4px;
-  --lgui-radius-md:      8px;   /* BR Size 3 — chips, tags */
-  --lgui-radius-default: 16px;  /* BR Size 4 — cards, modals */
-  --lgui-radius-lg:      24px;  /* BR Size 5 */
-  --lgui-radius-xl:      32px;  /* BR Size 6 — hero sections */
-  --lgui-radius-2xl:     48px;  /* BR Size 7 */
-  --lgui-radius-pill:    200px; /* BR Pill — full pill badges */
+  --lgui-radius-xs:      0.125rem;
+  --lgui-radius-sm:      0.25rem;
+  --lgui-radius-md:      0.5rem;   /* BR Size 3 — chips, tags */
+  --lgui-radius-default: 1rem;  /* BR Size 4 — cards, modals */
+  --lgui-radius-lg:      1.5rem;  /* BR Size 5 */
+  --lgui-radius-xl:      2rem;  /* BR Size 6 — hero sections */
+  --lgui-radius-2xl:     3rem;  /* BR Size 7 */
+  --lgui-radius-pill:    12.5rem; /* BR Pill — full pill badges */
 }
 
 /* ─────────────────────────────────────────────────────
@@ -118,28 +119,50 @@
    Neutral/BS Small → BS Large  +  Primary glow variant
    ───────────────────────────────────────────────────── */
 :root {
-  --lgui-shadow-sm:  0 1px 3px  rgba(25, 33, 61, 0.10);
-  --lgui-shadow-md:  0 2px 4px  rgba(25, 33, 61, 0.08);
-  --lgui-shadow-lg:  0 8px 15px rgba(25, 33, 61, 0.10);
-  --lgui-shadow-xl:  0 8px 24px rgba(25, 33, 61, 0.12);
+  --lgui-shadow-sm:  0 0.0625rem 0.1875rem  rgba(25, 33, 61, 0.10);
+  --lgui-shadow-md:  0 0.125rem 0.25rem  rgba(25, 33, 61, 0.08);
+  --lgui-shadow-lg:  0 0.5rem 0.9375rem rgba(25, 33, 61, 0.10);
+  --lgui-shadow-xl:  0 0.5rem 1.5rem rgba(25, 33, 61, 0.12);
 
   /* Primary (accent-tinted) shadow — for buttons, active cards */
-  --lgui-shadow-accent-sm: 0 0  2px rgba(232, 72, 85, 0.23);
-  --lgui-shadow-accent-md: 0 4px 8px rgba(232, 72, 85, 0.16);
+  --lgui-shadow-accent-sm: 0 0 0.125rem rgba(217, 30, 92, 0.28);
+  --lgui-shadow-accent-md: 0 0.25rem 0.5rem rgba(217, 30, 92, 0.22);
 }
 
 /* ─────────────────────────────────────────────────────
-   6. BRAND PALETTE — Ionic overrides
-   Dance/nightlife identity (coral + gold)
+   6. TYPOGRAPHY SCALE
+   Font-size and font-weight tokens.
+   Base: browser default 16px (1rem = 16px)
    ───────────────────────────────────────────────────── */
 :root {
-  /* Primary: Deep coral/rose — energetic, dance-oriented */
-  --ion-color-primary:              #E84855;
-  --ion-color-primary-rgb:          232, 72, 85;
+  /* Font-size scale — semantic roles */
+  --lgui-fs-display:    1.375rem;  /* Page-level question/hero heading */
+  --lgui-fs-heading:    1.0625rem;  /* Section titles, venue names */
+  --lgui-fs-subheading: 0.9375rem;  /* Card titles, subtitles */
+  --lgui-fs-body-lg:    0.875rem;  /* Labels, prominent body text */
+  --lgui-fs-body:       0.8125rem;  /* Primary body text */
+  --lgui-fs-caption:    0.75rem;  /* Secondary / hint text */
+  --lgui-fs-micro:      0.6875rem;  /* Chips, badges, smallest text */
+
+  /* Font-weight scale */
+  --lgui-fw-regular:  300;
+  --lgui-fw-medium:   400;
+  --lgui-fw-semibold: 500;
+  --lgui-fw-bold:     600;
+}
+
+/* ─────────────────────────────────────────────────────
+   7. BRAND PALETTE — Ionic overrides
+   VibraSBK identity: hot pink gradient (#E52030 → #D41870) + gold
+   ───────────────────────────────────────────────────── */
+:root {
+  /* Primary: VibraSBK hot pink — extracted from the SBK logo gradient midpoint */
+  --ion-color-primary:              #D91E5C;
+  --ion-color-primary-rgb:          217, 30, 92;
   --ion-color-primary-contrast:     #ffffff;
   --ion-color-primary-contrast-rgb: 255, 255, 255;
-  --ion-color-primary-shade:        #cc3f4b;
-  --ion-color-primary-tint:         #ea5a66;
+  --ion-color-primary-shade:        #BF1A51;
+  --ion-color-primary-tint:         #DD356C;
 
   /* Secondary: Warm gold — Latin warmth */
   --ion-color-secondary:              #F4A261;
@@ -232,10 +255,10 @@
     --lgui-text-4: #FFFFFF;
 
     /* Shadows — más sutiles en oscuro */
-    --lgui-shadow-sm:  0 1px 3px  rgba(0,0,0,0.40);
-    --lgui-shadow-md:  0 2px 6px  rgba(0,0,0,0.35);
-    --lgui-shadow-lg:  0 8px 16px rgba(0,0,0,0.40);
-    --lgui-shadow-xl:  0 8px 24px rgba(0,0,0,0.50);
+    --lgui-shadow-sm:  0 0.0625rem 0.1875rem  rgba(0,0,0,0.40);
+    --lgui-shadow-md:  0 0.125rem 0.375rem  rgba(0,0,0,0.35);
+    --lgui-shadow-lg:  0 0.5rem 1rem rgba(0,0,0,0.40);
+    --lgui-shadow-xl:  0 0.5rem 1.5rem rgba(0,0,0,0.50);
 
     /* Vibe backgrounds — más oscuros */
     --vibe-bg-quiet:   rgba(186,192,204,0.12);
@@ -249,7 +272,7 @@
     --type-congress-bg:   rgba(123,82,171,0.18);
 
     /* Status colors — dark-compatible overrides */
-    --lgui-red-100:    rgba(232, 72, 85, 0.15);
+    --lgui-red-100:    rgba(254, 86, 107, 0.15);
     --lgui-yellow-100: rgba(239, 196, 44, 0.15);
     --lgui-green-100:  rgba(74, 213, 98, 0.15);
     --lgui-blue-100:   rgba(100, 167, 255, 0.15);

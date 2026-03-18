@@ -34,12 +34,12 @@ vibrasbk/
 ### `auth`
 - `POST /api/auth/register` — onboarding payload → bcrypt hashes password → JWT
 - `POST /api/auth/login` — email + password → JWT
-- JWT payload: `{ sub: user.id, alias: user.alias, rol: user.rol }`
-- Guards: `JwtAuthGuard`, `AdminGuard`; decorator: `@Public()`
+- JWT payload: `{ sub: user.id, alias: user.alias, applicationRole: user.applicationRole }`
+- Guards: `JwtAuthGuard`, `AdminGuard` (allows `admin` and `superadmin`); decorator: `@Public()`
 
 ### `users`
 - `GET /api/users/profile` — returns full user profile (JWT required)
-- `PATCH /api/users/profile` — updates nivel, estilos, academia, fcmToken
+- `PATCH /api/users/profile` — updates level, styles, academy, fcmToken
 
 ### `venues`
 - `GET /api/venues` — list all venues (public)
@@ -49,7 +49,7 @@ vibrasbk/
 ### `events`
 - `GET /api/events/week` — current week's events enriched with vote data (JWT required)
 - `GET /api/events/:id` — single event enriched with vote data (JWT required)
-- `GET /api/events/:id/analytics` — prediction result (requires voy/tal_vez vote)
+- `GET /api/events/:id/analytics` — prediction result (requires going/maybe vote)
 - `POST /api/events`, `PATCH /api/events/:id`, `DELETE /api/events/:id` — admin CRUD
 - `PATCH /api/events/:id/foto` — admin photo upload (multipart)
 - Photos stored at `apps/api/uploads/events/`, served at `/uploads/events/{filename}`
@@ -71,8 +71,8 @@ vibrasbk/
 - Internal FCM push notification service (not exposed via HTTP)
 
 ### `scheduler`
-- `0 11 * * *` — sends FCM verification push to yesterday's "voy" voters
-- `5 11 * * *` — auto-closes pending verifications older than 24h, sets asistio=false, updates reliability
+- `0 11 * * *` — sends FCM verification push to yesterday's "going" voters
+- `5 11 * * *` — auto-closes pending verifications older than 24h, sets attended=false, updates reliability
 
 ### `chat` *(legacy — not wired into app.module.ts, safe to delete)*
 
@@ -89,11 +89,12 @@ vibrasbk/
 | alias | VARCHAR | unique, not null |
 | email | VARCHAR | unique, not null |
 | passwordHash | VARCHAR | bcrypt |
-| ciudad | VARCHAR | default 'Cartagena' |
-| rol | ENUM | leader \| follower \| switch \| admin |
-| nivel | ENUM | nuevo \| iniciacion \| social_comodo \| intermedio \| avanzado |
-| estilos | simple-array | CSV in text column |
-| academiaId | UUID | nullable FK |
+| city | VARCHAR | default 'Cartagena' |
+| dancingRole | ENUM | leader \| follower \| switch |
+| applicationRole | ENUM | user \| admin \| superadmin |
+| level | ENUM | beginner \| initiation \| comfortable \| intermediate \| advanced |
+| styles | simple-array | CSV in text column |
+| academyId | UUID | nullable FK |
 | fcmToken | VARCHAR | nullable |
 | createdAt, updatedAt | TIMESTAMP | |
 
@@ -101,51 +102,51 @@ vibrasbk/
 | Column | Type | Notes |
 |--------|------|-------|
 | id | UUID | PK |
-| nombre | VARCHAR | |
-| ciudad | VARCHAR | default 'Cartagena' |
+| name | VARCHAR | |
+| city | VARCHAR | default 'Cartagena' |
 | lat, lng | DECIMAL | nullable |
-| aforoMaximo | INTEGER | nullable |
-| estilos | simple-array | |
+| maxCapacity | INTEGER | nullable |
+| styles | simple-array | |
 
-### RecurringEvent / SocialEvent / IntensivoEvent / CongresoEvent (`recurring_events` table — STI)
+### RecurringEvent / SocialEvent / IntensiveEvent / CongressEvent (`recurring_events` table — STI)
 Base columns (all types):
 | Column | Type | Notes |
 |--------|------|-------|
 | id | UUID | PK |
-| tipo | ENUM | `social` \| `intensivo` \| `congreso` (discriminator) |
+| type | ENUM | `social` \| `intensive` \| `congress` (discriminator) |
 | venueId | UUID | FK → venues.id |
-| nombre | VARCHAR | |
-| fotoUrl | VARCHAR | nullable |
-| diaSemana | SMALLINT | 0=Mon…6=Sun; null for punctual events |
-| proximaFecha | DATE | persisted for quick lookup |
-| fechaInicio | DATE | nullable; used for punctual events |
-| horaInicio | TIME | HH:MM |
-| horaPicoEstimado | TIME | nullable |
-| estilos | simple-array | |
-| activo | BOOLEAN | default true |
+| name | VARCHAR | |
+| photoUrl | VARCHAR | nullable |
+| dayOfWeek | SMALLINT | 0=Mon…6=Sun; null for punctual events |
+| nextDate | DATE | persisted for quick lookup |
+| startDate | DATE | nullable; used for punctual events |
+| startTime | TIME | HH:MM |
+| estimatedPeakTime | TIME | nullable |
+| styles | simple-array | |
+| active | BOOLEAN | default true |
 
 Extra columns by type:
-- **SocialEvent**: `tallerIncluido` (bool), `precioEntrada` (decimal), `instructores` (text)
-- **IntensivoEvent**: `titulo`, `nivel`, `precio`, `profesores`, `fechaFin`
-- **CongresoEvent**: `titulo`, `localidad`, `duracionDias`, `precios` (JSON string), `enlaceWeb`, `fechaFin`
+- **SocialEvent**: `workshopIncluded` (bool), `entryPrice` (decimal), `instructors` (text)
+- **IntensiveEvent**: `title`, `level`, `price`, `instructors`, `endDate`
+- **CongressEvent**: `title`, `locality`, `durationDays`, `prices` (JSON string), `websiteUrl`, `endDate`
 
 ### IntentionVote (`intention_votes`)
-- userId, eventId, semanaIso (e.g. `"2025-W22"`), estado (voy/tal_vez/no_voy)
-- Unique constraint: `(userId, eventId, semanaIso)`
+- userId, eventId, isoWeek (e.g. `"2025-W22"`), status (going/maybe/not_going)
+- Unique constraint: `(userId, eventId, isoWeek)`
 
 ### AttendanceVerification (`attendance_verifications`)
-- userId, eventId, semanaIso, asistio (bool|null), timestampRespuesta
+- userId, eventId, isoWeek, attended (bool|null), responseTimestamp
 
 ### ReliabilityMetric (`reliability_metrics`)
-- userId (unique), votosVoyTotal, asistenciasConfirmadas
-- fiabilidad = asistenciasConfirmadas / max(1, votosVoyTotal)
-- Default for new users: fiabilidad = 1.0 (no row = full trust)
+- userId (unique), totalGoingVotes, confirmedAttendances
+- reliability = confirmedAttendances / max(1, totalGoingVotes)
+- Default for new users: reliability = 1.0 (no row = full trust)
 
 ### DanceStyle (`dance_styles`)
-- slug (unique), nombre, activo
+- slug (unique), name, active
 
 ### Academia (`academias`)
-- nombre, ciudad
+- name, city
 
 ---
 
@@ -153,24 +154,25 @@ Extra columns by type:
 
 | Rule | Logic |
 |------|-------|
-| Estimated attendance | `SUM(voy×1.0 + tal_vez×0.4) × fiabilidad` per voter |
-| Ambiente | flojo (<9) / normal (<19) / animado (<36) / muy_lleno (≥36) |
-| Role balance | leaders/followers ratio: 0.8–1.2 → equilibrado; <0.8 → faltan_leaders; >1.2 → faltan_followers |
-| Nivel medio | weighted avg (nuevo=1 … avanzado=5) × fiabilidad |
+| Estimated attendance | `SUM(going×1.0 + maybe×0.4) × reliability` per voter |
+| Vibe | quiet (<9) / normal (<19) / lively (<36) / packed (≥36) |
+| Role balance | leaders/followers ratio: 0.8–1.2 → balanced; <0.8 → need_leaders; >1.2 → need_followers |
+| Average level | weighted avg (beginner=1 … advanced=5) × reliability |
 
 ---
 
 ## Shared Types (`libs/shared-types/src/index.ts`)
 
 ```typescript
-Rol = 'leader' | 'follower' | 'switch' | 'admin'
-Nivel = 'nuevo' | 'iniciacion' | 'social_comodo' | 'intermedio' | 'avanzado'
-VoteEstado = 'voy' | 'tal_vez' | 'no_voy'
-Ambiente = 'flojo' | 'normal' | 'animado' | 'muy_lleno'
-TipoEvento = 'social' | 'intensivo' | 'congreso'
+DancingRole = 'leader' | 'follower' | 'switch'
+ApplicationRole = 'user' | 'admin' | 'superadmin'
+Level = 'beginner' | 'initiation' | 'comfortable' | 'intermediate' | 'advanced'
+VoteStatus = 'going' | 'maybe' | 'not_going'
+Vibe = 'quiet' | 'normal' | 'lively' | 'packed'
+EventType = 'social' | 'intensive' | 'congress'
 ```
 
-Interfaces: `UserProfile`, `Venue`, `WeeklyEvent`, `EventAnalytics`, `IntentionVote`, `AuthResponse`, `DanceStyle`, `Academia`, `RoleBalanceDetail`
+Interfaces: `UserProfile`, `Venue`, `WeeklyEvent`, `EventAnalytics`, `IntentionVote`, `AuthResponse`, `DanceStyle`, `Academia`, `RoleBalanceDetail`, `Estilo`
 
 ---
 
@@ -220,7 +222,7 @@ Interfaces: `UserProfile`, `Venue`, `WeeklyEvent`, `EventAnalytics`, `IntentionV
 - `tabs/` — bottom tab bar shell (Agenda + Perfil)
 - `home/` — weekly agenda grouped by day
 - `event-detail/` — vote buttons + analytics panel
-- `profile/` — edit nivel, estilos, academia; logout
+- `profile/` — edit level, styles, academy; logout
 - `admin/` — admin panel with modals for event/venue forms
 
 ### Pipes
@@ -275,7 +277,7 @@ npm run start:api
 - **NX package installs**: Always at workspace root (`npm install <pkg>`), NOT `--prefix apps/api`. NX resolves all imports from root `node_modules`.
 - **TypeORM `synchronize: true`** in dev — no migrations needed.
 - **JWT guard** is NOT global. Applied per-controller with `@UseGuards(JwtAuthGuard)`. Public endpoints use `@Public()`.
-- **STI (Single Table Inheritance)**: All event types in `recurring_events` with `tipo` discriminator.
+- **STI (Single Table Inheritance)**: All event types in `recurring_events` with `type` discriminator (DB column: `tipo`).
 - **Dependency direction** (no circular deps): `EventsModule → VotesModule`; `VotesModule` accesses `RecurringEvent` repo directly.
 - **tsconfig path alias**: `"@shared/types": ["libs/shared-types/src/index.ts"]` in `tsconfig.base.json`.
 - **Legacy modules** (`chat`, `calendar`) still exist on disk but are NOT imported in `app.module.ts`. Safe to delete.

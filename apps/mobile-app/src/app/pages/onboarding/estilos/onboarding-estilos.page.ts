@@ -12,64 +12,45 @@ import { DanceStyle, Academia } from '@shared/types';
 import { OnboardingStateService } from '../../../services/onboarding-state.service';
 import { AuthService } from '../../../services/auth.service';
 import { environment } from '../../../../environments/environment';
+import { StyleChipGridComponent } from '../../../components/style-chip-grid/style-chip-grid.component';
+import { FormFieldComponent } from '../../../components/form-field/form-field.component';
 
 @Component({
   selector: 'app-onboarding-estilos',
   standalone: true,
   imports: [
     CommonModule, FormsModule, IonContent, IonHeader, IonToolbar, IonTitle,
-    IonButton, IonChip, IonLabel, IonItem, IonInput, IonList, IonToast, IonProgressBar,
-    IonSelect, IonSelectOption, IonSpinner, IonButtons, IonBackButton,
+    IonButton, IonItem, IonInput, IonList, IonToast, IonProgressBar,
+    IonSelect, IonSelectOption, IonButtons, IonBackButton,
+    StyleChipGridComponent, FormFieldComponent,
   ],
   styles: [`
     .question {
-      font-size: 22px;
-      font-weight: 700;
+      font-size: var(--lgui-fs-display);
+      font-weight: var(--lgui-fw-bold);
       color: var(--lgui-text-4);
-      margin-bottom: 6px;
+      margin-bottom: 0.375rem;
     }
     .subtitle {
-      font-size: 14px;
+      font-size: var(--lgui-fs-body-lg);
       color: var(--lgui-text-3);
-      margin-bottom: 20px;
+      margin-bottom: 1.25rem;
     }
-    .chips-grid {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-bottom: 28px;
-    }
-    .style-chip {
-      height: 36px;
-      font-size: 13px;
-      font-weight: 500;
-      border-radius: 18px;
-      padding: 0 4px;
-    }
-    .field-label {
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--lgui-text-3);
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
-      margin-bottom: 4px;
-      padding-left: 4px;
-    }
-    .section-title {
-      font-size: 15px;
-      font-weight: 700;
+    .form-heading {
+      font-size: var(--lgui-fs-subheading);
+      font-weight: var(--lgui-fw-bold);
       color: var(--lgui-text-4);
-      margin: 24px 0 12px;
-      padding-left: 4px;
+      margin: 1.5rem 0 0.75rem;
+      padding-left: 0.25rem;
     }
   `],
   template: `
     <ion-header>
       <ion-toolbar>
         <ion-buttons slot="start">
-          <ion-back-button defaultHref="/onboarding/nivel"></ion-back-button>
+          <ion-back-button defaultHref="/onboarding/nivel" text=""></ion-back-button>
+          <span class="breadcrumb">Estilos</span>
         </ion-buttons>
-        <ion-title>Paso 4 de 4 — Estilos</ion-title>
       </ion-toolbar>
       <ion-progress-bar value="1.0" color="secondary"></ion-progress-bar>
     </ion-header>
@@ -78,75 +59,54 @@ import { environment } from '../../../../environments/environment';
       <div class="question">¿Qué estilos bailas?</div>
       <div class="subtitle">Selecciona al menos uno.</div>
 
-      <div *ngIf="loadingStyles" class="ion-text-center" style="margin-bottom: 20px;">
-        <ion-spinner color="primary" name="dots"></ion-spinner>
-      </div>
-      <div class="chips-grid" *ngIf="!loadingStyles">
-        <ion-chip
-          *ngFor="let e of styles"
-          [color]="isSelected(e.slug) ? 'primary' : 'medium'"
-          class="style-chip"
-          (click)="toggle(e.slug)">
-          <ion-label>{{ e.name }}</ion-label>
-        </ion-chip>
-      </div>
+      <app-style-chip-grid
+        [styles]="styles"
+        [selected]="selected"
+        [loading]="loadingStyles"
+        (selectionChange)="selected = $event">
+      </app-style-chip-grid>
 
-      <div class="field-label">Tu alias</div>
-      <ion-list lines="none" style="margin-bottom: 16px; border-radius: 10px; overflow: hidden;">
-        <ion-item>
-          <ion-input [(ngModel)]="alias" placeholder="Ej. salsa_king" required></ion-input>
-        </ion-item>
-      </ion-list>
+      <app-form-field label="Tu alias">
+        <ion-input [(ngModel)]="alias" placeholder="Ej. salsa_king" required></ion-input>
+      </app-form-field>
 
-      <div class="field-label">Academia (opcional)</div>
-      <ion-list lines="none" style="margin-bottom: 24px; border-radius: 10px; overflow: hidden;">
-        <ion-item>
-          <ion-select [(ngModel)]="selectedAcademyId" placeholder="Sin academia" interface="action-sheet">
-            <ion-select-option [value]="null">Sin academia</ion-select-option>
-            <ion-select-option *ngFor="let a of academias" [value]="a.id">{{ a.name }}</ion-select-option>
-          </ion-select>
-        </ion-item>
-      </ion-list>
+      <app-form-field label="Academia (opcional)">
+        <ion-select [(ngModel)]="selectedAcademyId" placeholder="Sin academia" interface="action-sheet">
+          <ion-select-option [value]="null">Sin academia</ion-select-option>
+          <ion-select-option *ngFor="let a of academias" [value]="a.id">{{ a.name }}</ion-select-option>
+        </ion-select>
+      </app-form-field>
 
       <!-- Account credentials -->
-      <div class="section-title">Crea tu cuenta</div>
+      <div class="form-heading">Crea tu cuenta</div>
 
-      <div class="field-label">Email</div>
-      <ion-list lines="none" style="margin-bottom: 16px; border-radius: 10px; overflow: hidden;">
-        <ion-item>
-          <ion-input
-            type="email"
-            [(ngModel)]="email"
-            placeholder="tu@email.com"
-            autocomplete="email">
-          </ion-input>
-        </ion-item>
-      </ion-list>
+      <app-form-field label="Email">
+        <ion-input
+          type="email"
+          [(ngModel)]="email"
+          placeholder="tu@email.com"
+          autocomplete="email">
+        </ion-input>
+      </app-form-field>
 
-      <div class="field-label">Contraseña (mínimo 6 caracteres)</div>
-      <ion-list lines="none" style="margin-bottom: 16px; border-radius: 10px; overflow: hidden;">
-        <ion-item>
-          <ion-input
-            type="password"
-            [(ngModel)]="password"
-            placeholder="••••••"
-            autocomplete="new-password">
-          </ion-input>
-        </ion-item>
-      </ion-list>
+      <app-form-field label="Contraseña (mínimo 6 caracteres)">
+        <ion-input
+          type="password"
+          [(ngModel)]="password"
+          placeholder="••••••"
+          autocomplete="new-password">
+        </ion-input>
+      </app-form-field>
 
-      <div class="field-label">Confirmar contraseña</div>
-      <ion-list lines="none" style="margin-bottom: 24px; border-radius: 10px; overflow: hidden;">
-        <ion-item>
-          <ion-input
-            type="password"
-            [(ngModel)]="confirmPassword"
-            placeholder="••••••"
-            autocomplete="new-password"
-            (keyup.enter)="finish()">
-          </ion-input>
-        </ion-item>
-      </ion-list>
+      <app-form-field label="Confirmar contraseña">
+        <ion-input
+          type="password"
+          [(ngModel)]="confirmPassword"
+          placeholder="••••••"
+          autocomplete="new-password"
+          (keyup.enter)="finish()">
+        </ion-input>
+      </app-form-field>
 
       <ion-button
         expand="block"
@@ -221,7 +181,7 @@ export class OnboardingEstilosPage implements OnInit {
 
   finish(): void {
     const onboarding = this.state.get();
-    if (!onboarding.role || !onboarding.level || this.selected.length === 0 || !this.alias.trim()) {
+    if (!onboarding.dancingRole || !onboarding.level || this.selected.length === 0 || !this.alias.trim()) {
       this.error = 'Por favor completa todos los campos requeridos.';
       return;
     }
@@ -244,7 +204,7 @@ export class OnboardingEstilosPage implements OnInit {
         alias: this.alias.trim(),
         email: this.email.trim(),
         password: this.password,
-        role: onboarding.role,
+        dancingRole: onboarding.dancingRole,
         level: onboarding.level,
         styles: this.selected,
         academyId: this.selectedAcademyId ?? undefined,

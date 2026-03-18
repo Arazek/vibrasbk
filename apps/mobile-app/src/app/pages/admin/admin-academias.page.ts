@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import {
   IonHeader, IonToolbar, IonTitle, IonContent, IonButtons,
   IonList, IonItem, IonLabel, IonButton, IonFab, IonFabButton, IonIcon,
-  IonToast, IonSpinner, AlertController, NavController,
+  IonToast, IonSpinner, IonBackButton, AlertController, NavController,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { add, trash, pencil, chevronBack } from 'ionicons/icons';
@@ -17,18 +17,15 @@ import { AdminService } from '../../services/admin.service';
     CommonModule,
     IonHeader, IonToolbar, IonTitle, IonContent, IonButtons,
     IonList, IonItem, IonLabel, IonButton, IonFab, IonFabButton, IonIcon,
-    IonToast, IonSpinner,
+    IonToast, IonSpinner, IonBackButton,
   ],
   template: `
     <ion-header>
       <ion-toolbar>
         <ion-buttons slot="start">
-          <ion-button (click)="goBack()">
-            <ion-icon slot="start" name="chevron-back"></ion-icon>
-            Admin
-          </ion-button>
+          <ion-back-button defaultHref="/admin" text=""></ion-back-button>
+          <span class="breadcrumb">Academias</span>
         </ion-buttons>
-        <ion-title>Academias</ion-title>
       </ion-toolbar>
     </ion-header>
     <ion-content>

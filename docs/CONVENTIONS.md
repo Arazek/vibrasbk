@@ -84,7 +84,8 @@ When the functional spec or product documentation uses a Spanish term, translate
 
 | Spanish enum | English enum | Values |
 |-------------|-------------|--------|
-| `Rol` | `Role` | `'leader'`, `'follower'`, `'switch'`, `'admin'` (already English) |
+| `Rol` (dancing) | `DancingRole` | `'leader'`, `'follower'`, `'switch'` |
+| `Rol` (app access) | `ApplicationRole` | `'user'`, `'admin'`, `'superadmin'` |
 | `Nivel` | `Level` | `'beginner'`, `'initiation'`, `'comfortable'`, `'intermediate'`, `'advanced'` |
 | `VoteEstado` | `VoteStatus` | `'going'`, `'maybe'`, `'not_going'` |
 | `Ambiente` | `Vibe` | `'quiet'`, `'normal'`, `'lively'`, `'packed'` |
@@ -287,6 +288,41 @@ padding: 16px;
 ```
 
 Use `--vibe-*` tokens for ambiente status colors and `--type-*` tokens for event type colors. See `docs/DESIGN_SYSTEM.md` for the full reference.
+
+### When to use a global CSS class vs a shared component
+
+**Use a global class in `styles.scss`** when the pattern is purely visual — same HTML structure and same styles, no Angular inputs, outputs, or logic.
+
+| Pattern | Where |
+|---------|-------|
+| `.section-title`, `.field-label` | Section / field labels |
+| `.form-list` | `ion-list` wrapper for inputs |
+| `.loading-container` | Spinner placeholder |
+| `.empty-state` | No-data placeholder |
+| `.breadcrumb` | Toolbar page title |
+
+Never redefine these locally inside a component's `styles: [...]` — the global definition is the single source of truth.
+
+**Create a shared component in `app/components/`** when the pattern repeats both template structure **and** logic (inputs, outputs, event handling) across two or more pages.
+
+Decision checklist:
+1. Is the same HTML + CSS repeated in ≥ 2 files? → consider extracting
+2. Does it also share logic (toggle, emit, HTTP call)? → shared component
+3. Is it purely visual with no logic? → global CSS class
+4. Is it used in only one place? → keep it local, don't abstract prematurely
+
+**Reference implementations:**
+- `app/components/form-field/` — projects content via `ng-content`, no logic
+- `app/components/style-chip-grid/` — owns toggle logic, emits `selectionChange`
+- `app/components/event-card/` — full display component with computed state
+- `app/components/analytics-panel/` — complex display component, no external API calls
+
+**Rules for new shared components:**
+- Must be `standalone: true`
+- Import only the Ionic/Angular modules it actually uses — never `IonicModule`
+- `@Input()` for data, `@Output() EventEmitter` for actions — never reach into parent state
+- Use global CSS classes (`.section-title`, `.form-list`, etc.) inside the component where applicable — do not re-define them locally
+- Selector must follow `app-` prefix convention: `app-my-component`
 
 ---
 

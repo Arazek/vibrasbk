@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { NavController } from '@ionic/angular/standalone';
 import {
   IonHeader, IonToolbar, IonTitle, IonContent,
-  IonList, IonItem, IonLabel, IonIcon, IonButtons, IonButton,
+  IonList, IonItem, IonLabel, IonIcon, IonButtons, IonButton, IonBackButton,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { calendar, location, statsChart, chevronBack, musicalNotes, school } from 'ionicons/icons';
@@ -12,28 +12,25 @@ import { calendar, location, statsChart, chevronBack, musicalNotes, school } fro
   standalone: true,
   imports: [
     IonHeader, IonToolbar, IonTitle, IonContent,
-    IonList, IonItem, IonLabel, IonIcon, IonButtons, IonButton,
+    IonList, IonItem, IonLabel, IonIcon, IonButtons, IonButton, IonBackButton,
   ],
   styles: [`
     .admin-header {
       padding: var(--lgui-pad-md);
-      font-size: 13px;
+      font-size: var(--lgui-fs-body);
       color: var(--lgui-text-3);
-      font-weight: 600;
+      font-weight: var(--lgui-fw-semibold);
       text-transform: uppercase;
-      letter-spacing: 0.6px;
+      letter-spacing: 0.0375rem;
     }
   `],
   template: `
     <ion-header>
       <ion-toolbar>
         <ion-buttons slot="start">
-          <ion-button (click)="goBack()">
-            <ion-icon slot="start" name="chevron-back"></ion-icon>
-            Perfil
-          </ion-button>
+          <ion-back-button defaultHref="/tabs/profile" text=""></ion-back-button>
+          <span class="breadcrumb">Panel Admin</span>
         </ion-buttons>
-        <ion-title>Panel Admin</ion-title>
       </ion-toolbar>
     </ion-header>
     <ion-content>

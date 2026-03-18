@@ -16,8 +16,8 @@ import { CreateVenuePayload } from '../../services/admin.service';
     IonButton, IonInput, IonText,
   ],
   styles: [`
-    .form-field { padding: 8px 0; }
-    .coords-preview { font-size: 12px; color: var(--ion-color-medium); margin-top: 4px; padding: 0 16px; }
+    .form-field { padding: 0.5rem 0; }
+    .coords-preview { font-size: var(--lgui-fs-caption); color: var(--ion-color-medium); margin-top: 0.25rem; padding: 0 1rem; }
     .coords-ok { color: var(--ion-color-success); }
     .coords-err { color: var(--ion-color-danger); }
     ion-content {
@@ -75,7 +75,7 @@ import { CreateVenuePayload } from '../../services/admin.service';
           placeholder="100">
         </ion-input>
       </div>
-      <ion-button expand="block" style="margin-top: 24px;" (click)="submit()">
+      <ion-button expand="block" style="margin-top: 1.5rem;" (click)="submit()">
         {{ editingId ? 'Guardar cambios' : 'Crear local' }}
       </ion-button>
     </ion-content>

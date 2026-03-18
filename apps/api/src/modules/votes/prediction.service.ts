@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Level } from '../users/entities/user.entity';
+import { DancingRole, Level } from '../users/entities/user.entity';
 import { VoteStatus } from './entities/intention-vote.entity';
 
 export type Vibe = 'quiet' | 'normal' | 'lively' | 'packed';
@@ -14,7 +14,7 @@ export interface RoleBalanceDetail {
 export interface VoterData {
   userId: string;
   status: VoteStatus;
-  role: 'leader' | 'follower' | 'switch';
+  role: DancingRole;
   level: Level;
   reliability: number;
 }

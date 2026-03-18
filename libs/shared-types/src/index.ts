@@ -1,4 +1,5 @@
-export type Role = 'leader' | 'follower' | 'switch' | 'admin';
+export type DancingRole = 'leader' | 'follower' | 'switch';
+export type ApplicationRole = 'user' | 'admin' | 'superadmin';
 export type Level = 'beginner' | 'initiation' | 'comfortable' | 'intermediate' | 'advanced';
 // Styles are now managed dynamically via the DanceStyle entity
 export type Estilo = string;
@@ -30,7 +31,8 @@ export interface UserProfile {
   id: string;
   alias: string;
   city: string;
-  role: Role;
+  dancingRole: DancingRole;
+  applicationRole: ApplicationRole;
   level: Level;
   styles: string[];
   academyId?: string;

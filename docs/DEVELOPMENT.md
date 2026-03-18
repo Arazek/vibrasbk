@@ -119,9 +119,9 @@ imports: [
 - `@UseGuards(JwtAuthGuard, AdminGuard)` — requires JWT + `rol === 'admin'`
 - `@Public()` — marks endpoint as public (skips JwtAuthGuard)
 
-JWT payload shape: `{ sub: user.id, alias: user.alias, rol: user.rol }`
+JWT payload shape: `{ sub: user.id, alias: user.alias, role: user.role }`
 
-Access in controller: `@Request() req` → `req.user.id`, `req.user.rol`
+Access in controller: `@Request() req` → `req.user.id`, `req.user.role`
 
 ---
 
@@ -251,7 +251,7 @@ Path alias is configured in `tsconfig.base.json`:
 "@shared/types": ["libs/shared-types/src/index.ts"]
 ```
 
-**Key types:** `Rol`, `Nivel`, `VoteEstado`, `Ambiente`, `TipoEvento`, `UserProfile`, `Venue`, `WeeklyEvent`, `EventAnalytics`, `IntentionVote`, `AuthResponse`, `DanceStyle`, `Academia`
+**Key types:** `Role`, `Level`, `VoteStatus`, `Vibe`, `EventType`, `UserProfile`, `Venue`, `WeeklyEvent`, `EventAnalytics`, `IntentionVote`, `AuthResponse`, `DanceStyle`, `Academia`
 
 ---
 
@@ -261,13 +261,13 @@ All event types are stored in a single `recurring_events` table using TypeORM's 
 
 | Type | `tipo` value | Extra fields |
 |------|-------------|--------------|
-| `SocialEvent` | `'social'` | tallerIncluido, precioEntrada, instructores |
-| `IntensivoEvent` | `'intensivo'` | titulo, nivel, precio, profesores, fechaFin |
-| `CongresoEvent` | `'congreso'` | titulo, localidad, duracionDias, precios, enlaceWeb, fechaFin |
+| `SocialEvent` | `'social'` | workshopIncluded, entryPrice, instructors |
+| `IntensiveEvent` | `'intensive'` | title, level, price, instructors, endDate |
+| `CongressEvent` | `'congress'` | title, locality, durationDays, prices, websiteUrl, endDate |
 
 **Recurring vs punctual:**
-- `diaSemana` is set (0–6) → recurring weekly event, projected dynamically to the current ISO week
-- `diaSemana` is null → punctual event (intensivo/congreso), uses `fechaInicio` directly
+- `dayOfWeek` is set (0–6) → recurring weekly event, projected dynamically to the current ISO week
+- `dayOfWeek` is null → punctual event (intensive/congress), uses `startDate` directly
 
 ---
 

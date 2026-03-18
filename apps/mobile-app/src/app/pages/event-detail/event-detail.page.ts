@@ -31,31 +31,31 @@ const TYPE_LABEL: Record<string, string> = {
   ],
   styles: [`
     .event-photo {
-      width: calc(100% + 32px);
-      margin: -16px -16px var(--lgui-gap-lg);
-      max-height: 220px;
+      width: calc(100% + 2rem);
+      margin: -1rem -1rem var(--lgui-gap-lg);
+      max-height: 13.75rem;
       object-fit: cover;
       display: block;
     }
     .photo-placeholder {
-      width: calc(100% + 32px);
-      margin: -16px -16px var(--lgui-gap-lg);
-      height: 180px;
+      width: calc(100% + 2rem);
+      margin: -1rem -1rem var(--lgui-gap-lg);
+      height: 11.25rem;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 48px;
+      font-size: 3rem;
       background: linear-gradient(135deg, var(--lgui-surface-3) 0%, var(--lgui-surface-4) 100%);
     }
     .event-venue {
-      font-size: 22px;
-      font-weight: 700;
+      font-size: var(--lgui-fs-display);
+      font-weight: var(--lgui-fw-bold);
       color: var(--lgui-text-4);
       margin-bottom: var(--lgui-space-1);
       line-height: 1.2;
     }
     .event-when {
-      font-size: 14px;
+      font-size: var(--lgui-fs-body-lg);
       color: var(--lgui-text-3);
       margin-bottom: var(--lgui-gap-md);
     }
@@ -67,18 +67,18 @@ const TYPE_LABEL: Record<string, string> = {
       flex-wrap: wrap;
     }
     .type-badge {
-      font-size: 10px;
-      font-weight: 700;
-      padding: 3px 9px;
+      font-size: var(--lgui-fs-micro);
+      font-weight: var(--lgui-fw-bold);
+      padding: 0.1875rem 0.5625rem;
       border-radius: var(--lgui-radius-pill);
       text-transform: uppercase;
-      letter-spacing: 0.4px;
+      letter-spacing: 0.025rem;
     }
     .type-social    { color: var(--type-social-color);    background: var(--type-social-bg); }
     .type-intensive { color: var(--type-intensive-color); background: var(--type-intensive-bg); }
     .type-congress  { color: var(--type-congress-color);  background: var(--type-congress-bg); }
     .capacity-info {
-      font-size: 12px;
+      font-size: var(--lgui-fs-caption);
       color: var(--lgui-text-3);
     }
     .chips-row {
@@ -88,7 +88,7 @@ const TYPE_LABEL: Record<string, string> = {
       margin-bottom: var(--lgui-gap-md);
     }
     .interested-count {
-      font-size: 13px;
+      font-size: var(--lgui-fs-body);
       color: var(--lgui-text-3);
       margin-bottom: var(--lgui-gap-md);
     }
@@ -96,17 +96,9 @@ const TYPE_LABEL: Record<string, string> = {
       margin-bottom: 0;
     }
     .section-divider {
-      height: 1px;
+      height: 0.0625rem;
       background: var(--lgui-border-2);
       margin: var(--lgui-gap-xl) 0;
-    }
-    .section-title {
-      font-size: 12px;
-      font-weight: 700;
-      letter-spacing: 0.6px;
-      text-transform: uppercase;
-      color: var(--lgui-text-3);
-      margin-bottom: var(--lgui-gap-md);
     }
     .vote-section {
       margin-bottom: var(--lgui-gap-xl);
@@ -114,17 +106,17 @@ const TYPE_LABEL: Record<string, string> = {
     /* Custom vote buttons */
     .vote-buttons {
       display: flex;
-      gap: 8px;
+      gap: 0.5rem;
     }
     .vote-btn {
       flex: 1;
-      padding: 10px 6px;
+      padding: 0.625rem 0.375rem;
       border-radius: var(--lgui-radius-default);
-      border: 1.5px solid var(--lgui-border-3);
+      border: 0.0938rem solid var(--lgui-border-3);
       background: var(--lgui-surface-2);
       color: var(--lgui-text-3);
-      font-size: 13px;
-      font-weight: 600;
+      font-size: var(--lgui-fs-body);
+      font-weight: var(--lgui-fw-semibold);
       cursor: pointer;
       transition: background 0.15s, color 0.15s, border-color 0.15s;
       -webkit-tap-highlight-color: transparent;
@@ -134,7 +126,7 @@ const TYPE_LABEL: Record<string, string> = {
     .vote-btn.active-maybe     { background: #EFC42C; border-color: #EFC42C; color: #fff; }
     .vote-btn.active-not-going { background: #BAC0CC; border-color: #BAC0CC; color: #fff; }
     .no-edit-note {
-      font-size: 12px;
+      font-size: var(--lgui-fs-caption);
       color: var(--lgui-text-3);
       margin-top: var(--lgui-gap-sm);
       text-align: center;
@@ -149,11 +141,11 @@ const TYPE_LABEL: Record<string, string> = {
       margin-top: var(--lgui-gap-lg);
     }
     .lock-icon {
-      font-size: 28px;
+      font-size: 1.75rem;
       flex-shrink: 0;
     }
     .lock-text {
-      font-size: 13px;
+      font-size: var(--lgui-fs-body);
       color: var(--lgui-text-3);
       line-height: 1.5;
     }
@@ -165,14 +157,14 @@ const TYPE_LABEL: Record<string, string> = {
     <ion-header>
       <ion-toolbar>
         <ion-buttons slot="start">
-          <ion-back-button defaultHref="/tabs/home"></ion-back-button>
+          <ion-back-button defaultHref="/tabs/home" text=""></ion-back-button>
+          <span class="breadcrumb">{{ event?.venue?.name ?? 'Evento' }}</span>
         </ion-buttons>
-        <ion-title>{{ event?.venue?.name ?? 'Evento' }}</ion-title>
       </ion-toolbar>
     </ion-header>
 
     <ion-content class="ion-padding">
-      <div *ngIf="loading" class="ion-text-center" style="padding-top: 60px;">
+      <div *ngIf="loading" class="loading-container">
         <ion-spinner color="primary"></ion-spinner>
       </div>
 
@@ -202,26 +194,26 @@ const TYPE_LABEL: Record<string, string> = {
 
         <!-- Social extras -->
         <ng-container *ngIf="event.type === 'social'">
-          <div *ngIf="event.workshopIncluded" style="font-size:13px; color:var(--lgui-text-3); margin-bottom:4px;">🎓 Incluye taller</div>
-          <div *ngIf="event.entryPrice" style="font-size:13px; color:var(--lgui-text-3); margin-bottom:4px;">🎟 Entrada: {{ event.entryPrice }}€</div>
-          <div *ngIf="event.instructors?.length" style="font-size:13px; color:var(--lgui-text-3); margin-bottom:8px;">🎤 {{ event.instructors!.join(', ') }}</div>
+          <div *ngIf="event.workshopIncluded" style="font-size: var(--lgui-fs-body); color:var(--lgui-text-3); margin-bottom:0.25rem;">🎓 Incluye taller</div>
+          <div *ngIf="event.entryPrice" style="font-size: var(--lgui-fs-body); color:var(--lgui-text-3); margin-bottom:0.25rem;">🎟 Entrada: {{ event.entryPrice }}€</div>
+          <div *ngIf="event.instructors?.length" style="font-size: var(--lgui-fs-body); color:var(--lgui-text-3); margin-bottom:0.5rem;">🎤 {{ event.instructors!.join(', ') }}</div>
         </ng-container>
 
         <!-- Intensive extras -->
         <ng-container *ngIf="event.type === 'intensive'">
-          <div *ngIf="event.title" style="font-size:16px; font-weight:600; color:var(--lgui-text-4); margin-bottom:4px;">{{ event.title }}</div>
-          <div *ngIf="event.level" style="font-size:13px; color:var(--lgui-text-3); margin-bottom:4px;">📊 Nivel: {{ event.level | replace:'_':' ' }}</div>
-          <div *ngIf="event.instructors?.length" style="font-size:13px; color:var(--lgui-text-3); margin-bottom:4px;">👨‍🏫 {{ event.instructors!.join(', ') }}</div>
-          <div *ngIf="event.startDate" style="font-size:13px; color:var(--lgui-text-3); margin-bottom:4px;">📅 {{ event.startDate }}<span *ngIf="event.endDate"> → {{ event.endDate }}</span></div>
+          <div *ngIf="event.title" style="font-size: var(--lgui-fs-subheading); font-weight: var(--lgui-fw-semibold); color:var(--lgui-text-4); margin-bottom:0.25rem;">{{ event.title }}</div>
+          <div *ngIf="event.level" style="font-size: var(--lgui-fs-body); color:var(--lgui-text-3); margin-bottom:0.25rem;">📊 Nivel: {{ event.level | replace:'_':' ' }}</div>
+          <div *ngIf="event.instructors?.length" style="font-size: var(--lgui-fs-body); color:var(--lgui-text-3); margin-bottom:0.25rem;">👨‍🏫 {{ event.instructors!.join(', ') }}</div>
+          <div *ngIf="event.startDate" style="font-size: var(--lgui-fs-body); color:var(--lgui-text-3); margin-bottom:0.25rem;">📅 {{ event.startDate }}<span *ngIf="event.endDate"> → {{ event.endDate }}</span></div>
         </ng-container>
 
         <!-- Congress extras -->
         <ng-container *ngIf="event.type === 'congress'">
-          <div *ngIf="event.title" style="font-size:16px; font-weight:600; color:var(--lgui-text-4); margin-bottom:4px;">{{ event.title }}</div>
-          <div *ngIf="event.locality" style="font-size:13px; color:var(--lgui-text-3); margin-bottom:4px;">📍 {{ event.locality }}</div>
-          <div *ngIf="event.durationDays" style="font-size:13px; color:var(--lgui-text-3); margin-bottom:4px;">📅 {{ event.durationDays }} días</div>
-          <div *ngIf="event.prices" style="font-size:13px; color:var(--lgui-text-3); margin-bottom:4px;">💶 {{ event.prices }}</div>
-          <div *ngIf="event.websiteUrl" style="margin-bottom:8px;">
+          <div *ngIf="event.title" style="font-size: var(--lgui-fs-subheading); font-weight: var(--lgui-fw-semibold); color:var(--lgui-text-4); margin-bottom:0.25rem;">{{ event.title }}</div>
+          <div *ngIf="event.locality" style="font-size: var(--lgui-fs-body); color:var(--lgui-text-3); margin-bottom:0.25rem;">📍 {{ event.locality }}</div>
+          <div *ngIf="event.durationDays" style="font-size: var(--lgui-fs-body); color:var(--lgui-text-3); margin-bottom:0.25rem;">📅 {{ event.durationDays }} días</div>
+          <div *ngIf="event.prices" style="font-size: var(--lgui-fs-body); color:var(--lgui-text-3); margin-bottom:0.25rem;">💶 {{ event.prices }}</div>
+          <div *ngIf="event.websiteUrl" style="margin-bottom:0.5rem;">
             <ion-button fill="outline" size="small" (click)="openLink(event.websiteUrl!)">🌐 Web oficial</ion-button>
           </div>
         </ng-container>
@@ -234,7 +226,7 @@ const TYPE_LABEL: Record<string, string> = {
             📍 ¿Cómo llegar?
           </ion-button>
         </div>
-        <div style="margin-top: 8px;">
+        <div style="margin-top: 0.5rem;">
           <ion-button expand="block" fill="outline" color="success" (click)="shareWhatsApp()">
             📲 Compartir en WhatsApp
           </ion-button>
@@ -248,17 +240,17 @@ const TYPE_LABEL: Record<string, string> = {
 
           <div class="vote-buttons">
             <button class="vote-btn"
-              [class.active-going]="event.userVote === 'going'"
+              [class.active-not-going]="event.userVote === 'not_going'"
               [disabled]="voting || !canEdit"
-              (click)="vote('going')">♥ Voy</button>
+              (click)="vote('not_going')">✕ No iré</button>
             <button class="vote-btn"
               [class.active-maybe]="event.userVote === 'maybe'"
               [disabled]="voting || !canEdit"
               (click)="vote('maybe')">~ Tal vez</button>
             <button class="vote-btn"
-              [class.active-not-going]="event.userVote === 'not_going'"
+              [class.active-going]="event.userVote === 'going'"
               [disabled]="voting || !canEdit"
-              (click)="vote('not_going')">✕ No iré</button>
+              (click)="vote('going')">♥ Voy</button>
           </div>
 
           <div *ngIf="!canEdit" class="no-edit-note">

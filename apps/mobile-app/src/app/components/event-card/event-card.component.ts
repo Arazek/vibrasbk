@@ -84,18 +84,18 @@ const TYPE_BG: Record<string, string> = {
     }
     .event-photo {
       width: 100%;
-      height: 130px;
+      height: 8.125rem;
       object-fit: cover;
       display: block;
       flex-shrink: 0;
     }
     .photo-placeholder {
       width: 100%;
-      height: 100px;
+      height: 6.25rem;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 30px;
+      font-size: 1.875rem;
       flex-shrink: 0;
       background: linear-gradient(135deg, var(--lgui-surface-3) 0%, var(--lgui-surface-4) 100%);
     }
@@ -105,7 +105,7 @@ const TYPE_BG: Record<string, string> = {
       flex: 1;
     }
     .accent-bar {
-      width: 4px;
+      width: 0.25rem;
       flex-shrink: 0;
     }
     .card-body {
@@ -121,17 +121,17 @@ const TYPE_BG: Record<string, string> = {
       margin-bottom: var(--lgui-gap-xs);
     }
     .venue-name {
-      font-size: 15px;
-      font-weight: 600;
+      font-size: var(--lgui-fs-subheading);
+      font-weight: var(--lgui-fw-semibold);
       color: var(--lgui-text-4);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
     .event-time {
-      font-size: 12px;
+      font-size: var(--lgui-fs-caption);
       color: var(--lgui-text-3);
-      margin-top: 2px;
+      margin-top: 0.125rem;
     }
     .chips-row {
       display: flex;
@@ -146,37 +146,37 @@ const TYPE_BG: Record<string, string> = {
       margin-top: var(--lgui-gap-xs);
     }
     .stats {
-      font-size: 11px;
+      font-size: var(--lgui-fs-micro);
       color: var(--lgui-text-3);
     }
     .vibe-pill {
       display: flex;
       align-items: center;
-      gap: 3px;
-      font-size: 11px;
-      font-weight: 700;
+      gap: 0.1875rem;
+      font-size: var(--lgui-fs-micro);
+      font-weight: var(--lgui-fw-bold);
     }
     .vote-badge {
-      font-size: 10px;
-      font-weight: 700;
-      padding: 2px var(--lgui-gap-sm);
+      font-size: var(--lgui-fs-micro);
+      font-weight: var(--lgui-fw-bold);
+      padding: 0.125rem var(--lgui-gap-sm);
       border-radius: var(--lgui-radius-pill);
       white-space: nowrap;
     }
     .type-chip {
-      font-size: 10px;
-      font-weight: 700;
-      padding: 2px 7px;
+      font-size: var(--lgui-fs-micro);
+      font-weight: var(--lgui-fw-bold);
+      padding: 0.125rem 0.4375rem;
       border-radius: var(--lgui-radius-pill);
-      letter-spacing: 0.3px;
+      letter-spacing: 0.0187rem;
       text-transform: uppercase;
       white-space: nowrap;
     }
     /* Role balance mini-bar */
     .role-mini-bar {
       display: flex;
-      height: 3px;
-      border-radius: 2px;
+      height: 0.1875rem;
+      border-radius: 0.125rem;
       overflow: hidden;
       margin-top: var(--lgui-space-1);
       background: var(--lgui-surface-3);
@@ -202,7 +202,7 @@ const TYPE_BG: Record<string, string> = {
               <div class="venue-name">{{ event.venue.name }}</div>
               <div class="event-time">{{ event.startTime?.substring(0, 5) }}</div>
             </div>
-            <div style="display:flex; flex-direction:column; align-items:flex-end; gap:4px; flex-shrink:0;">
+            <div style="display:flex; flex-direction:column; align-items:flex-end; gap:0.25rem; flex-shrink:0;">
               <span
                 *ngIf="event.type"
                 class="type-chip"
@@ -221,8 +221,8 @@ const TYPE_BG: Record<string, string> = {
           </div>
 
           <div class="chips-row">
-            <ion-chip *ngFor="let e of event.styles" style="height:20px; margin:0; --background: rgba(102,111,141,0.10); --color: var(--lgui-text-3); --border-radius: 200px;">
-              <ion-label style="font-size:10px; font-weight:600;">{{ e | replace:'_':' ' }}</ion-label>
+            <ion-chip *ngFor="let e of event.styles" style="height:1.25rem; margin:0; --background: rgba(102,111,141,0.10); --color: var(--lgui-text-3); --border-radius: 12.5rem;">
+              <ion-label style="font-size:var(--lgui-fs-micro); font-weight:var(--lgui-fw-semibold);">{{ e | replace:'_':' ' }}</ion-label>
             </ion-chip>
           </div>
 

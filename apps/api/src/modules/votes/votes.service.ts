@@ -127,7 +127,7 @@ export class VotesService {
           return {
             userId: v.userId,
             status: v.status,
-            role: user.role,
+            role: user.dancingRole,
             level: user.level,
             reliability: reliabilityMap.get(v.userId) ?? 1.0,
           } as VoterData;
@@ -187,7 +187,7 @@ export class VotesService {
         return {
           userId: v.userId,
           status: v.status,
-          role: user.role,
+          role: user.dancingRole,
           level: user.level,
           reliability: reliabilityMap.get(v.userId) ?? 1.0,
         } as VoterData;

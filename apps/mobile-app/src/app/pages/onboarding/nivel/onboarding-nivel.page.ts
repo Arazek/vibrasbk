@@ -22,10 +22,10 @@ const LEVELS: { value: Level; label: string; description: string; emoji: string 
   imports: [CommonModule, IonContent, IonHeader, IonToolbar, IonTitle, IonButton, IonProgressBar, IonButtons, IonBackButton],
   styles: [`
     .question {
-      font-size: 22px;
-      font-weight: 700;
+      font-size: var(--lgui-fs-display);
+      font-weight: var(--lgui-fw-bold);
       color: var(--lgui-text-4);
-      margin-bottom: 24px;
+      margin-bottom: 1.5rem;
     }
     .level-card {
       display: flex;
@@ -33,7 +33,7 @@ const LEVELS: { value: Level; label: string; description: string; emoji: string 
       gap: var(--lgui-gap-md);
       padding: var(--lgui-pad-sm) var(--lgui-pad-md);
       border-radius: var(--lgui-radius-default);
-      border: 2px solid var(--lgui-border-3);
+      border: 0.125rem solid var(--lgui-border-3);
       margin-bottom: var(--lgui-gap-sm);
       cursor: pointer;
       background: var(--lgui-surface-1);
@@ -47,20 +47,20 @@ const LEVELS: { value: Level; label: string; description: string; emoji: string 
       background: var(--lgui-red-100, rgba(232, 72, 85, 0.06));
     }
     .level-label {
-      font-size: 15px;
-      font-weight: 600;
+      font-size: var(--lgui-fs-subheading);
+      font-weight: var(--lgui-fw-semibold);
       color: var(--lgui-text-4);
     }
     .level-card.selected .level-label {
       color: var(--ion-color-primary);
     }
     .level-desc {
-      font-size: 12px;
+      font-size: var(--lgui-fs-caption);
       color: var(--lgui-text-3);
-      margin-top: 2px;
+      margin-top: 0.125rem;
     }
     .check {
-      font-size: 20px;
+      font-size: 1.25rem;
       color: var(--ion-color-primary);
       flex-shrink: 0;
     }
@@ -69,9 +69,9 @@ const LEVELS: { value: Level; label: string; description: string; emoji: string 
     <ion-header>
       <ion-toolbar>
         <ion-buttons slot="start">
-          <ion-back-button defaultHref="/onboarding/rol"></ion-back-button>
+          <ion-back-button defaultHref="/onboarding/rol" text=""></ion-back-button>
+          <span class="breadcrumb">Tu nivel</span>
         </ion-buttons>
-        <ion-title>Paso 3 de 4 — Tu nivel</ion-title>
       </ion-toolbar>
       <ion-progress-bar value="0.75" color="secondary"></ion-progress-bar>
     </ion-header>
@@ -84,7 +84,7 @@ const LEVELS: { value: Level; label: string; description: string; emoji: string 
         class="level-card"
         [class.selected]="selected === n.value"
         (click)="selected = n.value">
-        <span style="font-size:28px; line-height:1; flex-shrink:0;">{{ n.emoji }}</span>
+        <span style="font-size:1.75rem; line-height:1; flex-shrink:0;">{{ n.emoji }}</span>
         <div style="flex:1;">
           <div class="level-label">{{ n.label }}</div>
           <div class="level-desc">{{ n.description }}</div>
@@ -92,7 +92,7 @@ const LEVELS: { value: Level; label: string; description: string; emoji: string 
         <span *ngIf="selected === n.value" class="check">✓</span>
       </div>
 
-      <ion-button expand="block" [disabled]="!!(!selected)" (click)="next()" style="margin-top: 24px;">
+      <ion-button expand="block" [disabled]="!!(!selected)" (click)="next()" style="margin-top: 1.5rem;">
         Siguiente
       </ion-button>
     </ion-content>

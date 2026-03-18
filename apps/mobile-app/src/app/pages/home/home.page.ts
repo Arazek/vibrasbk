@@ -9,13 +9,39 @@ import {
   IonChip, IonLabel, IonIcon,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { musicalNotes, calendar } from 'ionicons/icons';
+import { listOutline, calendarOutline, chevronBack, chevronForward } from 'ionicons/icons';
 import { WeeklyEvent, EventType } from '@shared/types';
 import { EventsService } from '../../services/events.service';
 import { EventCardComponent } from '../../components/event-card/event-card.component';
 
 const DAY_NAMES = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
 const MONTH_NAMES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+const MONTH_NAMES_FULL = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+const DAY_HEADERS = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
+
+const TYPE_DOT_COLOR: Record<string, string> = {
+  social:    'var(--type-social-color)',
+  intensive: 'var(--type-intensive-color)',
+  congress:  'var(--type-congress-color)',
+};
+
+interface CalendarCell {
+  date: Date;
+  inMonth: boolean;
+  isToday: boolean;
+  dots: string[];
+}
+
+function getMondayOfWeek(date: Date): Date {
+  const d = new Date(date);
+  const day = d.getDay();
+  const diff = day === 0 ? -6 : 1 - day;
+  d.setDate(d.getDate() + diff);
+  d.setHours(0, 0, 0, 0);
+  return d;
+}
+
+const VIEW_KEY = 'vibrasbk_home_view';
 
 @Component({
   selector: 'app-home',
@@ -28,39 +54,26 @@ const MONTH_NAMES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'jul
     EventCardComponent,
   ],
   styles: [`
-    .brand-slot {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      padding-left: 4px;
-    }
-    .brand-icon { font-size: 22px; color: var(--ion-color-primary); }
-    .brand-name {
-      font-size: 16px;
-      font-weight: 700;
-      color: var(--lgui-text-4);
-      letter-spacing: -0.3px;
-    }
+    /* ── Filter bar ─────────────────────────────────────────────── */
     .filter-bar {
       display: flex;
       gap: var(--lgui-gap-sm);
       padding: var(--lgui-space-3) var(--lgui-pad-md);
       overflow-x: auto;
       overflow-y: hidden;
-      border-bottom: 1px solid var(--lgui-border-2);
+      border-bottom: 0.0625rem solid var(--lgui-border-2);
       background: var(--lgui-surface-1);
-      /* Hide scrollbar but keep scroll */
       scrollbar-width: none;
     }
     .filter-bar::-webkit-scrollbar { display: none; }
     .filter-chip {
       display: inline-flex;
       align-items: center;
-      height: 30px;
+      height: 1.875rem;
       padding: 0 var(--lgui-space-3);
       border-radius: var(--lgui-radius-pill);
-      font-size: 13px;
-      font-weight: 600;
+      font-size: var(--lgui-fs-body);
+      font-weight: var(--lgui-fw-semibold);
       cursor: pointer;
       flex-shrink: 0;
       transition: background 0.15s, color 0.15s;
@@ -69,77 +82,143 @@ const MONTH_NAMES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'jul
       border: none;
       user-select: none;
     }
-    .filter-chip.active {
-      background: var(--ion-color-primary);
-      color: #fff;
+    .filter-chip.active                { background: var(--ion-color-primary); color: #fff; }
+    .filter-chip.active.type-social    { background: var(--type-social-color, #4A90D9); }
+    .filter-chip.active.type-intensive { background: var(--type-intensive-color, #D07A2E); }
+    .filter-chip.active.type-congress  { background: var(--type-congress-color, #7B52AB); }
+
+    /* ── View toggle ─────────────────────────────────────────────── */
+    .view-toggle {
+      display: inline-flex;
+      margin-left: auto;
+      border-radius: var(--lgui-radius-pill);
+      overflow: hidden;
+      background: var(--lgui-surface-3);
+      flex-shrink: 0;
     }
-    .filter-chip.active.type-social     { background: var(--type-social-color, #4A90D9); }
-    .filter-chip.active.type-intensive  { background: var(--type-intensive-color, #D07A2E); }
-    .filter-chip.active.type-congress   { background: var(--type-congress-color, #7B52AB); }
+    .view-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 2rem;
+      height: 1.875rem;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      color: var(--lgui-text-3);
+      font-size: 1rem;
+      transition: background 0.15s, color 0.15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .view-btn.active { background: var(--ion-color-primary); color: #fff; }
+
+    /* ── List view ───────────────────────────────────────────────── */
     .day-header {
       padding: var(--lgui-space-5) var(--lgui-pad-md) var(--lgui-space-1);
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 1px;
+      font-size: var(--lgui-fs-micro);
+      font-weight: var(--lgui-fw-bold);
+      letter-spacing: 0.0625rem;
       text-transform: uppercase;
       color: var(--lgui-text-3);
     }
-    .day-group {
-      margin-bottom: var(--lgui-gap-sm);
-    }
-    .content-area {
-      padding-bottom: var(--lgui-space-8);
-    }
-    .loading-container {
+    .day-group   { margin-bottom: var(--lgui-gap-sm); }
+    .content-area { padding-bottom: var(--lgui-space-8); }
+
+    /* ── Calendar view ───────────────────────────────────────────── */
+    .month-nav {
       display: flex;
-      justify-content: center;
       align-items: center;
-      padding: var(--lgui-space-9) 0;
+      justify-content: space-between;
+      padding: var(--lgui-pad-sm) var(--lgui-pad-md) var(--lgui-gap-sm);
     }
-    .empty-state {
+    .month-title {
+      font-size: var(--lgui-fs-heading);
+      font-weight: var(--lgui-fw-bold);
+      color: var(--lgui-text-4);
+    }
+    .cal-day-headers {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      padding: 0 var(--lgui-pad-md);
+      margin-bottom: 0.125rem;
+    }
+    .cal-day-header-cell {
+      text-align: center;
+      font-size: var(--lgui-fs-micro);
+      font-weight: var(--lgui-fw-bold);
+      letter-spacing: 0.0313rem;
+      color: var(--lgui-text-3);
+      padding: 0.25rem 0;
+    }
+    .cal-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      padding: 0 var(--lgui-pad-md);
+      gap: 0.125rem 0;
+    }
+    .cal-cell {
       display: flex;
       flex-direction: column;
       align-items: center;
+      padding: 0.1875rem 0 0.25rem;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .cal-cell.out-month .day-num { opacity: 0.28; }
+    .day-num {
+      width: 2rem;
+      height: 2rem;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
       justify-content: center;
-      padding: var(--lgui-space-10) var(--lgui-space-6);
-      text-align: center;
-    }
-    .empty-icon {
-      font-size: 56px;
-      margin-bottom: var(--lgui-gap-lg);
-      line-height: 1;
-    }
-    .empty-title {
-      font-size: 17px;
-      font-weight: 600;
+      font-size: var(--lgui-fs-body);
+      font-weight: var(--lgui-fw-medium);
       color: var(--lgui-text-4);
-      margin-bottom: var(--lgui-gap-sm);
+      transition: background 0.12s;
     }
-    .empty-subtitle {
-      font-size: 14px;
+    .cal-cell.today    .day-num { background: var(--lgui-surface-3); font-weight: var(--lgui-fw-bold); }
+    .cal-cell.selected .day-num { background: var(--ion-color-primary); color: #fff; font-weight: var(--lgui-fw-bold); }
+    .cal-cell.selected.today .day-num { background: var(--ion-color-primary); }
+    .dots-row {
+      display: flex;
+      gap: 0.1875rem;
+      margin-top: 0.125rem;
+      height: 0.3125rem;
+      align-items: center;
+    }
+    .dot {
+      width: 0.3125rem;
+      height: 0.3125rem;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .cal-divider {
+      height: 0.0625rem;
+      background: var(--lgui-border-2);
+      margin: var(--lgui-gap-md) var(--lgui-pad-md) 0;
+    }
+    .selected-label {
+      padding: var(--lgui-gap-md) var(--lgui-pad-md) var(--lgui-gap-sm);
+      font-size: var(--lgui-fs-caption);
+      font-weight: var(--lgui-fw-bold);
+      letter-spacing: 0.0375rem;
+      text-transform: uppercase;
       color: var(--lgui-text-3);
-      line-height: 1.6;
     }
+    .bottom-space { height: var(--lgui-space-8); }
   `],
   template: `
     <ion-header>
       <ion-toolbar>
         <ion-buttons slot="start">
-          <div class="brand-slot">
-            <ion-icon name="musical-notes" class="brand-icon"></ion-icon>
-            <span class="brand-name">Predictor</span>
-          </div>
-        </ion-buttons>
-        <ion-buttons slot="end">
-          <ion-button (click)="openCalendar()">
-            <ion-icon slot="icon-only" name="calendar"></ion-icon>
-          </ion-button>
+          <span class="breadcrumb">Agenda</span>
         </ion-buttons>
       </ion-toolbar>
     </ion-header>
 
     <ion-content>
-      <!-- Filtro por tipo — custom pills (not ion-chip to avoid Ionic override issues) -->
+      <!-- Type chips + view toggle -->
       <div class="filter-bar">
         <button class="filter-chip" [class.active]="!selectedType" (click)="setType(null)">
           Todos
@@ -153,9 +232,17 @@ const MONTH_NAMES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'jul
         <button class="filter-chip type-congress" [class.active]="selectedType === 'congress'" (click)="setType('congress')">
           Congreso
         </button>
+        <div class="view-toggle">
+          <button class="view-btn" [class.active]="activeView === 'list'" (click)="setView('list')">
+            <ion-icon name="list-outline"></ion-icon>
+          </button>
+          <button class="view-btn" [class.active]="activeView === 'calendar'" (click)="setView('calendar')">
+            <ion-icon name="calendar-outline"></ion-icon>
+          </button>
+        </div>
       </div>
 
-      <!-- Filtro por ciudad — solo visible si hay más de 1 ciudad en los datos -->
+      <!-- City filter — only if more than 1 city -->
       <div class="filter-bar" *ngIf="availableCities.length > 1">
         <button class="filter-chip" [class.active]="!selectedCity" (click)="setCity(null)">
           📍 Todas
@@ -179,17 +266,62 @@ const MONTH_NAMES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'jul
         <ion-button (click)="load(null)" expand="block">Reintentar</ion-button>
       </div>
 
-      <div *ngIf="!loading && !error" class="content-area">
+      <!-- ── List view ─────────────────────────────────────────── -->
+      <div *ngIf="!loading && !error && activeView === 'list'" class="content-area">
         <div *ngFor="let group of grouped" class="day-group">
           <div class="day-header">{{ group.dayName }}</div>
           <app-event-card *ngFor="let ev of group.events" [event]="ev"></app-event-card>
         </div>
-
         <div *ngIf="grouped.length === 0" class="empty-state">
           <div class="empty-icon">🎵</div>
           <div class="empty-title">Sin eventos esta semana</div>
           <div class="empty-subtitle">No hay sociales programados.<br>¡Vuelve pronto!</div>
         </div>
+      </div>
+
+      <!-- ── Calendar view ──────────────────────────────────────── -->
+      <div *ngIf="!loading && !error && activeView === 'calendar'">
+        <div class="month-nav">
+          <ion-button fill="clear" size="small" (click)="prevMonth()">
+            <ion-icon slot="icon-only" name="chevron-back"></ion-icon>
+          </ion-button>
+          <span class="month-title">{{ monthTitle }}</span>
+          <ion-button fill="clear" size="small" (click)="nextMonth()">
+            <ion-icon slot="icon-only" name="chevron-forward"></ion-icon>
+          </ion-button>
+        </div>
+
+        <div class="cal-day-headers">
+          <div *ngFor="let h of dayHeaders" class="cal-day-header-cell">{{ h }}</div>
+        </div>
+
+        <div class="cal-grid">
+          <div
+            *ngFor="let cell of cells"
+            class="cal-cell"
+            [class.out-month]="!cell.inMonth"
+            [class.today]="cell.isToday"
+            [class.selected]="isSameDay(cell.date, selectedDate)"
+            (click)="selectDate(cell.date)">
+            <div class="day-num">{{ cell.date.getDate() }}</div>
+            <div class="dots-row">
+              <div *ngFor="let color of cell.dots.slice(0,3)" class="dot" [style.background]="color"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="cal-divider"></div>
+        <div class="selected-label">{{ selectedDayLabel }}</div>
+
+        <app-event-card *ngFor="let ev of selectedDayEvents" [event]="ev"></app-event-card>
+
+        <div *ngIf="selectedDayEvents.length === 0" class="empty-state">
+          <div class="empty-icon">🎵</div>
+          <div class="empty-title">Sin eventos este día</div>
+          <div class="empty-subtitle">No hay sociales programados.</div>
+        </div>
+
+        <div class="bottom-space"></div>
       </div>
     </ion-content>
   `,
@@ -201,24 +333,31 @@ export class HomePage implements OnDestroy {
   selectedType: EventType | null = null;
   selectedCity: string | null = null;
   availableCities: string[] = [];
+  activeView: 'list' | 'calendar' = 'list';
+
+  dayHeaders = DAY_HEADERS;
+  displayMonth: Date = (() => { const d = new Date(); d.setDate(1); d.setHours(0, 0, 0, 0); return d; })();
+  selectedDate: Date = (() => { const d = new Date(); d.setHours(0, 0, 0, 0); return d; })();
+  cells: CalendarCell[] = [];
 
   private allLoadedEvents: WeeklyEvent[] = [];
+  private filteredEvents: WeeklyEvent[] = [];
   private navSub: Subscription;
 
   constructor(private eventsService: EventsService, private router: Router) {
-    addIcons({ musicalNotes, calendar });
-    // Reload every time the router lands on /tabs/home (initial + return from event detail)
+    addIcons({ listOutline, calendarOutline, chevronBack, chevronForward });
+    const saved = localStorage.getItem(VIEW_KEY);
+    if (saved === 'list' || saved === 'calendar') this.activeView = saved;
     this.navSub = this.router.events.pipe(
       filter(e => e instanceof NavigationEnd && e.urlAfterRedirects === '/tabs/home'),
     ).subscribe(() => this.load(null));
   }
 
-  ngOnDestroy() {
-    this.navSub.unsubscribe();
-  }
+  ngOnDestroy() { this.navSub.unsubscribe(); }
 
-  openCalendar() {
-    this.router.navigate(['/calendar']);
+  setView(v: 'list' | 'calendar') {
+    this.activeView = v;
+    localStorage.setItem(VIEW_KEY, v);
   }
 
   setType(type: EventType | null) {
@@ -256,16 +395,93 @@ export class HomePage implements OnDestroy {
   }
 
   private applyFilters() {
-    const filtered = this.selectedCity
+    this.filteredEvents = this.selectedCity
       ? this.allLoadedEvents.filter(e => e.venue?.city === this.selectedCity)
       : this.allLoadedEvents;
-    this.grouped = this.groupByDay(filtered);
+    this.grouped = this.groupByDay(this.filteredEvents);
+    this.buildCells();
   }
+
+  // ── Calendar ──────────────────────────────────────────────────────
+
+  get monthTitle(): string {
+    return `${MONTH_NAMES_FULL[this.displayMonth.getMonth()]} ${this.displayMonth.getFullYear()}`;
+  }
+
+  get selectedDayLabel(): string {
+    const d = this.selectedDate;
+    const dayIdx = d.getDay() === 0 ? 6 : d.getDay() - 1;
+    return `${DAY_NAMES[dayIdx]} ${d.getDate()} de ${MONTH_NAMES[d.getMonth()]}`;
+  }
+
+  get selectedDayEvents(): WeeklyEvent[] {
+    const norm = this.selectedDate.getDay() === 0 ? 6 : this.selectedDate.getDay() - 1;
+    return this.filteredEvents.filter(ev => (ev.dayOfWeek ?? -1) === norm);
+  }
+
+  prevMonth() {
+    this.displayMonth = new Date(this.displayMonth.getFullYear(), this.displayMonth.getMonth() - 1, 1);
+    this.buildCells();
+  }
+
+  nextMonth() {
+    this.displayMonth = new Date(this.displayMonth.getFullYear(), this.displayMonth.getMonth() + 1, 1);
+    this.buildCells();
+  }
+
+  selectDate(date: Date) {
+    this.selectedDate = new Date(date);
+  }
+
+  isSameDay(a: Date, b: Date): boolean {
+    return a.getFullYear() === b.getFullYear() &&
+           a.getMonth()    === b.getMonth()    &&
+           a.getDate()     === b.getDate();
+  }
+
+  private buildCells() {
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    const year  = this.displayMonth.getFullYear();
+    const month = this.displayMonth.getMonth();
+    const startCell = getMondayOfWeek(new Date(year, month, 1));
+
+    this.cells = [];
+    for (let i = 0; i < 42; i++) {
+      const date = new Date(startCell);
+      date.setDate(startCell.getDate() + i);
+      this.cells.push({
+        date,
+        inMonth: date.getMonth() === month,
+        isToday: this.isSameDay(date, today),
+        dots: this.dotsForDate(date),
+      });
+    }
+    // Trim trailing rows that are fully out-of-month
+    while (this.cells.length > 35) {
+      const lastRow = this.cells.slice(-7);
+      if (lastRow.every(c => !c.inMonth)) this.cells.splice(-7);
+      else break;
+    }
+  }
+
+  private dotsForDate(date: Date): string[] {
+    const norm = date.getDay() === 0 ? 6 : date.getDay() - 1;
+    const colors: string[] = [];
+    const seen = new Set<string>();
+    for (const ev of this.filteredEvents) {
+      if ((ev.dayOfWeek ?? -1) === norm && !seen.has(ev.type)) {
+        seen.add(ev.type);
+        colors.push(TYPE_DOT_COLOR[ev.type] ?? '#BAC0CC');
+      }
+    }
+    return colors;
+  }
+
+  // ── List ──────────────────────────────────────────────────────────
 
   private groupByDay(events: WeeklyEvent[]): { dayName: string; events: WeeklyEvent[] }[] {
     const map = new Map<number, { date: Date; events: WeeklyEvent[] }>();
     for (const ev of events) {
-      // Parsear "YYYY-MM-DD" como fecha local para evitar el desfase UTC
       const [yr, mo, dy] = ev.eventDate.split('-').map(Number);
       const d = new Date(yr, mo - 1, dy);
       const normalized = d.getDay() === 0 ? 6 : d.getDay() - 1;

@@ -11,7 +11,10 @@ export class UserProfileDto {
   city: string;
 
   @ApiProperty()
-  role: string;
+  dancingRole: string;
+
+  @ApiProperty()
+  applicationRole: string;
 
   @ApiProperty()
   level: string;

@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { tap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { AuthResponse, Role, Level } from '@shared/types';
+import { AuthResponse, DancingRole, ApplicationRole, Level } from '@shared/types';
 
 const TOKEN_KEY = 'auth_token';
 
@@ -11,7 +11,7 @@ export interface RegisterPayload {
   alias: string;
   email: string;
   password: string;
-  role: Role;
+  dancingRole: DancingRole;
   level: Level;
   styles: string[];
   academyId?: string;
@@ -47,18 +47,19 @@ export class AuthService {
     return !!this.getToken();
   }
 
-  getRole(): string | null {
+  getApplicationRole(): ApplicationRole | null {
     const token = this.getToken();
     if (!token) return null;
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));
-      return payload.role ?? null;
+      return payload.applicationRole ?? null;
     } catch {
       return null;
     }
   }
 
   isAdmin(): boolean {
-    return this.getRole() === 'admin';
+    const role = this.getApplicationRole();
+    return role === 'admin' || role === 'superadmin';
   }
 }

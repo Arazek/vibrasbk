@@ -7,6 +7,7 @@ import {
   IonButton, IonItem, IonInput, IonList, IonToast, IonBackButton, IonButtons,
 } from '@ionic/angular/standalone';
 import { AuthService } from '../../services/auth.service';
+import { FormFieldComponent } from '../../components/form-field/form-field.component';
 
 @Component({
   selector: 'app-login',
@@ -15,6 +16,7 @@ import { AuthService } from '../../services/auth.service';
     CommonModule, FormsModule,
     IonContent, IonHeader, IonToolbar, IonTitle,
     IonButton, IonItem, IonInput, IonList, IonToast, IonBackButton, IonButtons,
+    FormFieldComponent,
   ],
   styles: [`
     .login-container {
@@ -23,48 +25,34 @@ import { AuthService } from '../../services/auth.service';
       align-items: center;
       justify-content: center;
       min-height: 70vh;
-      padding: 32px 24px;
+      padding: 2rem 1.5rem;
       text-align: center;
     }
     .login-emoji {
-      font-size: 56px;
-      margin-bottom: 24px;
+      font-size: 3.5rem;
+      margin-bottom: 1.5rem;
       line-height: 1;
     }
     .login-title {
-      font-size: 26px;
-      font-weight: 700;
+      font-size: 1.625rem;
+      font-weight: var(--lgui-fw-bold);
       color: var(--lgui-text-4);
-      margin-bottom: 8px;
+      margin-bottom: 0.5rem;
     }
     .login-subtitle {
-      font-size: 14px;
+      font-size: var(--lgui-fs-body-lg);
       color: var(--lgui-text-3);
-      margin-bottom: 32px;
+      margin-bottom: 2rem;
       line-height: 1.5;
-    }
-    .field-label {
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--lgui-text-3);
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
-      margin-bottom: 4px;
-      text-align: left;
-      width: 100%;
-    }
-    .input-block {
-      width: 100%;
-      margin-bottom: 16px;
     }
   `],
   template: `
     <ion-header>
       <ion-toolbar>
         <ion-buttons slot="start">
-          <ion-back-button defaultHref="/onboarding/ciudad"></ion-back-button>
+          <ion-back-button defaultHref="/onboarding/ciudad" text=""></ion-back-button>
+          <span class="breadcrumb">Iniciar sesión</span>
         </ion-buttons>
-        <ion-title>Iniciar sesión</ion-title>
       </ion-toolbar>
     </ion-header>
 
@@ -76,40 +64,30 @@ import { AuthService } from '../../services/auth.service';
           Introduce tu email y contraseña para volver a la pista.
         </div>
 
-        <div class="input-block">
-          <div class="field-label">Email</div>
-          <ion-list lines="none" style="border-radius: 10px; overflow: hidden;">
-            <ion-item>
-              <ion-input
-                type="email"
-                [(ngModel)]="email"
-                placeholder="tu@email.com"
-                autocomplete="email"
-                (keyup.enter)="passwordInput.setFocus()">
-              </ion-input>
-            </ion-item>
-          </ion-list>
-        </div>
+        <app-form-field label="Email">
+          <ion-input
+            type="email"
+            [(ngModel)]="email"
+            placeholder="tu@email.com"
+            autocomplete="email"
+            (keyup.enter)="passwordInput.setFocus()">
+          </ion-input>
+        </app-form-field>
 
-        <div class="input-block">
-          <div class="field-label">Contraseña</div>
-          <ion-list lines="none" style="border-radius: 10px; overflow: hidden;">
-            <ion-item>
-              <ion-input
-                #passwordInput
-                type="password"
-                [(ngModel)]="password"
-                placeholder="••••••"
-                autocomplete="current-password"
-                (keyup.enter)="login()">
-              </ion-input>
-            </ion-item>
-          </ion-list>
-        </div>
+        <app-form-field label="Contraseña">
+          <ion-input
+            #passwordInput
+            type="password"
+            [(ngModel)]="password"
+            placeholder="••••••"
+            autocomplete="current-password"
+            (keyup.enter)="login()">
+          </ion-input>
+        </app-form-field>
 
         <ion-button
           expand="block"
-          style="width: 100%; margin-top: 8px;"
+          style="width: 100%; margin-top: 0.5rem;"
           [disabled]="!!(!canSubmit || loading)"
           (click)="login()">
           {{ loading ? 'Entrando...' : 'Entrar' }}

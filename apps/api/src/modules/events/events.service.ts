@@ -138,9 +138,15 @@ export class EventsService implements OnApplicationBootstrap {
   }
 
   async findAllActive(type?: string): Promise<RecurringEvent[]> {
-    const where: Record<string, unknown> = { active: true };
-    if (type) where['type'] = type;
-    return this.eventsRepository.find({ where });
+    const events = await this.eventsRepository.find({ where: { active: true } });
+    if (!type) return events;
+    const classMap: Record<string, Function> = {
+      social:    SocialEvent,
+      intensive: IntensivoEvent,
+      congress:  CongresoEvent,
+    };
+    const EntityClass = classMap[type];
+    return EntityClass ? events.filter(ev => ev instanceof EntityClass) : [];
   }
 
   async findOne(id: string): Promise<RecurringEvent | null> {

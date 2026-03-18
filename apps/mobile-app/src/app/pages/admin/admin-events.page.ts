@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import {
   IonHeader, IonToolbar, IonTitle, IonContent, IonButtons,
   IonList, IonItem, IonLabel, IonButton, IonFab, IonFabButton, IonIcon,
-  IonToast, IonSpinner, ModalController, AlertController, NavController, LoadingController,
+  IonToast, IonSpinner, IonBackButton, ModalController, AlertController, NavController, LoadingController,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { add, trash, pencil, camera, chevronBack } from 'ionicons/icons';
@@ -21,18 +21,15 @@ const DAY_NAMES = ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado'
     CommonModule,
     IonHeader, IonToolbar, IonTitle, IonContent, IonButtons,
     IonList, IonItem, IonLabel, IonButton, IonFab, IonFabButton, IonIcon,
-    IonToast, IonSpinner,
+    IonToast, IonSpinner, IonBackButton,
   ],
   template: `
     <ion-header>
       <ion-toolbar>
         <ion-buttons slot="start">
-          <ion-button (click)="goBack()">
-            <ion-icon slot="start" name="chevron-back"></ion-icon>
-            Admin
-          </ion-button>
+          <ion-back-button defaultHref="/admin" text=""></ion-back-button>
+          <span class="breadcrumb">Eventos</span>
         </ion-buttons>
-        <ion-title>Eventos</ion-title>
       </ion-toolbar>
     </ion-header>
     <ion-content>
@@ -43,9 +40,9 @@ const DAY_NAMES = ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado'
         <ion-item *ngFor="let ev of events">
           <!-- Thumbnail: shows uploaded photo or placeholder -->
           <img *ngIf="ev.photoUrl" slot="start" [src]="photoThumb(ev.photoUrl)"
-            style="width:44px; height:44px; object-fit:cover; border-radius:8px; flex-shrink:0;" />
+            style="width:2.75rem; height:2.75rem; object-fit:cover; border-radius:0.5rem; flex-shrink:0;" />
           <div *ngIf="!ev.photoUrl" slot="start"
-            style="width:44px; height:44px; border-radius:8px; background:var(--lgui-surface-3); display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0;">🎵</div>
+            style="width:2.75rem; height:2.75rem; border-radius:0.5rem; background:var(--lgui-surface-3); display:flex; align-items:center; justify-content:center; font-size:1.25rem; flex-shrink:0;">🎵</div>
           <ion-label>
             <h3>{{ ev.venue?.name }} - {{ ev.type }}</h3>
             <p>{{ dayName(ev.dayOfWeek) }} {{ ev.startTime }}</p>
@@ -132,6 +129,7 @@ export class AdminEventsPage implements OnInit {
       component: EventFormModal,
       componentProps: {
         editingId: ev.id, venues: this.venues,
+        currentPhotoUrl: ev.photoUrl ? this.photoThumb(ev.photoUrl) : null,
         initial: { venueId: ev.venue?.id ?? '', type: ev.type, dayOfWeek: ev.dayOfWeek ?? 0, startTime: ev.startTime, name: ev.name, instructors: ev.instructors, endDate: ev.endDate, startDate: ev.startDate, title: ev.title, level: ev.level, entryPrice: ev.entryPrice, workshopIncluded: ev.workshopIncluded, locality: ev.locality, durationDays: ev.durationDays, prices: ev.prices, websiteUrl: ev.websiteUrl },
       },
     });

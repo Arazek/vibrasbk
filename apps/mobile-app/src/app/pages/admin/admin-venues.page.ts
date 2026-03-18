@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import {
   IonHeader, IonToolbar, IonTitle, IonContent, IonButtons,
   IonList, IonItem, IonLabel, IonButton, IonFab, IonFabButton, IonIcon,
-  IonToast, IonSpinner, ModalController, AlertController, NavController,
+  IonToast, IonSpinner, IonBackButton, ModalController, AlertController, NavController,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { add, trash, pencil, chevronBack } from 'ionicons/icons';
@@ -18,18 +18,15 @@ import { VenueFormModal } from './venue-form.modal';
     CommonModule,
     IonHeader, IonToolbar, IonTitle, IonContent, IonButtons,
     IonList, IonItem, IonLabel, IonButton, IonFab, IonFabButton, IonIcon,
-    IonToast, IonSpinner,
+    IonToast, IonSpinner, IonBackButton,
   ],
   template: `
     <ion-header>
       <ion-toolbar>
         <ion-buttons slot="start">
-          <ion-button (click)="goBack()">
-            <ion-icon slot="start" name="chevron-back"></ion-icon>
-            Admin
-          </ion-button>
+          <ion-back-button defaultHref="/admin" text=""></ion-back-button>
+          <span class="breadcrumb">Locales</span>
         </ion-buttons>
-        <ion-title>Locales</ion-title>
       </ion-toolbar>
     </ion-header>
     <ion-content>

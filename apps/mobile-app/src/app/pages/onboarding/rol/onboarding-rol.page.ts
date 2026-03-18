@@ -5,10 +5,10 @@ import {
   IonContent, IonHeader, IonToolbar, IonTitle,
   IonButton, IonProgressBar, IonButtons, IonBackButton,
 } from '@ionic/angular/standalone';
-import { Role } from '@shared/types';
+import { DancingRole } from '@shared/types';
 import { OnboardingStateService } from '../../../services/onboarding-state.service';
 
-const ROLES: { value: Role; label: string; description: string; emoji: string }[] = [
+const ROLES: { value: DancingRole; label: string; description: string; emoji: string }[] = [
   { value: 'leader',   label: 'Leader',   description: 'Llevo el compás en pista',     emoji: '🕺' },
   { value: 'follower', label: 'Follower', description: 'Me dejo llevar por el ritmo',   emoji: '💃' },
   { value: 'switch',   label: 'Switch',   description: 'Bailo ambos roles con soltura', emoji: '🔄' },
@@ -20,10 +20,10 @@ const ROLES: { value: Role; label: string; description: string; emoji: string }[
   imports: [CommonModule, IonContent, IonHeader, IonToolbar, IonTitle, IonButton, IonProgressBar, IonButtons, IonBackButton],
   styles: [`
     .question {
-      font-size: 22px;
-      font-weight: 700;
+      font-size: var(--lgui-fs-display);
+      font-weight: var(--lgui-fw-bold);
       color: var(--lgui-text-4);
-      margin-bottom: 24px;
+      margin-bottom: 1.5rem;
     }
     .role-card {
       display: flex;
@@ -31,7 +31,7 @@ const ROLES: { value: Role; label: string; description: string; emoji: string }[
       gap: var(--lgui-gap-lg);
       padding: var(--lgui-pad-sm) var(--lgui-pad-md);
       border-radius: var(--lgui-radius-default);
-      border: 2px solid var(--lgui-border-3);
+      border: 0.125rem solid var(--lgui-border-3);
       margin-bottom: var(--lgui-gap-sm);
       cursor: pointer;
       background: var(--lgui-surface-1);
@@ -46,19 +46,19 @@ const ROLES: { value: Role; label: string; description: string; emoji: string }[
       color: #fff;
     }
     .role-emoji {
-      font-size: 36px;
+      font-size: 2.25rem;
       line-height: 1;
       flex-shrink: 0;
     }
     .role-label {
-      font-size: 17px;
-      font-weight: 600;
+      font-size: var(--lgui-fs-heading);
+      font-weight: var(--lgui-fw-semibold);
       color: var(--lgui-text-4);
     }
     .role-card.selected .role-label { color: #fff; }
     .role-desc {
-      font-size: 13px;
-      margin-top: 2px;
+      font-size: var(--lgui-fs-body);
+      margin-top: 0.125rem;
       color: var(--lgui-text-3);
     }
     .role-card.selected .role-desc { color: rgba(255,255,255,0.78); }
@@ -67,9 +67,9 @@ const ROLES: { value: Role; label: string; description: string; emoji: string }[
     <ion-header>
       <ion-toolbar>
         <ion-buttons slot="start">
-          <ion-back-button defaultHref="/onboarding/ciudad"></ion-back-button>
+          <ion-back-button defaultHref="/onboarding/ciudad" text=""></ion-back-button>
+          <span class="breadcrumb">Tu rol</span>
         </ion-buttons>
-        <ion-title>Paso 2 de 4 — Tu rol</ion-title>
       </ion-toolbar>
       <ion-progress-bar value="0.5" color="secondary"></ion-progress-bar>
     </ion-header>
@@ -89,7 +89,7 @@ const ROLES: { value: Role; label: string; description: string; emoji: string }[
         </div>
       </div>
 
-      <ion-button expand="block" [disabled]="!!(!selected)" (click)="next()" style="margin-top: 24px;">
+      <ion-button expand="block" [disabled]="!!(!selected)" (click)="next()" style="margin-top: 1.5rem;">
         Siguiente
       </ion-button>
     </ion-content>
@@ -97,15 +97,15 @@ const ROLES: { value: Role; label: string; description: string; emoji: string }[
 })
 export class OnboardingRolPage {
   roles = ROLES;
-  selected: Role | null = null;
+  selected: DancingRole | null = null;
 
   constructor(private router: Router, private state: OnboardingStateService) {
-    this.selected = this.state.get().role;
+    this.selected = this.state.get().dancingRole;
   }
 
   next() {
     if (!this.selected) return;
-    this.state.set({ role: this.selected });
+    this.state.set({ dancingRole: this.selected });
     this.router.navigate(['/onboarding/nivel']);
   }
 }

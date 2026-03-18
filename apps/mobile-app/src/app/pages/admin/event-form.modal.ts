@@ -3,10 +3,13 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
   IonHeader, IonToolbar, IonTitle, IonContent, IonButtons,
-  IonButton, IonInput, IonSelect, IonSelectOption, IonToggle, IonItem, IonLabel, ModalController,
+  IonButton, IonInput, IonSelect, IonSelectOption, IonToggle, IonItem, IonLabel, IonIcon,
+  ModalController, LoadingController,
 } from '@ionic/angular/standalone';
+import { addIcons } from 'ionicons';
+import { camera } from 'ionicons/icons';
 import { Venue, EventType } from '@shared/types';
-import { CreateEventPayload } from '../../services/admin.service';
+import { AdminService, CreateEventPayload } from '../../services/admin.service';
 
 const DAY_NAMES = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
 const LEVELS = ['beginner', 'initiation', 'comfortable', 'intermediate', 'advanced'];
@@ -17,23 +20,30 @@ const LEVELS = ['beginner', 'initiation', 'comfortable', 'intermediate', 'advanc
   imports: [
     CommonModule, FormsModule,
     IonHeader, IonToolbar, IonTitle, IonContent, IonButtons,
-    IonButton, IonInput, IonSelect, IonSelectOption, IonToggle, IonItem, IonLabel,
+    IonButton, IonInput, IonSelect, IonSelectOption, IonToggle, IonItem, IonLabel, IonIcon,
   ],
   styles: [`
-    .form-field { padding: 8px 0; }
-    .section-title {
-      font-size: 11px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.6px;
-      color: var(--lgui-text-3);
-      padding: 16px 0 4px;
-    }
+    .form-field { padding: 0.5rem 0; }
     ion-content {
       --background: var(--ion-background-color, #ffffff);
       --color: var(--ion-text-color, #19213D);
     }
     ion-input, ion-select { color: var(--ion-text-color, #19213D); }
+    .photo-label {
+      display: block;
+      cursor: pointer;
+    }
+    .photo-label ion-button {
+      pointer-events: none;
+    }
+    .photo-preview {
+      width: 100%;
+      max-height: 10rem;
+      object-fit: cover;
+      border-radius: var(--lgui-radius-md);
+      margin-bottom: var(--lgui-gap-sm);
+      display: block;
+    }
   `],
   template: `
     <ion-header>
@@ -63,17 +73,34 @@ const LEVELS = ['beginner', 'initiation', 'comfortable', 'intermediate', 'advanc
         <ion-input label="Nombre (opcional)" labelPlacement="stacked" [(ngModel)]="form.name"></ion-input>
       </div>
 
-      <!-- ─── Social: recurrente ─────────────────────────────── -->
+      <!-- ─── Social ─────────────────────────────────────────── -->
       <ng-container *ngIf="form.type === 'social'">
-        <div class="section-title">Horario recurrente</div>
-        <div class="form-field">
-          <ion-select label="Día de la semana" labelPlacement="stacked" [(ngModel)]="form.dayOfWeek" interface="action-sheet">
-            <ion-select-option *ngFor="let d of dayOptions; let i = index" [value]="i">{{ d }}</ion-select-option>
-          </ion-select>
-        </div>
+        <div class="section-title">Horario</div>
+        <ion-item lines="none" style="padding: 0;">
+          <ion-label>¿Es recurrente (semanal)?</ion-label>
+          <ion-toggle slot="end" [(ngModel)]="isRecurring"></ion-toggle>
+        </ion-item>
+
+        <!-- Recurring: day of week -->
+        <ng-container *ngIf="isRecurring">
+          <div class="form-field">
+            <ion-select label="Día de la semana" labelPlacement="stacked" [(ngModel)]="form.dayOfWeek" interface="action-sheet">
+              <ion-select-option *ngFor="let d of dayOptions; let i = index" [value]="i">{{ d }}</ion-select-option>
+            </ion-select>
+          </div>
+        </ng-container>
+
+        <!-- One-time: specific date -->
+        <ng-container *ngIf="!isRecurring">
+          <div class="form-field">
+            <ion-input label="Fecha (YYYY-MM-DD)" labelPlacement="stacked" [(ngModel)]="form.startDate" placeholder="2026-06-14"></ion-input>
+          </div>
+        </ng-container>
+
         <div class="form-field">
           <ion-input label="Hora inicio (HH:MM)" labelPlacement="stacked" [(ngModel)]="form.startTime" placeholder="21:00"></ion-input>
         </div>
+
         <div class="section-title">Detalles</div>
         <ion-item lines="none" style="padding: 0;">
           <ion-label>¿Hay taller incluido?</ion-label>
@@ -137,7 +164,20 @@ const LEVELS = ['beginner', 'initiation', 'comfortable', 'intermediate', 'advanc
         </div>
       </ng-container>
 
-      <ion-button expand="block" style="margin-top: 24px;" (click)="submit()">
+      <!-- ─── Photo upload (edit only) ──────────────────────── -->
+      <ng-container *ngIf="editingId">
+        <div class="section-title">Foto del evento</div>
+        <img *ngIf="currentPhotoUrl" [src]="currentPhotoUrl" class="photo-preview" />
+        <label class="photo-label">
+          <input type="file" accept="image/*" style="display:none" (change)="uploadPhoto($event)">
+          <ion-button expand="block" fill="outline" [disabled]="uploading">
+            <ion-icon slot="start" name="camera"></ion-icon>
+            {{ uploading ? 'Subiendo...' : (currentPhotoUrl ? 'Cambiar foto' : 'Subir foto') }}
+          </ion-button>
+        </label>
+      </ng-container>
+
+      <ion-button expand="block" style="margin-top: 1.5rem;" (click)="submit()">
         {{ editingId ? 'Guardar cambios' : 'Crear evento' }}
       </ion-button>
     </ion-content>
@@ -147,17 +187,24 @@ export class EventFormModal implements OnInit {
   @Input() editingId: string | null = null;
   @Input() initial: Partial<CreateEventPayload> = {};
   @Input() venues: Venue[] = [];
+  @Input() currentPhotoUrl: string | null = null;
 
   form: CreateEventPayload = { venueId: '', type: 'social', dayOfWeek: 0, startTime: '21:00' };
 
   dayOptions = DAY_NAMES;
   levels = LEVELS;
+  isRecurring = true;
+  uploading = false;
 
   // Helper strings for array fields
   instructorsStr = '';
   pricesStr = '';
 
-  constructor(private modalCtrl: ModalController) {}
+  constructor(
+    private modalCtrl: ModalController,
+    private loadingCtrl: LoadingController,
+    private admin: AdminService,
+  ) { addIcons({ camera }); }
 
   ngOnInit() {
     this.form = {
@@ -167,15 +214,45 @@ export class EventFormModal implements OnInit {
       dayOfWeek: this.initial.dayOfWeek ?? 0,
       startTime: this.initial.startTime ?? '21:00',
     };
+    // When editing a social: recurring if it has dayOfWeek, one-time if it has startDate
+    if (this.form.type === 'social') {
+      this.isRecurring = this.initial.startDate == null;
+    }
     this.instructorsStr = (this.initial.instructors ?? []).join(', ');
     this.pricesStr = this.initial.prices ?? '';
   }
 
   dismiss() { this.modalCtrl.dismiss(null); }
 
+  async uploadPhoto(event: Event) {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (!file || !this.editingId) return;
+    this.uploading = true;
+    const loading = await this.loadingCtrl.create({ message: 'Subiendo foto...' });
+    await loading.present();
+    this.admin.uploadEventPhoto(this.editingId, file).subscribe({
+      next: (ev) => {
+        this.currentPhotoUrl = ev.photoUrl
+          ? (ev.photoUrl.startsWith('http') ? ev.photoUrl : (window.location.origin.replace(/:\d+$/, ':3333') + ev.photoUrl))
+          : null;
+        loading.dismiss();
+        this.uploading = false;
+      },
+      error: () => { loading.dismiss(); this.uploading = false; },
+    });
+    (event.target as HTMLInputElement).value = '';
+  }
+
   submit() {
     if (!this.form.venueId) return;
-    // Parse array helpers back
+    // For social: clear the field that doesn't apply to the chosen mode
+    if (this.form.type === 'social') {
+      if (this.isRecurring) {
+        this.form.startDate = undefined;
+      } else {
+        this.form.dayOfWeek = undefined;
+      }
+    }
     if (this.form.type === 'social' || this.form.type === 'intensive') {
       this.form.instructors = this.instructorsStr ? this.instructorsStr.split(',').map((s) => s.trim()) : undefined;
     }

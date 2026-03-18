@@ -15,6 +15,7 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname, join } from 'path';
+import { randomUUID } from 'crypto';
 import { ApiTags, ApiOperation, ApiBearerAuth, ApiConsumes } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt.guard';
 import { AdminGuard } from '../auth/guards/admin.guard';
@@ -23,11 +24,11 @@ import { VotesService } from '../votes/votes.service';
 import { CreateEventDto } from './dtos/create-event.dto';
 import { UpdateEventDto } from './dtos/update-event.dto';
 
+// Path mirrors future MinIO object key: events/photos/{uuid}.{ext}
 const photoStorage = diskStorage({
-  destination: join(process.cwd(), 'apps', 'api', 'uploads', 'events'),
+  destination: join(process.cwd(), 'apps', 'api', 'uploads', 'events', 'photos'),
   filename: (_req, file, cb) => {
-    const unique = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
-    cb(null, `${unique}${extname(file.originalname)}`);
+    cb(null, `${randomUUID()}${extname(file.originalname).toLowerCase()}`);
   },
 });
 
@@ -88,7 +89,7 @@ export class EventsController {
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(FileInterceptor('file', { storage: photoStorage }))
   async uploadPhoto(@Param('id') id: string, @UploadedFile() file: Express.Multer.File) {
-    const photoUrl = `/uploads/events/${file.filename}`;
+    const photoUrl = `/uploads/events/photos/${file.filename}`;
     return this.eventsService.updatePhoto(id, photoUrl);
   }
 }

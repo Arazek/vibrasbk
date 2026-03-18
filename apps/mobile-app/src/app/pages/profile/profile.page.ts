@@ -15,6 +15,7 @@ import { UserProfile, Level, DanceStyle, Academia } from '@shared/types';
 import { ProfileService } from '../../services/profile.service';
 import { AuthService } from '../../services/auth.service';
 import { environment } from '../../../environments/environment';
+import { StyleChipGridComponent } from '../../components/style-chip-grid/style-chip-grid.component';
 
 const LEVEL_OPTIONS: { value: Level; label: string }[] = [
   { value: 'beginner',     label: 'Nuevo' },
@@ -32,6 +33,7 @@ const LEVEL_OPTIONS: { value: Level; label: string }[] = [
     IonHeader, IonToolbar, IonTitle, IonContent, IonButtons,
     IonButton, IonSpinner, IonText, IonList, IonItem, IonLabel,
     IonSelect, IonSelectOption, IonChip, IonToast, IonIcon,
+    StyleChipGridComponent,
   ],
   styles: [`
     .identity-card {
@@ -45,60 +47,43 @@ const LEVEL_OPTIONS: { value: Level; label: string }[] = [
       box-shadow: var(--lgui-shadow-accent-md);
     }
     .avatar {
-      width: 64px;
-      height: 64px;
+      width: 4rem;
+      height: 4rem;
       border-radius: 50%;
       background: rgba(255,255,255,0.22);
-      border: 2px solid rgba(255,255,255,0.4);
+      border: 0.125rem solid rgba(255,255,255,0.4);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 22px;
-      font-weight: 700;
+      font-size: var(--lgui-fs-display);
+      font-weight: var(--lgui-fw-bold);
       color: #fff;
       flex-shrink: 0;
-      letter-spacing: -0.5px;
+      letter-spacing: -0.0313rem;
     }
     .identity-info { flex: 1; min-width: 0; }
     .identity-alias {
-      font-size: 20px;
-      font-weight: 700;
+      font-size: 1.25rem;
+      font-weight: var(--lgui-fw-bold);
       color: #fff;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
-    .identity-meta { font-size: 13px; color: rgba(255,255,255,0.75); margin-top: 3px; }
-    .section-title {
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.6px;
-      text-transform: uppercase;
-      color: var(--lgui-text-3);
-      margin-bottom: var(--lgui-gap-sm);
-      margin-top: var(--lgui-gap-xl);
-    }
-    .styles-grid {
-      display: flex;
-      flex-wrap: wrap;
-      gap: var(--lgui-gap-sm);
-      margin-bottom: var(--lgui-gap-xl);
-    }
-    .style-chip { height: 36px; font-size: 13px; font-weight: 500; }
+    .identity-meta { font-size: var(--lgui-fs-body); color: rgba(255,255,255,0.75); margin-top: 0.1875rem; }
     .bottom-space { height: var(--lgui-space-8); }
   `],
   template: `
     <ion-header>
       <ion-toolbar>
-        <ion-title>Mi Perfil</ion-title>
-        <ion-buttons slot="end">
-          <ion-button (click)="logout()">Salir</ion-button>
+        <ion-buttons slot="start">
+          <span class="breadcrumb">Perfil</span>
         </ion-buttons>
       </ion-toolbar>
     </ion-header>
 
     <ion-content class="ion-padding">
-      <div *ngIf="loading" class="ion-text-center" style="padding-top: 60px;">
+      <div *ngIf="loading" class="ion-text-center" class="loading-container">
         <ion-spinner color="primary"></ion-spinner>
       </div>
 
@@ -114,7 +99,7 @@ const LEVEL_OPTIONS: { value: Level; label: string }[] = [
 
         <!-- Admin button -->
         <ion-button
-          *ngIf="profile.role === 'admin'"
+          *ngIf="profile.applicationRole === 'admin' || profile.applicationRole === 'superadmin'"
           expand="block"
           color="secondary"
           (click)="router.navigate(['/admin'])">
@@ -123,7 +108,7 @@ const LEVEL_OPTIONS: { value: Level; label: string }[] = [
 
         <!-- Level (editable) -->
         <div class="section-title">Nivel</div>
-        <ion-list style="border-radius: 10px; overflow: hidden; margin-bottom: 0;">
+        <ion-list class="form-list" style="margin-bottom: 0;">
           <ion-item>
             <ion-label>Nivel actual</ion-label>
             <ion-select [(ngModel)]="selectedLevel" interface="action-sheet">
@@ -136,22 +121,16 @@ const LEVEL_OPTIONS: { value: Level; label: string }[] = [
 
         <!-- Styles (editable, API-driven) -->
         <div class="section-title">Estilos</div>
-        <div *ngIf="loadingStyles" class="ion-text-center" style="margin-bottom: 16px;">
-          <ion-spinner name="dots" color="primary"></ion-spinner>
-        </div>
-        <div class="styles-grid" *ngIf="!loadingStyles">
-          <ion-chip
-            *ngFor="let e of styleOptions"
-            [color]="isSelected(e.slug) ? 'primary' : 'medium'"
-            class="style-chip"
-            (click)="toggleStyle(e.slug)">
-            <ion-label>{{ e.name }}</ion-label>
-          </ion-chip>
-        </div>
+        <app-style-chip-grid
+          [styles]="styleOptions"
+          [selected]="selectedStyles"
+          [loading]="loadingStyles"
+          (selectionChange)="selectedStyles = $event">
+        </app-style-chip-grid>
 
         <!-- Academia (dropdown, API-driven) -->
         <div class="section-title">Academia</div>
-        <ion-list style="border-radius: 10px; overflow: hidden; margin-bottom: var(--lgui-gap-xl);">
+        <ion-list class="form-list">
           <ion-item>
             <ion-label>Academia</ion-label>
             <ion-select [(ngModel)]="selectedAcademyId" interface="action-sheet">
@@ -240,8 +219,8 @@ export class ProfilePage implements OnInit {
   }
 
   get roleLabel(): string {
-    const map: Record<string, string> = { leader: 'Leader', follower: 'Follower', switch: 'Switch', admin: 'Admin' };
-    return map[this.profile?.role ?? ''] ?? '';
+    const map: Record<string, string> = { leader: 'Leader', follower: 'Follower', switch: 'Switch' };
+    return map[this.profile?.dancingRole ?? ''] ?? '';
   }
 
   isSelected(slug: string): boolean {
