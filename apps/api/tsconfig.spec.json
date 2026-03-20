@@ -4,7 +4,11 @@
     "outDir": "../../dist/out-tsc/spec",
     "types": ["jest", "node"],
     "esModuleInterop": true,
-    "emitDecoratorMetadata": true
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "strictPropertyInitialization": false,
+    "noPropertyAccessFromIndexSignature": false,
+    "moduleResolution": "node"
   },
-  "include": ["**/*.spec.ts", "**/*.test.ts", "**/*.d.ts"]
+  "include": ["src/**/*.ts", "test/**/*.ts", "**/*.spec.ts", "**/*.test.ts", "**/*.d.ts"]
 }

@@ -52,14 +52,14 @@ export class VenuesService implements OnApplicationBootstrap {
 
   async update(id: string, dto: UpdateVenueDto): Promise<Venue> {
     const venue = await this.venuesRepository.findOne({ where: { id } });
-    if (!venue) throw new NotFoundException(`Venue ${id} no encontrado.`);
+    if (!venue) throw new NotFoundException(`Venue ${id} not found.`);
     Object.assign(venue, dto);
     return this.venuesRepository.save(venue);
   }
 
   async remove(id: string): Promise<void> {
     const venue = await this.venuesRepository.findOne({ where: { id } });
-    if (!venue) throw new NotFoundException(`Venue ${id} no encontrado.`);
+    if (!venue) throw new NotFoundException(`Venue ${id} not found.`);
     await this.venuesRepository.remove(venue);
   }
 }

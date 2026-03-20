@@ -1,7 +1,7 @@
 # Implementation Context
 
 > Node version required: **v22** (use `nvm use 22` before running any commands).
-> Last updated: 2026-03-17
+> Last updated: 2026-03-18
 
 ---
 
@@ -52,7 +52,9 @@ vibrasbk/
 - `GET /api/events/:id/analytics` — prediction result (requires going/maybe vote)
 - `POST /api/events`, `PATCH /api/events/:id`, `DELETE /api/events/:id` — admin CRUD
 - `PATCH /api/events/:id/foto` — admin photo upload (multipart)
-- Photos stored at `apps/api/uploads/events/`, served at `/uploads/events/{filename}`
+- Photos stored at `apps/api/uploads/events/photos/`, served at `/uploads/events/photos/{uuid}.ext`
+- Filename is a random UUID (`crypto.randomUUID()`) — no timestamp prefix
+- Path structure mirrors future MinIO object keys: `{entity}/{asset-type}/{uuid}.ext`
 
 ### `votes`
 - `POST /api/votes` — cast vote (1 per user/event/week enforced by DB unique constraint)
@@ -199,6 +201,8 @@ Interfaces: `UserProfile`, `Venue`, `WeeklyEvent`, `EventAnalytics`, `IntentionV
 **                        → redirect to /tabs/home
 ```
 
+> **Note:** The `/calendar` route has been removed. Calendar functionality is now embedded inline in `HomePage` (see below).
+
 ### Guards
 - `authGuard` — redirects to `/login` if no JWT
 - `onboardingGuard` — redirects to `/tabs/home` if already authenticated
@@ -220,10 +224,32 @@ Interfaces: `UserProfile`, `Venue`, `WeeklyEvent`, `EventAnalytics`, `IntentionV
 - `login/` — email + password login form
 - `onboarding/{ciudad,rol,nivel,estilos}/` — 4-step onboarding flow
 - `tabs/` — bottom tab bar shell (Agenda + Perfil)
-- `home/` — weekly agenda grouped by day
+- `home/` — weekly agenda with **list/calendar toggle** in the filter bar
+  - `activeView: 'list' | 'calendar'` persisted to `localStorage` key `vibrasbk_home_view`
+  - List view: events grouped by day (existing behaviour)
+  - Calendar view: full-month grid with dot indicators per event type; selecting a day shows that day's events below the grid
+  - Month navigation: prev/next month arrows
+  - Calendar was previously a separate route (`/calendar`); it is now inline in this page
 - `event-detail/` — vote buttons + analytics panel
 - `profile/` — edit level, styles, academy; logout
 - `admin/` — admin panel with modals for event/venue forms
+  - All admin pages use `<ion-back-button>` with `defaultHref` for hardware back button support (Android)
+  - `admin-home` → `defaultHref="/tabs/profile"`, all others → `defaultHref="/admin"`
+  - **Event form modal**: social events now have a recurring/one-time toggle
+    - Recurring: `dayOfWeek` is set, `startDate` is cleared before submit
+    - One-time: `startDate` is set, `dayOfWeek` is cleared before submit
+  - **Event form modal (edit mode only)**: photo upload section using `<label>` wrapper around a hidden `<input type="file">` — reliable on Android/iOS WebView where programmatic `.click()` fails
+
+### Assets (`apps/mobile-app/src/assets/`)
+- `vibrasbk.png` — full logo ("Vibra" outline + "SBK" hot-pink gradient)
+- `sbk.png` — SBK-only logo (Vibra removed via color masking), transparent background; used as Android launcher icon
+
+### Android Launcher Icons (`android/app/src/main/res/mipmap-*/`)
+All densities (mdpi, hdpi, xhdpi, xxhdpi, xxxhdpi) have been regenerated from `sbk.png`:
+- `ic_launcher.png` — square, white background + SBK logo (15% padding)
+- `ic_launcher_round.png` — circular clip, white background + SBK logo
+- `ic_launcher_foreground.png` — transparent background + SBK logo (20% padding) for adaptive icon (API 26+)
+- Background color for adaptive icon: `#FFFFFF` (`android/app/src/main/res/values/ic_launcher_background.xml`)
 
 ### Pipes
 - `pipes/replace.pipe.ts` — `ReplacePipe` for `_` → space display
@@ -277,7 +303,7 @@ npm run start:api
 - **NX package installs**: Always at workspace root (`npm install <pkg>`), NOT `--prefix apps/api`. NX resolves all imports from root `node_modules`.
 - **TypeORM `synchronize: true`** in dev — no migrations needed.
 - **JWT guard** is NOT global. Applied per-controller with `@UseGuards(JwtAuthGuard)`. Public endpoints use `@Public()`.
-- **STI (Single Table Inheritance)**: All event types in `recurring_events` with `type` discriminator (DB column: `tipo`).
+- **STI (Single Table Inheritance)**: All event types in `recurring_events` with `type` discriminator (DB column: `tipo`). **Never filter by `where: { type }` — the discriminator column is `tipo` not `type`, so TypeORM generates invalid SQL.** Filter using `instanceof` after a full `.find()`: `events.filter(ev => ev instanceof SocialEvent)`.
 - **Dependency direction** (no circular deps): `EventsModule → VotesModule`; `VotesModule` accesses `RecurringEvent` repo directly.
 - **tsconfig path alias**: `"@shared/types": ["libs/shared-types/src/index.ts"]` in `tsconfig.base.json`.
 - **Legacy modules** (`chat`, `calendar`) still exist on disk but are NOT imported in `app.module.ts`. Safe to delete.

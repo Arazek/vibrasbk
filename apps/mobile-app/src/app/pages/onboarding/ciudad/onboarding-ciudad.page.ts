@@ -70,7 +70,7 @@ import {
           y el balance de roles.
         </div>
         <div class="city-badge">📍 Cartagena</div>
-        <ion-button expand="block" (click)="next()" style="width: 100%;">
+        <ion-button expand="block" color="primary" style="margin: 0.5rem; width: 100%" (click)="next()">
           Crear perfil — Soy nuevo
         </ion-button>
         <div class="login-link">

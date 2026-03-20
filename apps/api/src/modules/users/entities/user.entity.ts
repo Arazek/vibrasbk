@@ -26,7 +26,7 @@ export enum Level {
   ADVANCED = 'advanced',
 }
 
-export enum Estilo {
+export enum UserDanceStyle {
   BACHATA_SENSUAL = 'bachata_sensual',
   BACHATA_TRADICIONAL = 'bachata_tradicional',
   SALSA_LINEA = 'salsa_linea',
@@ -47,7 +47,7 @@ export class User {
   @Column()
   passwordHash: string;
 
-  @Column({ name: 'ciudad', default: 'Cartagena' })
+  @Column({ name: 'city', default: 'Cartagena' })
   city: string;
 
   @Column({ type: 'enum', enum: DancingRole, name: 'dancing_role', default: DancingRole.LEADER })
@@ -56,14 +56,14 @@ export class User {
   @Column({ type: 'enum', enum: ApplicationRole, name: 'application_role', default: ApplicationRole.USER })
   applicationRole: ApplicationRole;
 
-  @Column({ type: 'enum', enum: Level, name: 'nivel' })
+  @Column({ type: 'enum', enum: Level, name: 'level' })
   level: Level;
 
-  @Column({ name: 'estilos', type: 'simple-array' })
+  @Column({ name: 'styles', type: 'simple-array' })
   styles: string[];
 
   // UUID referencing the Academia entity
-  @Column({ name: 'academia_id', nullable: true })
+  @Column({ name: 'academy_id', nullable: true })
   academyId?: string;
 
   @Column({ name: 'fcm_token', nullable: true })

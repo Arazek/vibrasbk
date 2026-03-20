@@ -9,7 +9,7 @@ import {
 import { Venue } from '../../venues/entities/venue.entity';
 
 @Entity('recurring_events')
-@TableInheritance({ column: { type: 'varchar', name: 'tipo' } })
+@TableInheritance({ column: { type: 'varchar', name: 'type' } })
 export class RecurringEvent {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -21,34 +21,34 @@ export class RecurringEvent {
   @Column({ name: 'venue_id' })
   venueId: string;
 
-  @Column({ name: 'nombre', nullable: true })
+  @Column({ name: 'name', nullable: true })
   name: string;
 
-  @Column({ name: 'foto_url', nullable: true })
+  @Column({ name: 'photo_url', nullable: true })
   photoUrl: string;
 
-  // 0 = Monday … 6 = Sunday. Null for puntuales (intensivos, congresos)
-  @Column({ name: 'dia_semana', type: 'smallint', nullable: true })
+  // 0 = Monday … 6 = Sunday. Null for one-off events (intensives, congresses)
+  @Column({ name: 'day_of_week', type: 'smallint', nullable: true })
   dayOfWeek: number | null;
 
-  // Fecha real proyectada de la próxima ocurrencia (YYYY-MM-DD)
-  @Column({ name: 'proxima_fecha', type: 'date', nullable: true })
+  // Projected real date of the next occurrence (YYYY-MM-DD)
+  @Column({ name: 'next_date', type: 'date', nullable: true })
   nextDate: string | null;
 
-  // Fecha de inicio para eventos puntuales (intensivos, congresos) — YYYY-MM-DD
-  @Column({ name: 'fecha_inicio', nullable: true })
+  // Start date for one-off events (intensives, congresses) — YYYY-MM-DD
+  @Column({ name: 'start_date', nullable: true })
   startDate?: string;
 
   // stored as HH:MM string, e.g. "21:00"
-  @Column({ name: 'hora_inicio', type: 'time', nullable: true })
+  @Column({ name: 'start_time', type: 'time', nullable: true })
   startTime: string;
 
-  @Column({ name: 'hora_pico_estimado', type: 'time', nullable: true })
+  @Column({ name: 'estimated_peak_time', type: 'time', nullable: true })
   estimatedPeakTime: string;
 
-  @Column({ name: 'estilos', type: 'simple-array' })
+  @Column({ name: 'styles', type: 'simple-array' })
   styles: string[];
 
-  @Column({ name: 'activo', default: true })
+  @Column({ name: 'active', default: true })
   active: boolean;
 }

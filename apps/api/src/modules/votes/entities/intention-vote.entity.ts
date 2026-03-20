@@ -25,10 +25,10 @@ export class IntentionVote {
   @Column({ name: 'event_id' })
   eventId: string;
 
-  @Column({ name: 'semana_iso' })
+  @Column({ name: 'iso_week' })
   isoWeek: string;
 
-  @Column({ type: 'enum', enum: VoteStatus, name: 'estado' })
+  @Column({ type: 'enum', enum: VoteStatus, name: 'status' })
   status: VoteStatus;
 
   @CreateDateColumn()

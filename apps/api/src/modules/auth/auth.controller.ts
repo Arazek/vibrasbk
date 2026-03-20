@@ -2,6 +2,7 @@ import { Controller, Post, Body } from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dtos/register.dto';
+import { LoginDto } from './dtos/login.dto';
 import { AuthResponseDto } from './dtos/auth-response.dto';
 import { Public } from './decorators/public.decorator';
 
@@ -20,7 +21,7 @@ export class AuthController {
   @Public()
   @Post('login')
   @ApiOperation({ summary: 'Login with email and password' })
-  login(@Body() body: { email: string; password: string }): Promise<AuthResponseDto> {
-    return this.authService.login(body.email, body.password) as Promise<AuthResponseDto>;
+  login(@Body() dto: LoginDto): Promise<AuthResponseDto> {
+    return this.authService.login(dto.email, dto.password) as Promise<AuthResponseDto>;
   }
 }

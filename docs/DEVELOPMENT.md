@@ -315,7 +315,7 @@ docker compose -f infra.docker-compose.yml up -d
 - [ ] `infra.docker-compose.yml` is up (Traefik + Postgres)
 - [ ] `docker compose -f docker-compose.app.yml up -d --build`
 - [ ] Verify `GET https://vibrasbk.duckdns.org/api/venues` returns 200
-- [ ] For Android APK: `nx build mobile-app --configuration=production --skip-nx-cache` → `npx cap sync android` → build with Gradle
+- [ ] For Android APK: see full sequence below — NX build needs node 20, `cap sync` needs node 22
 
 ---
 
@@ -332,6 +332,41 @@ You installed a package with `--prefix apps/api`. NX resolves all imports from r
 
 ### TypeORM unknown column
 `synchronize: true` auto-migrates in dev — restart the API after entity changes.
+
+### STI type filter returns all events or nothing
+**Never filter STI entities with `find({ where: { type: 'social' } })`** — the discriminator column is `tipo` in the DB, not `type`, so TypeORM generates invalid SQL or silently ignores the condition. Filter using `instanceof` after a full fetch:
+
+```typescript
+const all = await this.eventsRepository.find({ where: { active: true } });
+const social = all.filter(ev => ev instanceof SocialEvent);
+```
+
+### Android APK build — node version mismatch
+NX requires **Node 20** but `cap sync` requires **Node 22**. Run them with different node versions:
+
+```bash
+nvm use 20
+unset NODE_ENV
+./node_modules/.bin/nx build mobile-app --configuration=production --skip-nx-cache
+
+nvm use 22
+npx cap sync android
+
+cd android && ./gradlew assembleDebug
+adb install -r app/build/outputs/apk/debug/app-debug.apk
+```
+
+### Mobile file picker not opening (Android/iOS)
+Programmatic `.click()` on a hidden `<input type="file">` is unreliable inside a Capacitor WebView — it is not considered a direct user gesture. Use a `<label>` wrapper instead:
+
+```html
+<label>
+  <input type="file" accept="image/*" style="display:none" (change)="onFile($event)">
+  <ion-button>Upload</ion-button>
+</label>
+```
+
+The `<label>` tap is always a direct gesture so the file picker opens reliably.
 
 ### Angular Standalone component not rendering
 Ensure the required Ionic components are listed in the `imports[]` array of the standalone component.

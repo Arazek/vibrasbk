@@ -50,7 +50,7 @@ export class AuthService {
       throw new BadRequestException(`Invalid level: ${dto.level}`);
     }
     if (!Array.isArray(dto.styles) || dto.styles.length === 0) {
-      throw new BadRequestException(`Se requiere al menos un estilo`);
+      throw new BadRequestException(`At least one style is required`);
     }
 
     const passwordHash = await bcrypt.hash(dto.password, 10);
@@ -74,11 +74,11 @@ export class AuthService {
   async login(email: string, password: string): Promise<AuthResponseData> {
     const user = await this.usersRepository.findOne({ where: { email } });
     if (!user) {
-      throw new UnauthorizedException('Email o contraseña incorrectos');
+      throw new UnauthorizedException('Incorrect email or password');
     }
     const valid = await bcrypt.compare(password, user.passwordHash);
     if (!valid) {
-      throw new UnauthorizedException('Email o contraseña incorrectos');
+      throw new UnauthorizedException('Incorrect email or password');
     }
     return this.signToken(user);
   }

@@ -1,4 +1,5 @@
 import 'reflect-metadata';
+import { join } from 'path';
 import { DataSource } from 'typeorm';
 
 import { User } from './modules/users/entities/user.entity';
@@ -14,9 +15,6 @@ import { IntensivoEvent } from './modules/events/entities/intensivo-event.entity
 import { IntentionVote } from './modules/votes/entities/intention-vote.entity';
 import { AttendanceVerification } from './modules/votes/entities/attendance-verification.entity';
 import { ReliabilityMetric } from './modules/votes/entities/reliability-metric.entity';
-import { CalendarEvent } from './modules/calendar/entities/calendar-event.entity';
-import { Conversation } from './modules/chat/entities/conversation.entity';
-import { Message } from './modules/chat/entities/message.entity';
 
 export const AppDataSource = new DataSource({
   type: 'postgres',
@@ -24,7 +22,9 @@ export const AppDataSource = new DataSource({
   port: parseInt(process.env.DB_PORT || '5432', 10),
   username: process.env.DB_USERNAME || 'postgres',
   password: process.env.DB_PASSWORD || 'postgres',
-  database: process.env.DB_NAME || 'mobile_app',
+  database: process.env.DB_NAME || 'vibrasbk',
+  schema: process.env.DB_SCHEMA || 'vibrasbk',
+  extra: { options: `-c search_path=${process.env.DB_SCHEMA || 'vibrasbk'},public` },
   entities: [
     User,
     Venue,
@@ -38,11 +38,8 @@ export const AppDataSource = new DataSource({
     IntentionVote,
     AttendanceVerification,
     ReliabilityMetric,
-    CalendarEvent,
-    Conversation,
-    Message,
   ],
-  migrations: ['src/migrations/*.ts'],
+  migrations: [join(__dirname, 'migrations', '*.{ts,js}')],
   migrationsTableName: 'typeorm_migrations',
   synchronize: false,
   logging: process.env.NODE_ENV !== 'production',

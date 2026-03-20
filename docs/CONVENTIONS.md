@@ -127,7 +127,7 @@ CSS variables follow the same rule — English names.
 TypeORM property names are camelCase; the DB column name is always explicitly declared as snake_case using `@Column({ name: '...' })`. This decouples TypeScript renames from DB schema changes.
 
 ```typescript
-// ✅
+// ✅ Convention
 @Column({ name: 'day_of_week', type: 'smallint', nullable: true })
 dayOfWeek: number | null;
 
@@ -138,6 +138,8 @@ startTime: string;
 @JoinColumn({ name: 'venue_id' })
 venue: Venue;
 ```
+
+All DB column names are English snake_case. New entities must follow the same rule.
 
 ### Files — kebab-case
 

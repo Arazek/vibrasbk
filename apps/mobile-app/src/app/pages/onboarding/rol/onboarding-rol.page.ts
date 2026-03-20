@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import {
-  IonContent, IonHeader, IonToolbar, IonTitle,
+  IonContent, IonHeader, IonToolbar, IonTitle, IonFooter,
   IonButton, IonProgressBar, IonButtons, IonBackButton,
 } from '@ionic/angular/standalone';
 import { DancingRole } from '@shared/types';
@@ -17,7 +17,7 @@ const ROLES: { value: DancingRole; label: string; description: string; emoji: st
 @Component({
   selector: 'app-onboarding-rol',
   standalone: true,
-  imports: [CommonModule, IonContent, IonHeader, IonToolbar, IonTitle, IonButton, IonProgressBar, IonButtons, IonBackButton],
+  imports: [CommonModule, IonContent, IonHeader, IonToolbar, IonTitle, IonFooter, IonButton, IonProgressBar, IonButtons, IonBackButton],
   styles: [`
     .question {
       font-size: var(--lgui-fs-display);
@@ -89,10 +89,15 @@ const ROLES: { value: DancingRole; label: string; description: string; emoji: st
         </div>
       </div>
 
-      <ion-button expand="block" [disabled]="!!(!selected)" (click)="next()" style="margin-top: 1.5rem;">
-        Siguiente
-      </ion-button>
     </ion-content>
+
+    <ion-footer>
+      <ion-toolbar>
+        <ion-button expand="block" color="primary" style="margin: 0.5rem" [disabled]="!!(!selected)" (click)="next()">
+          Siguiente
+        </ion-button>
+      </ion-toolbar>
+    </ion-footer>
   `,
 })
 export class OnboardingRolPage {

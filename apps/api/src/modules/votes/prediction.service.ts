@@ -128,12 +128,12 @@ export class PredictionService {
 
   // Recommendation text based on combined rules
   getRecommendation(vibe: Vibe, averageLevel: number, balance: RoleBalanceDetail['balance']): string {
-    if (vibe === 'quiet') return 'Poca gente de momento.';
-    if (averageLevel >= 4) return 'Exigente para principiantes.';
-    if (balance === 'need_followers') return 'Puede haber espera para followers.';
-    if (balance === 'need_leaders') return 'Puede haber espera para leaders.';
-    if (vibe === 'lively' || vibe === 'packed') return 'Noche animada, ¡buena opción!';
-    return 'Buen día para practicar.';
+    if (vibe === 'quiet') return 'Few people at the moment.';
+    if (averageLevel >= 4) return 'Demanding for beginners.';
+    if (balance === 'need_followers') return 'There may be a wait for followers.';
+    if (balance === 'need_leaders') return 'There may be a wait for leaders.';
+    if (vibe === 'lively' || vibe === 'packed') return 'Lively night, great option!';
+    return 'Good day to practice.';
   }
 
   // Compose full prediction from voter data

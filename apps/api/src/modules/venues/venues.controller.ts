@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Patch, Delete, Param, Body, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Delete, Param, Body, UseGuards, ParseUUIDPipe } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt.guard';
 import { AdminGuard } from '../auth/guards/admin.guard';
@@ -21,7 +21,7 @@ export class VenuesController {
 
   @Get(':id')
   @ApiOperation({ summary: 'Get a single venue' })
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id', ParseUUIDPipe) id: string) {
     return this.venuesService.findOne(id);
   }
 
@@ -35,14 +35,14 @@ export class VenuesController {
   @Patch(':id')
   @UseGuards(AdminGuard)
   @ApiOperation({ summary: '[Admin] Update a venue' })
-  update(@Param('id') id: string, @Body() dto: UpdateVenueDto) {
+  update(@Param('id', ParseUUIDPipe) id: string, @Body() dto: UpdateVenueDto) {
     return this.venuesService.update(id, dto);
   }
 
   @Delete(':id')
   @UseGuards(AdminGuard)
   @ApiOperation({ summary: '[Admin] Delete a venue' })
-  remove(@Param('id') id: string) {
+  remove(@Param('id', ParseUUIDPipe) id: string) {
     return this.venuesService.remove(id);
   }
 }

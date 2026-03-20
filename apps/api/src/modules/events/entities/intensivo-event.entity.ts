@@ -3,19 +3,19 @@ import { RecurringEvent } from './recurring-event.entity';
 
 @ChildEntity('intensive')
 export class IntensivoEvent extends RecurringEvent {
-  @Column({ name: 'titulo', nullable: true })
+  @Column({ name: 'title', nullable: true })
   title?: string;
 
-  @Column({ name: 'nivel', nullable: true })
+  @Column({ name: 'level', nullable: true })
   level?: string;
 
   @Column({ type: 'decimal', nullable: true })
   price?: number;
 
-  @Column({ name: 'profesores', type: 'simple-array', nullable: true })
+  @Column({ name: 'instructors', type: 'simple-array', nullable: true })
   instructors?: string[];
 
-  // Fecha fin del intensivo (YYYY-MM-DD)
-  @Column({ name: 'fecha_fin', nullable: true })
+  // End date of the intensive (YYYY-MM-DD)
+  @Column({ name: 'end_date', nullable: true })
   endDate?: string;
 }

@@ -3,23 +3,23 @@ import { RecurringEvent } from './recurring-event.entity';
 
 @ChildEntity('congress')
 export class CongresoEvent extends RecurringEvent {
-  @Column({ name: 'titulo', nullable: true })
+  @Column({ name: 'title', nullable: true })
   title?: string;
 
-  @Column({ name: 'localidad', nullable: true })
+  @Column({ name: 'locality', nullable: true })
   locality?: string;
 
-  @Column({ name: 'duracion_dias', nullable: true })
+  @Column({ name: 'duration_days', nullable: true })
   durationDays?: number;
 
-  // JSON string: [{label: string, precio: number}]
-  @Column({ name: 'precios', type: 'text', nullable: true })
+  // JSON string: [{label: string, price: number}]
+  @Column({ name: 'prices', type: 'text', nullable: true })
   prices?: string;
 
-  @Column({ name: 'enlace_web', nullable: true })
+  @Column({ name: 'website_url', nullable: true })
   websiteUrl?: string;
 
-  // Fecha fin del congreso (YYYY-MM-DD)
-  @Column({ name: 'fecha_fin', nullable: true })
+  // End date of the congress (YYYY-MM-DD)
+  @Column({ name: 'end_date', nullable: true })
   endDate?: string;
 }

@@ -5,9 +5,9 @@ export class Academia {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ name: 'nombre' })
+  @Column({ name: 'name' })
   name: string;
 
-  @Column({ name: 'ciudad', nullable: true })
+  @Column({ name: 'city', nullable: true })
   city?: string;
 }

@@ -11,6 +11,7 @@ import {
   UseInterceptors,
   UploadedFile,
   Request,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
@@ -50,13 +51,13 @@ export class EventsController {
 
   @Get(':id')
   @ApiOperation({ summary: 'Get a single event enriched with vote data for the current week' })
-  findOne(@Param('id') id: string, @Request() req: any) {
+  findOne(@Param('id', ParseUUIDPipe) id: string, @Request() req: any) {
     return this.eventsService.getEventDetail(id, req.user.id);
   }
 
   @Get(':id/analytics')
   @ApiOperation({ summary: 'Full prediction analytics (requires going or maybe vote)' })
-  getAnalytics(@Param('id') id: string, @Request() req: any) {
+  getAnalytics(@Param('id', ParseUUIDPipe) id: string, @Request() req: any) {
     return this.votesService.getAnalytics(id, req.user.id);
   }
 
@@ -72,14 +73,14 @@ export class EventsController {
   @Patch(':id')
   @UseGuards(AdminGuard)
   @ApiOperation({ summary: '[Admin] Update a recurring event' })
-  updateEvent(@Param('id') id: string, @Body() dto: UpdateEventDto) {
+  updateEvent(@Param('id', ParseUUIDPipe) id: string, @Body() dto: UpdateEventDto) {
     return this.eventsService.updateEvent(id, dto);
   }
 
   @Delete(':id')
   @UseGuards(AdminGuard)
   @ApiOperation({ summary: '[Admin] Soft-delete (deactivate) an event' })
-  removeEvent(@Param('id') id: string) {
+  removeEvent(@Param('id', ParseUUIDPipe) id: string) {
     return this.eventsService.removeEvent(id);
   }
 
@@ -88,7 +89,7 @@ export class EventsController {
   @ApiOperation({ summary: '[Admin] Upload event photo' })
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(FileInterceptor('file', { storage: photoStorage }))
-  async uploadPhoto(@Param('id') id: string, @UploadedFile() file: Express.Multer.File) {
+  async uploadPhoto(@Param('id', ParseUUIDPipe) id: string, @UploadedFile() file: Express.Multer.File) {
     const photoUrl = `/uploads/events/photos/${file.filename}`;
     return this.eventsService.updatePhoto(id, photoUrl);
   }

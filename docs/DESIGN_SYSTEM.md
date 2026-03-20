@@ -138,9 +138,19 @@ Dance/nightlife identity. Applied via Ionic's color system so all `ion-button`, 
 
 | Role | Color | Value | Rationale |
 |------|-------|-------|-----------|
-| **Primary** | Coral rose | `#E84855` | Energetic, dance-oriented; used for all primary CTAs |
+| **Primary** | Hot pink | `#D91E5C` | Matches the VibraSBK logo gradient midpoint; energetic, dance-oriented; used for all primary CTAs |
 | **Secondary** | Warm gold | `#F4A261` | Latin warmth; used for accents, highlights |
 | **Tertiary** | Teal | `#2A9D8F` | Cool counterpoint; used sparingly |
+
+Ionic color system variables for primary:
+```css
+--ion-color-primary:         #D91E5C;
+--ion-color-primary-rgb:     217, 30, 92;
+--ion-color-primary-shade:   #BF1A51;
+--ion-color-primary-tint:    #DD356C;
+--lgui-shadow-accent-sm: 0 0 0.125rem rgba(217, 30, 92, 0.28);
+--lgui-shadow-accent-md: 0 0.25rem 0.5rem rgba(217, 30, 92, 0.22);
+```
 
 **When to use primary vs secondary:**
 - `primary` → main actions (vote buttons, register, confirm)
@@ -228,6 +238,19 @@ Dark mode is automatic via `@media (prefers-color-scheme: dark)`. All Layer 2 se
 - Never hardcode `#FFFFFF` or `#19213D` in components — use `--lgui-text-1`/`--lgui-text-4`
 - Never hardcode background colors — use `--lgui-surface-*`
 - Brand colors (`--ion-color-primary`, `--ion-color-secondary`) do not change in dark mode by design
+- **Inline Angular `[style.background]` / `[style.color]` bindings must use CSS variable strings** — not hex values. Hardcoded hex bypasses the `@media (prefers-color-scheme: dark)` cascade and breaks dark mode.
+
+```typescript
+// ✅ Dark-mode safe — CSS variable string
+[style.background]="'var(--vibe-bg-quiet)'"
+[style.color]="'var(--type-social-color)'"
+
+// ❌ Breaks dark mode — hardcoded hex
+[style.background]="'#BAC0CC'"
+[style.color]="'#4A90D9'"
+```
+
+This applies to all computed color maps in components (e.g. `VIBE_BG`, `VIBE_HEX`, `TYPE_DOT_COLOR`). Use `Record<string, string>` with `'var(--token-name)'` values.
 
 ---
 

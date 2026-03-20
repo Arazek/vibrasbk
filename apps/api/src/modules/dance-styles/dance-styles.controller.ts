@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Patch, Delete, Param, Body, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Delete, Param, Body, UseGuards, ParseUUIDPipe } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { Public } from '../auth/decorators/public.decorator';
 import { JwtAuthGuard } from '../auth/guards/jwt.guard';
@@ -30,7 +30,7 @@ export class DanceStylesController {
   @UseGuards(JwtAuthGuard, AdminGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: '[Admin] Update a dance style' })
-  update(@Param('id') id: string, @Body() dto: Partial<CreateDanceStyleDto>) {
+  update(@Param('id', ParseUUIDPipe) id: string, @Body() dto: Partial<CreateDanceStyleDto>) {
     return this.service.update(id, dto);
   }
 
@@ -38,7 +38,7 @@ export class DanceStylesController {
   @UseGuards(JwtAuthGuard, AdminGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: '[Admin] Delete a dance style' })
-  remove(@Param('id') id: string) {
+  remove(@Param('id', ParseUUIDPipe) id: string) {
     return this.service.remove(id);
   }
 }

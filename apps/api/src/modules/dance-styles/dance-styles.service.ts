@@ -39,14 +39,14 @@ export class DanceStylesService implements OnApplicationBootstrap {
 
   async update(id: string, dto: Partial<CreateDanceStyleDto>): Promise<DanceStyle> {
     const style = await this.repo.findOne({ where: { id } });
-    if (!style) throw new NotFoundException(`Estilo ${id} no encontrado`);
+    if (!style) throw new NotFoundException(`Style ${id} not found`);
     Object.assign(style, dto);
     return this.repo.save(style);
   }
 
   async remove(id: string): Promise<void> {
     const style = await this.repo.findOne({ where: { id } });
-    if (!style) throw new NotFoundException(`Estilo ${id} no encontrado`);
+    if (!style) throw new NotFoundException(`Style ${id} not found`);
     await this.repo.remove(style);
   }
 }

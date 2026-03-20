@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import {
-  IonContent, IonHeader, IonToolbar, IonTitle, IonButton,
+  IonContent, IonHeader, IonToolbar, IonTitle, IonFooter, IonButton,
   IonChip, IonLabel, IonItem, IonInput, IonList, IonToast, IonProgressBar,
   IonSelect, IonSelectOption, IonSpinner, IonButtons, IonBackButton,
 } from '@ionic/angular/standalone';
@@ -19,7 +19,7 @@ import { FormFieldComponent } from '../../../components/form-field/form-field.co
   selector: 'app-onboarding-estilos',
   standalone: true,
   imports: [
-    CommonModule, FormsModule, IonContent, IonHeader, IonToolbar, IonTitle,
+    CommonModule, FormsModule, IonContent, IonHeader, IonToolbar, IonTitle, IonFooter,
     IonButton, IonItem, IonInput, IonList, IonToast, IonProgressBar,
     IonSelect, IonSelectOption, IonButtons, IonBackButton,
     StyleChipGridComponent, FormFieldComponent,
@@ -108,13 +108,6 @@ import { FormFieldComponent } from '../../../components/form-field/form-field.co
         </ion-input>
       </app-form-field>
 
-      <ion-button
-        expand="block"
-        [disabled]="!!(!canSubmit || loading)"
-        (click)="finish()">
-        {{ loading ? 'Creando perfil...' : 'Entrar a la app 🎵' }}
-      </ion-button>
-
       <ion-toast
         [isOpen]="!!error"
         [message]="error"
@@ -123,6 +116,19 @@ import { FormFieldComponent } from '../../../components/form-field/form-field.co
         (didDismiss)="error = ''">
       </ion-toast>
     </ion-content>
+
+    <ion-footer>
+      <ion-toolbar>
+        <ion-button
+          expand="block"
+          color="primary"
+          style="margin: 0.5rem"
+          [disabled]="!!(!canSubmit || loading)"
+          (click)="finish()">
+          {{ loading ? 'Creando perfil...' : 'Entrar a la app 🎵' }}
+        </ion-button>
+      </ion-toolbar>
+    </ion-footer>
   `,
 })
 export class OnboardingEstilosPage implements OnInit {

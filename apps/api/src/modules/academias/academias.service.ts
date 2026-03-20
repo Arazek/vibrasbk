@@ -25,14 +25,14 @@ export class AcademiasService {
 
   async update(id: string, dto: Partial<CreateAcademiaDto>): Promise<Academia> {
     const academia = await this.repo.findOne({ where: { id } });
-    if (!academia) throw new NotFoundException(`Academia ${id} no encontrada`);
+    if (!academia) throw new NotFoundException(`Academia ${id} not found`);
     Object.assign(academia, dto);
     return this.repo.save(academia);
   }
 
   async remove(id: string): Promise<void> {
     const academia = await this.repo.findOne({ where: { id } });
-    if (!academia) throw new NotFoundException(`Academia ${id} no encontrada`);
+    if (!academia) throw new NotFoundException(`Academia ${id} not found`);
     await this.repo.remove(academia);
   }
 }

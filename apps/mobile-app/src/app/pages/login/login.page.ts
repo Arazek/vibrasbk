@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import {
-  IonContent, IonHeader, IonToolbar, IonTitle,
+  IonContent, IonHeader, IonToolbar, IonTitle, IonFooter,
   IonButton, IonItem, IonInput, IonList, IonToast, IonBackButton, IonButtons,
 } from '@ionic/angular/standalone';
 import { AuthService } from '../../services/auth.service';
@@ -14,7 +14,7 @@ import { FormFieldComponent } from '../../components/form-field/form-field.compo
   standalone: true,
   imports: [
     CommonModule, FormsModule,
-    IonContent, IonHeader, IonToolbar, IonTitle,
+    IonContent, IonHeader, IonToolbar, IonTitle, IonFooter,
     IonButton, IonItem, IonInput, IonList, IonToast, IonBackButton, IonButtons,
     FormFieldComponent,
   ],
@@ -85,13 +85,6 @@ import { FormFieldComponent } from '../../components/form-field/form-field.compo
           </ion-input>
         </app-form-field>
 
-        <ion-button
-          expand="block"
-          style="width: 100%; margin-top: 0.5rem;"
-          [disabled]="!!(!canSubmit || loading)"
-          (click)="login()">
-          {{ loading ? 'Entrando...' : 'Entrar' }}
-        </ion-button>
       </div>
 
       <ion-toast
@@ -102,6 +95,18 @@ import { FormFieldComponent } from '../../components/form-field/form-field.compo
         (didDismiss)="error = ''">
       </ion-toast>
     </ion-content>
+
+    <ion-footer>
+      <ion-toolbar>
+        <ion-button
+          expand="block"
+          style="margin: 0.5rem"
+          [disabled]="!!(!canSubmit || loading)"
+          (click)="login()">
+          {{ loading ? 'Entrando...' : 'Entrar' }}
+        </ion-button>
+      </ion-toolbar>
+    </ion-footer>
   `,
 })
 export class LoginPage {

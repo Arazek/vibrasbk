@@ -25,7 +25,7 @@ if [ -f "$ENV_FILE" ]; then
 fi
 DB_HOST="${DB_HOST:-localhost}"
 DB_PORT="${DB_PORT:-5432}"
-DB_NAME="${POSTGRES_DB:-${DB_NAME:-mobile_app}}"
+DB_NAME="${POSTGRES_DB:-${DB_NAME:-vibrasbk}}"
 DB_USER="${POSTGRES_USER:-${DB_USERNAME:-postgres}}"
 DB_PASS="${POSTGRES_PASSWORD:-${DB_PASSWORD:-postgres}}"
 
@@ -160,11 +160,69 @@ cmd_stop() {
     print_success "Done"
 }
 
+cmd_test() {
+    load_node
+    check_postgres || { print_error "PostgreSQL must be running to execute integration tests"; exit 1; }
+    ensure_deps
+
+    local filter="${2:-}"
+    echo ""
+    echo -e "${BLUE}Running backend integration tests...${NC}"
+    echo ""
+
+    if [ -n "$filter" ]; then
+        print_info "Filter: $filter"
+        (cd "$PROJECT_DIR/apps/api" && DB_SCHEMA=vibrasbk_test npx jest --testPathPattern="$filter" --forceExit --runInBand 2>&1)
+    else
+        (cd "$PROJECT_DIR/apps/api" && DB_SCHEMA=vibrasbk_test npx jest --forceExit --runInBand 2>&1)
+    fi
+
+    local exit_code=$?
+    echo ""
+    if [ $exit_code -eq 0 ]; then
+        print_success "All tests passed"
+    else
+        print_error "Tests failed (exit $exit_code)"
+    fi
+    return $exit_code
+}
+
 cmd_rebuild() {
     load_node
     print_info "Building Angular app (production)..."
     (cd "$PROJECT_DIR" && npm run build:app)
     print_success "Build complete — output: dist/apps/mobile-app/"
+}
+
+cmd_apk() {
+    load_node
+    ensure_deps
+
+    local android_dir="$PROJECT_DIR/apps/mobile-app/android"
+    local apk_src="$android_dir/app/build/outputs/apk/debug/app-debug.apk"
+    local apk_dest="$PROJECT_DIR/vibrasbk-debug.apk"
+
+    # NODE_ENV must be unset — it interferes with NX cache/build
+    unset NODE_ENV
+
+    print_info "Step 1/3 — Building Angular app (production)..."
+    (cd "$PROJECT_DIR" && ./node_modules/.bin/nx build mobile-app --configuration=production --skip-nx-cache) \
+        || { print_error "Angular build failed"; exit 1; }
+    print_success "Angular build complete"
+
+    print_info "Step 2/3 — Syncing Capacitor..."
+    (cd "$PROJECT_DIR/apps/mobile-app" && npx cap sync android) \
+        || { print_error "Capacitor sync failed"; exit 1; }
+    print_success "Capacitor sync complete"
+
+    print_info "Step 3/3 — Building APK (assembleDebug)..."
+    (cd "$android_dir" && ./gradlew assembleDebug) \
+        || { print_error "Gradle build failed"; exit 1; }
+    print_success "Gradle build complete"
+
+    cp "$apk_src" "$apk_dest"
+    print_success "APK ready: vibrasbk-debug.apk"
+    print_info   "  Install: adb install -r vibrasbk-debug.apk"
 }
 
 cmd_logs() {
@@ -283,7 +341,10 @@ Usage: ./run.sh [COMMAND]
 Development commands:
     start          Start API + frontend dev servers  (default)
     stop           Stop all dev servers
+    test           Run backend integration tests (requires PostgreSQL)
+    test <pattern> Run only tests matching a file name pattern
     rebuild        Production build of the Angular app
+    apk            Build Android debug APK → vibrasbk-debug.apk in project root
     logs           Tail API and frontend logs
     status         Show running status of all services
 
@@ -308,7 +369,9 @@ EOF
 case "${1:-start}" in
     start)          cmd_start        ;;
     stop)           cmd_stop         ;;
+    test)           cmd_test "$@"    ;;
     rebuild)        cmd_rebuild      ;;
+    apk)            cmd_apk          ;;
     logs)           cmd_logs         ;;
     status)         cmd_status       ;;
     prod)           cmd_prod_up      ;;

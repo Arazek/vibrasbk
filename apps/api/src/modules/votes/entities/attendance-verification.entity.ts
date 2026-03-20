@@ -18,14 +18,14 @@ export class AttendanceVerification {
   @Column({ name: 'event_id' })
   eventId: string;
 
-  @Column({ name: 'semana_iso' })
+  @Column({ name: 'iso_week' })
   isoWeek: string;
 
   // null = pending response, true = attended, false = did not attend (or timed out)
-  @Column({ name: 'asistio', type: 'boolean', nullable: true })
+  @Column({ name: 'attended', type: 'boolean', nullable: true })
   attended: boolean | null;
 
-  @Column({ name: 'timestamp_respuesta', nullable: true })
+  @Column({ name: 'response_timestamp', nullable: true })
   responseTimestamp: Date;
 
   @CreateDateColumn()

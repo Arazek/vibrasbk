@@ -77,19 +77,19 @@ export class EventsService implements OnApplicationBootstrap {
    */
   private async backfillNullType() {
     await this.eventsRepository.query(
-      `UPDATE recurring_events SET tipo = 'social' WHERE tipo IS NULL`
+      `UPDATE recurring_events SET type = 'social' WHERE type IS NULL`
     );
     // Rename legacy 'taller' discriminator to 'intensive'
     await this.eventsRepository.query(
-      `UPDATE recurring_events SET tipo = 'intensive' WHERE tipo = 'taller'`
+      `UPDATE recurring_events SET type = 'intensive' WHERE type = 'taller'`
     );
     // Rename legacy 'intensivo' discriminator to 'intensive'
     await this.eventsRepository.query(
-      `UPDATE recurring_events SET tipo = 'intensive' WHERE tipo = 'intensivo'`
+      `UPDATE recurring_events SET type = 'intensive' WHERE type = 'intensivo'`
     );
     // Rename legacy 'congreso' discriminator to 'congress'
     await this.eventsRepository.query(
-      `UPDATE recurring_events SET tipo = 'congress' WHERE tipo = 'congreso'`
+      `UPDATE recurring_events SET type = 'congress' WHERE type = 'congreso'`
     );
   }
 
@@ -226,21 +226,21 @@ export class EventsService implements OnApplicationBootstrap {
 
   async updateEvent(id: string, dto: UpdateEventDto): Promise<RecurringEvent> {
     const ev = await this.eventsRepository.findOne({ where: { id } });
-    if (!ev) throw new NotFoundException(`Evento ${id} no encontrado.`);
+    if (!ev) throw new NotFoundException(`Event ${id} not found.`);
     Object.assign(ev, dto);
     return this.eventsRepository.save(ev);
   }
 
   async removeEvent(id: string): Promise<void> {
-    const ev = await this.eventsRepository.findOne({ where: { id } });
-    if (!ev) throw new NotFoundException(`Evento ${id} no encontrado.`);
+    const ev = await this.eventsRepository.findOne({ where: { id, active: true } });
+    if (!ev) throw new NotFoundException(`Event ${id} not found.`);
     ev.active = false;
     await this.eventsRepository.save(ev);
   }
 
   async updatePhoto(id: string, photoUrl: string): Promise<RecurringEvent> {
     const ev = await this.eventsRepository.findOne({ where: { id } });
-    if (!ev) throw new NotFoundException(`Evento ${id} no encontrado.`);
+    if (!ev) throw new NotFoundException(`Event ${id} not found.`);
     ev.photoUrl = photoUrl;
     return this.eventsRepository.save(ev);
   }

@@ -52,7 +52,7 @@ export class VotesService {
       where: { userId, eventId: dto.eventId, isoWeek },
     });
     if (existing) {
-      throw new ConflictException('Ya has votado para este evento esta semana. Usa PATCH para cambiar.');
+      throw new ConflictException('You have already voted for this event this week. Use PATCH to update.');
     }
     const vote = this.votesRepo.create({
       userId,
@@ -65,12 +65,12 @@ export class VotesService {
 
   async updateVote(userId: string, voteId: string, dto: UpdateVoteDto): Promise<IntentionVote> {
     const vote = await this.votesRepo.findOne({ where: { id: voteId } });
-    if (!vote) throw new NotFoundException('Voto no encontrado.');
-    if (vote.userId !== userId) throw new ForbiddenException('No puedes modificar este voto.');
+    if (!vote) throw new NotFoundException('Vote not found.');
+    if (vote.userId !== userId) throw new ForbiddenException('You cannot modify this vote.');
 
     const canEdit = await this.canEditVote(vote.eventId);
     if (!canEdit) {
-      throw new ForbiddenException('No se puede cambiar el voto menos de 2 horas antes del evento.');
+      throw new ForbiddenException('Cannot change vote less than 2 hours before the event.');
     }
 
     vote.status = dto.status;
@@ -162,7 +162,7 @@ export class VotesService {
       where: { userId, eventId, isoWeek },
     });
     if (!userVote || userVote.status === VoteStatus.NOT_GOING) {
-      throw new UnauthorizedException('Debes votar "Voy" o "Tal vez" para ver la analítica.');
+      throw new UnauthorizedException('You must vote Going or Maybe to view analytics.');
     }
 
     // Load event to get venue capacity
