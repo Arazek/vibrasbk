@@ -198,7 +198,7 @@ cmd_apk() {
     load_node
     ensure_deps
 
-    local android_dir="$PROJECT_DIR/apps/mobile-app/android"
+    local android_dir="$PROJECT_DIR/android"
     local apk_src="$android_dir/app/build/outputs/apk/debug/app-debug.apk"
     local apk_dest="$PROJECT_DIR/vibrasbk-debug.apk"
 
@@ -211,7 +211,13 @@ cmd_apk() {
     print_success "Angular build complete"
 
     print_info "Step 2/3 — Syncing Capacitor..."
-    (cd "$PROJECT_DIR/apps/mobile-app" && npx cap sync android) \
+    if [ ! -d "$android_dir" ]; then
+        print_info "Android platform not found — running 'cap add android' first..."
+        (cd "$PROJECT_DIR" && npx cap add android) \
+            || { print_error "Capacitor add android failed"; exit 1; }
+        print_success "Android platform added"
+    fi
+    (cd "$PROJECT_DIR" && npx cap sync android) \
         || { print_error "Capacitor sync failed"; exit 1; }
     print_success "Capacitor sync complete"
 
