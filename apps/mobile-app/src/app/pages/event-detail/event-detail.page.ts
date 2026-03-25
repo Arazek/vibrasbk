@@ -2,9 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
-  IonHeader, IonToolbar, IonTitle, IonContent, IonBackButton, IonButtons,
+  IonContent,
   IonSpinner, IonText, IonChip, IonLabel, IonToast, IonButton,
 } from '@ionic/angular/standalone';
+import { NavbarComponent } from '../../components/navbar/navbar.component';
 import { WeeklyEvent, EventAnalytics, VoteStatus } from '@shared/types';
 import { EventsService } from '../../services/events.service';
 import { VotesService } from '../../services/votes.service';
@@ -25,9 +26,9 @@ const TYPE_LABEL: Record<string, string> = {
   standalone: true,
   imports: [
     CommonModule,
-    IonHeader, IonToolbar, IonTitle, IonContent, IonBackButton, IonButtons,
+    IonContent,
     IonSpinner, IonText, IonChip, IonLabel, IonToast, IonButton,
-    AnalyticsPanelComponent, ReplacePipe,
+    AnalyticsPanelComponent, ReplacePipe, NavbarComponent,
   ],
   styles: [`
     .event-photo {
@@ -154,14 +155,7 @@ const TYPE_LABEL: Record<string, string> = {
     }
   `],
   template: `
-    <ion-header>
-      <ion-toolbar>
-        <ion-buttons slot="start">
-          <ion-back-button defaultHref="/tabs/home" text=""></ion-back-button>
-          <span class="breadcrumb">{{ event?.venue?.name ?? 'Evento' }}</span>
-        </ion-buttons>
-      </ion-toolbar>
-    </ion-header>
+    <app-navbar></app-navbar>
 
     <ion-content class="ion-padding">
       <div *ngIf="loading" class="loading-container">

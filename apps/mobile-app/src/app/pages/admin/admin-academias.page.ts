@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
-  IonHeader, IonToolbar, IonTitle, IonContent, IonButtons,
+  IonContent,
   IonList, IonItem, IonLabel, IonButton, IonFab, IonFabButton, IonIcon,
-  IonToast, IonSpinner, IonBackButton, AlertController, NavController,
+  IonToast, IonSpinner, AlertController, NavController,
 } from '@ionic/angular/standalone';
+import { NavbarComponent } from '../../components/navbar/navbar.component';
 import { addIcons } from 'ionicons';
 import { add, trash, pencil, chevronBack } from 'ionicons/icons';
 import { Academia } from '@shared/types';
@@ -15,19 +16,12 @@ import { AdminService } from '../../services/admin.service';
   standalone: true,
   imports: [
     CommonModule,
-    IonHeader, IonToolbar, IonTitle, IonContent, IonButtons,
+    IonContent,
     IonList, IonItem, IonLabel, IonButton, IonFab, IonFabButton, IonIcon,
-    IonToast, IonSpinner, IonBackButton,
+    IonToast, IonSpinner, NavbarComponent,
   ],
   template: `
-    <ion-header>
-      <ion-toolbar>
-        <ion-buttons slot="start">
-          <ion-back-button defaultHref="/admin" text=""></ion-back-button>
-          <span class="breadcrumb">Academias</span>
-        </ion-buttons>
-      </ion-toolbar>
-    </ion-header>
+    <app-navbar></app-navbar>
     <ion-content>
       <div *ngIf="loading" class="ion-text-center ion-padding">
         <ion-spinner color="primary"></ion-spinner>

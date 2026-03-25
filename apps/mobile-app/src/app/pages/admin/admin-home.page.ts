@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
 import { NavController } from '@ionic/angular/standalone';
 import {
-  IonHeader, IonToolbar, IonTitle, IonContent,
-  IonList, IonItem, IonLabel, IonIcon, IonButtons, IonButton, IonBackButton,
+  IonContent,
+  IonList, IonItem, IonLabel, IonIcon,
 } from '@ionic/angular/standalone';
+import { NavbarComponent } from '../../components/navbar/navbar.component';
 import { addIcons } from 'ionicons';
 import { calendar, location, statsChart, chevronBack, musicalNotes, school } from 'ionicons/icons';
 
@@ -11,8 +12,9 @@ import { calendar, location, statsChart, chevronBack, musicalNotes, school } fro
   selector: 'app-admin-home',
   standalone: true,
   imports: [
-    IonHeader, IonToolbar, IonTitle, IonContent,
-    IonList, IonItem, IonLabel, IonIcon, IonButtons, IonButton, IonBackButton,
+    IonContent,
+    IonList, IonItem, IonLabel, IonIcon,
+    NavbarComponent,
   ],
   styles: [`
     .admin-header {
@@ -25,14 +27,7 @@ import { calendar, location, statsChart, chevronBack, musicalNotes, school } fro
     }
   `],
   template: `
-    <ion-header>
-      <ion-toolbar>
-        <ion-buttons slot="start">
-          <ion-back-button defaultHref="/tabs/profile" text=""></ion-back-button>
-          <span class="breadcrumb">Panel Admin</span>
-        </ion-buttons>
-      </ion-toolbar>
-    </ion-header>
+    <app-navbar></app-navbar>
     <ion-content>
       <div class="admin-header">Gestión</div>
       <ion-list>

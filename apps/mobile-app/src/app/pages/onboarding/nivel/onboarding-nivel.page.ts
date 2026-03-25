@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import {
   IonContent, IonHeader, IonToolbar, IonTitle, IonFooter,
-  IonButton, IonProgressBar, IonButtons, IonBackButton,
+  IonButton, IonProgressBar, IonButtons,
 } from '@ionic/angular/standalone';
 import { Level } from '@shared/types';
 import { OnboardingStateService } from '../../../services/onboarding-state.service';
@@ -19,7 +19,7 @@ const LEVELS: { value: Level; label: string; description: string; emoji: string 
 @Component({
   selector: 'app-onboarding-nivel',
   standalone: true,
-  imports: [CommonModule, IonContent, IonHeader, IonToolbar, IonTitle, IonFooter, IonButton, IonProgressBar, IonButtons, IonBackButton],
+  imports: [CommonModule, IonContent, IonHeader, IonToolbar, IonTitle, IonFooter, IonButton, IonProgressBar, IonButtons],
   styles: [`
     .question {
       font-size: var(--lgui-fs-display);
@@ -69,7 +69,6 @@ const LEVELS: { value: Level; label: string; description: string; emoji: string 
     <ion-header>
       <ion-toolbar>
         <ion-buttons slot="start">
-          <ion-back-button defaultHref="/onboarding/rol" text=""></ion-back-button>
           <span class="breadcrumb">Tu nivel</span>
         </ion-buttons>
       </ion-toolbar>

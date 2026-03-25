@@ -25,6 +25,7 @@
 
 * {
   box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
 }
 
 html,
@@ -45,11 +46,6 @@ ion-card {
 ion-content {
   --overflow: auto;
   -webkit-overflow-scrolling: touch;
-}
-
-/* Tap highlight suppression — let components define their own feedback */
-* {
-  -webkit-tap-highlight-color: transparent;
 }
 
 /* Segment buttons — tighter, pill-like style */

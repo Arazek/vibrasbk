@@ -2,10 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
-  IonHeader, IonToolbar, IonTitle, IonContent, IonButtons,
+  IonContent,
   IonList, IonItem, IonLabel, IonButton, IonFab, IonFabButton, IonIcon,
-  IonToast, IonSpinner, IonInput, IonBackButton, ModalController, AlertController, NavController,
+  IonToast, IonSpinner, IonInput, ModalController, AlertController, NavController,
 } from '@ionic/angular/standalone';
+import { NavbarComponent } from '../../components/navbar/navbar.component';
 import { addIcons } from 'ionicons';
 import { add, trash, pencil, chevronBack } from 'ionicons/icons';
 import { DanceStyle } from '@shared/types';
@@ -16,19 +17,12 @@ import { AdminService } from '../../services/admin.service';
   standalone: true,
   imports: [
     CommonModule, FormsModule,
-    IonHeader, IonToolbar, IonTitle, IonContent, IonButtons,
+    IonContent,
     IonList, IonItem, IonLabel, IonButton, IonFab, IonFabButton, IonIcon,
-    IonToast, IonSpinner, IonInput, IonBackButton,
+    IonToast, IonSpinner, IonInput, NavbarComponent,
   ],
   template: `
-    <ion-header>
-      <ion-toolbar>
-        <ion-buttons slot="start">
-          <ion-back-button defaultHref="/admin" text=""></ion-back-button>
-          <span class="breadcrumb">Estilos de Baile</span>
-        </ion-buttons>
-      </ion-toolbar>
-    </ion-header>
+    <app-navbar></app-navbar>
     <ion-content>
       <div *ngIf="loading" class="ion-text-center ion-padding">
         <ion-spinner color="primary"></ion-spinner>

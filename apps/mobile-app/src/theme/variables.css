@@ -17,13 +17,13 @@
 :root {
 
   --lgui-neutral-100: #FFFFFF;
-  --lgui-neutral-200: #F7F8FA;
-  --lgui-neutral-300: #F0F2F5;
-  --lgui-neutral-400: #E3E6EA;
-  --lgui-neutral-500: #BAC0CC;
-  --lgui-neutral-600: #666F8D;
-  --lgui-neutral-700: #353E5C;
-  --lgui-neutral-800: #19213D;
+  --lgui-neutral-200: #F5F5F5;
+  --lgui-neutral-300: #EBEBEB;
+  --lgui-neutral-400: #D4D4D4;
+  --lgui-neutral-500: #A3A3A3;
+  --lgui-neutral-600: #6B6B6B;
+  --lgui-neutral-700: #2C2C2C;
+  --lgui-neutral-800: #141414;
 
   /* System / Status colors (LanguageGUI System Colors) */
   --lgui-red-100:    #FFF5F6;
@@ -227,18 +227,409 @@
 }
 
 /* ─────────────────────────────────────────────────────
-   8. DARK THEME — automático (prefers-color-scheme: dark)
+   8. THEME VARIANTS — data-theme attribute overrides
+   Applied by ThemeService on <html data-theme="...">
+   ───────────────────────────────────────────────────── */
+
+/* Noir — true black (default dark) */
+:root[data-theme="noir"] {
+  --lgui-surface-1: #1C1C1E;
+  --lgui-surface-2: #0F0F0F;
+  --lgui-surface-3: #2C2C2E;
+  --lgui-surface-4: #3A3A3C;
+  --lgui-surface-5: #48484A;
+  --lgui-surface-6: #636366;
+  --lgui-surface-7: #8E8E93;
+
+  --lgui-border-1: rgba(255,255,255,0.05);
+  --lgui-border-2: rgba(255,255,255,0.09);
+  --lgui-border-3: rgba(255,255,255,0.14);
+  --lgui-border-4: rgba(255,255,255,0.22);
+  --lgui-border-5: rgba(255,255,255,0.32);
+  --lgui-border-6: rgba(255,255,255,0.48);
+
+  --lgui-text-1: rgba(255,255,255,0.92);
+  --lgui-text-2: rgba(255,255,255,0.72);
+  --lgui-text-3: rgba(255,255,255,0.60);
+  --lgui-text-4: #FFFFFF;
+
+  --lgui-shadow-sm:  0 0.0625rem 0.1875rem  rgba(0,0,0,0.40);
+  --lgui-shadow-md:  0 0.125rem 0.375rem  rgba(0,0,0,0.35);
+  --lgui-shadow-lg:  0 0.5rem 1rem rgba(0,0,0,0.40);
+  --lgui-shadow-xl:  0 0.5rem 1.5rem rgba(0,0,0,0.50);
+
+  --vibe-bg-quiet:  rgba(186,192,204,0.12);
+  --vibe-bg-normal: rgba(239,196,44,0.12);
+  --vibe-bg-lively: rgba(74,213,98,0.12);
+  --vibe-bg-packed: rgba(254,86,107,0.12);
+
+  --type-social-bg:    rgba(74,144,217,0.18);
+  --type-intensive-bg: rgba(208,122,46,0.18);
+  --type-congress-bg:  rgba(123,82,171,0.18);
+
+  --lgui-red-100:    rgba(254, 86, 107, 0.15);
+  --lgui-yellow-100: rgba(239, 196, 44, 0.15);
+  --lgui-green-100:  rgba(74, 213, 98, 0.15);
+  --lgui-blue-100:   rgba(100, 167, 255, 0.15);
+
+  --ion-background-color:     #0F0F0F;
+  --ion-background-color-rgb: 15,15,15;
+  --ion-text-color:           #FFFFFF;
+  --ion-text-color-rgb:       255,255,255;
+  --ion-card-background:      #1C1C1E;
+  --ion-item-background:      #1C1C1E;
+  --ion-toolbar-background:   #1C1C1E;
+  --ion-toolbar-color:        #FFFFFF;
+  --ion-tab-bar-background:   #1C1C1E;
+  --ion-tab-bar-border-color: rgba(255,255,255,0.09);
+  --ion-color-medium-contrast:     #ffffff;
+  --ion-color-medium-contrast-rgb: 255,255,255;
+}
+
+/* Purple — midnight violet */
+:root[data-theme="purple"] {
+  --lgui-surface-1: #1E1B2E;
+  --lgui-surface-2: #0D0B1A;
+  --lgui-surface-3: #2A2640;
+  --lgui-surface-4: #38344E;
+  --lgui-surface-5: #4A455F;
+  --lgui-surface-6: #6B6580;
+  --lgui-surface-7: #9490A8;
+
+  --lgui-border-1: rgba(180,160,255,0.05);
+  --lgui-border-2: rgba(180,160,255,0.10);
+  --lgui-border-3: rgba(180,160,255,0.16);
+  --lgui-border-4: rgba(180,160,255,0.24);
+  --lgui-border-5: rgba(180,160,255,0.36);
+  --lgui-border-6: rgba(180,160,255,0.54);
+
+  --lgui-text-1: rgba(255,255,255,0.92);
+  --lgui-text-2: rgba(220,210,250,0.82);
+  --lgui-text-3: rgba(200,190,230,0.72);
+  --lgui-text-4: #F0EEFF;
+
+  --lgui-shadow-sm:  0 0.0625rem 0.1875rem  rgba(0,0,0,0.45);
+  --lgui-shadow-md:  0 0.125rem 0.375rem  rgba(0,0,0,0.40);
+  --lgui-shadow-lg:  0 0.5rem 1rem rgba(0,0,0,0.45);
+  --lgui-shadow-xl:  0 0.5rem 1.5rem rgba(0,0,0,0.55);
+
+  --vibe-bg-quiet:  rgba(186,192,204,0.12);
+  --vibe-bg-normal: rgba(239,196,44,0.12);
+  --vibe-bg-lively: rgba(74,213,98,0.12);
+  --vibe-bg-packed: rgba(254,86,107,0.12);
+
+  --type-social-bg:    rgba(74,144,217,0.20);
+  --type-intensive-bg: rgba(208,122,46,0.20);
+  --type-congress-bg:  rgba(123,82,171,0.25);
+
+  --lgui-red-100:    rgba(254, 86, 107, 0.15);
+  --lgui-yellow-100: rgba(239, 196, 44, 0.15);
+  --lgui-green-100:  rgba(74, 213, 98, 0.15);
+  --lgui-blue-100:   rgba(100, 167, 255, 0.15);
+
+  --ion-background-color:     #0D0B1A;
+  --ion-background-color-rgb: 13,11,26;
+  --ion-text-color:           #F0EEFF;
+  --ion-text-color-rgb:       240,238,255;
+  --ion-card-background:      #1E1B2E;
+  --ion-item-background:      #1E1B2E;
+  --ion-toolbar-background:   #1E1B2E;
+  --ion-toolbar-color:        #F0EEFF;
+  --ion-tab-bar-background:   #1E1B2E;
+  --ion-tab-bar-border-color: rgba(180,160,255,0.10);
+  --ion-color-medium-contrast:     #ffffff;
+  --ion-color-medium-contrast-rgb: 255,255,255;
+}
+
+/* Warm — charcoal amber */
+:root[data-theme="warm"] {
+  --lgui-surface-1: #1E1B12;
+  --lgui-surface-2: #100E09;
+  --lgui-surface-3: #2C2719;
+  --lgui-surface-4: #3A3424;
+  --lgui-surface-5: #4A4330;
+  --lgui-surface-6: #6B6248;
+  --lgui-surface-7: #9A9070;
+
+  --lgui-border-1: rgba(255,220,150,0.05);
+  --lgui-border-2: rgba(255,220,150,0.09);
+  --lgui-border-3: rgba(255,220,150,0.14);
+  --lgui-border-4: rgba(255,220,150,0.22);
+  --lgui-border-5: rgba(255,220,150,0.32);
+  --lgui-border-6: rgba(255,220,150,0.48);
+
+  --lgui-text-1: rgba(255,248,235,0.92);
+  --lgui-text-2: rgba(240,220,180,0.82);
+  --lgui-text-3: rgba(220,200,160,0.72);
+  --lgui-text-4: #FFF8EB;
+
+  --lgui-shadow-sm:  0 0.0625rem 0.1875rem  rgba(0,0,0,0.45);
+  --lgui-shadow-md:  0 0.125rem 0.375rem  rgba(0,0,0,0.40);
+  --lgui-shadow-lg:  0 0.5rem 1rem rgba(0,0,0,0.45);
+  --lgui-shadow-xl:  0 0.5rem 1.5rem rgba(0,0,0,0.55);
+
+  --vibe-bg-quiet:  rgba(186,192,204,0.12);
+  --vibe-bg-normal: rgba(239,196,44,0.14);
+  --vibe-bg-lively: rgba(74,213,98,0.12);
+  --vibe-bg-packed: rgba(254,86,107,0.12);
+
+  --type-social-bg:    rgba(74,144,217,0.18);
+  --type-intensive-bg: rgba(208,122,46,0.22);
+  --type-congress-bg:  rgba(123,82,171,0.18);
+
+  --lgui-red-100:    rgba(254, 86, 107, 0.15);
+  --lgui-yellow-100: rgba(239, 196, 44, 0.18);
+  --lgui-green-100:  rgba(74, 213, 98, 0.15);
+  --lgui-blue-100:   rgba(100, 167, 255, 0.15);
+
+  --ion-background-color:     #100E09;
+  --ion-background-color-rgb: 16,14,9;
+  --ion-text-color:           #FFF8EB;
+  --ion-text-color-rgb:       255,248,235;
+  --ion-card-background:      #1E1B12;
+  --ion-item-background:      #1E1B12;
+  --ion-toolbar-background:   #1E1B12;
+  --ion-toolbar-color:        #FFF8EB;
+  --ion-tab-bar-background:   #1E1B12;
+  --ion-tab-bar-border-color: rgba(255,220,150,0.09);
+  --ion-color-medium-contrast:     #ffffff;
+  --ion-color-medium-contrast-rgb: 255,255,255;
+}
+
+/* Crimson — deep red underground */
+:root[data-theme="crimson"] {
+  --lgui-surface-1: #1F0E0E;
+  --lgui-surface-2: #150808;
+  --lgui-surface-3: #2E1414;
+  --lgui-surface-4: #3D1C1C;
+  --lgui-surface-5: #4E2626;
+  --lgui-surface-6: #6B3838;
+  --lgui-surface-7: #8E5555;
+
+  --lgui-border-1: rgba(255,120,120,0.05);
+  --lgui-border-2: rgba(255,120,120,0.09);
+  --lgui-border-3: rgba(255,120,120,0.14);
+  --lgui-border-4: rgba(255,120,120,0.22);
+  --lgui-border-5: rgba(255,120,120,0.32);
+  --lgui-border-6: rgba(255,120,120,0.48);
+
+  --lgui-text-1: rgba(255,232,232,0.92);
+  --lgui-text-2: rgba(240,200,200,0.82);
+  --lgui-text-3: rgba(220,180,180,0.72);
+  --lgui-text-4: #FFE8E8;
+
+  --lgui-shadow-sm:  0 0.0625rem 0.1875rem rgba(0,0,0,0.50);
+  --lgui-shadow-md:  0 0.125rem 0.375rem  rgba(0,0,0,0.45);
+  --lgui-shadow-lg:  0 0.5rem 1rem        rgba(0,0,0,0.50);
+  --lgui-shadow-xl:  0 0.5rem 1.5rem      rgba(0,0,0,0.60);
+
+  --vibe-bg-quiet:  rgba(186,192,204,0.12);
+  --vibe-bg-normal: rgba(239,196,44,0.12);
+  --vibe-bg-lively: rgba(74,213,98,0.12);
+  --vibe-bg-packed: rgba(254,86,107,0.16);
+
+  --type-social-bg:    rgba(74,144,217,0.18);
+  --type-intensive-bg: rgba(208,122,46,0.18);
+  --type-congress-bg:  rgba(123,82,171,0.20);
+
+  --lgui-red-100:    rgba(254, 86, 107, 0.20);
+  --lgui-yellow-100: rgba(239, 196, 44, 0.15);
+  --lgui-green-100:  rgba(74, 213, 98, 0.15);
+  --lgui-blue-100:   rgba(100, 167, 255, 0.15);
+
+  --ion-background-color:     #150808;
+  --ion-background-color-rgb: 21,8,8;
+  --ion-text-color:           #FFE8E8;
+  --ion-text-color-rgb:       255,232,232;
+  --ion-card-background:      #1F0E0E;
+  --ion-item-background:      #1F0E0E;
+  --ion-toolbar-background:   #1F0E0E;
+  --ion-toolbar-color:        #FFE8E8;
+  --ion-tab-bar-background:   #1F0E0E;
+  --ion-tab-bar-border-color: rgba(255,120,120,0.09);
+  --ion-color-medium-contrast:     #ffffff;
+  --ion-color-medium-contrast-rgb: 255,255,255;
+}
+
+/* Electric — cobalt midnight */
+:root[data-theme="electric"] {
+  --lgui-surface-1: #0D1221;
+  --lgui-surface-2: #060810;
+  --lgui-surface-3: #161E30;
+  --lgui-surface-4: #1E283E;
+  --lgui-surface-5: #28344E;
+  --lgui-surface-6: #3E4E6E;
+  --lgui-surface-7: #607090;
+
+  --lgui-border-1: rgba(100,160,255,0.05);
+  --lgui-border-2: rgba(100,160,255,0.09);
+  --lgui-border-3: rgba(100,160,255,0.14);
+  --lgui-border-4: rgba(100,160,255,0.22);
+  --lgui-border-5: rgba(100,160,255,0.32);
+  --lgui-border-6: rgba(100,160,255,0.48);
+
+  --lgui-text-1: rgba(232,240,255,0.92);
+  --lgui-text-2: rgba(200,220,255,0.82);
+  --lgui-text-3: rgba(180,200,240,0.72);
+  --lgui-text-4: #E8F0FF;
+
+  --lgui-shadow-sm:  0 0.0625rem 0.1875rem rgba(0,0,0,0.50);
+  --lgui-shadow-md:  0 0.125rem 0.375rem  rgba(0,0,0,0.45);
+  --lgui-shadow-lg:  0 0.5rem 1rem        rgba(0,0,0,0.50);
+  --lgui-shadow-xl:  0 0.5rem 1.5rem      rgba(0,0,0,0.60);
+
+  --vibe-bg-quiet:  rgba(186,192,204,0.12);
+  --vibe-bg-normal: rgba(239,196,44,0.12);
+  --vibe-bg-lively: rgba(74,213,98,0.12);
+  --vibe-bg-packed: rgba(254,86,107,0.12);
+
+  --type-social-bg:    rgba(74,144,217,0.25);
+  --type-intensive-bg: rgba(208,122,46,0.18);
+  --type-congress-bg:  rgba(123,82,171,0.20);
+
+  --lgui-red-100:    rgba(254, 86, 107, 0.15);
+  --lgui-yellow-100: rgba(239, 196, 44, 0.15);
+  --lgui-green-100:  rgba(74, 213, 98, 0.15);
+  --lgui-blue-100:   rgba(100, 167, 255, 0.22);
+
+  --ion-background-color:     #060810;
+  --ion-background-color-rgb: 6,8,16;
+  --ion-text-color:           #E8F0FF;
+  --ion-text-color-rgb:       232,240,255;
+  --ion-card-background:      #0D1221;
+  --ion-item-background:      #0D1221;
+  --ion-toolbar-background:   #0D1221;
+  --ion-toolbar-color:        #E8F0FF;
+  --ion-tab-bar-background:   #0D1221;
+  --ion-tab-bar-border-color: rgba(100,160,255,0.09);
+  --ion-color-medium-contrast:     #ffffff;
+  --ion-color-medium-contrast-rgb: 255,255,255;
+}
+
+/* Emerald — dark Havana */
+:root[data-theme="emerald"] {
+  --lgui-surface-1: #0F1C10;
+  --lgui-surface-2: #070F08;
+  --lgui-surface-3: #162618;
+  --lgui-surface-4: #1E3220;
+  --lgui-surface-5: #283E2A;
+  --lgui-surface-6: #3E5E40;
+  --lgui-surface-7: #5E8060;
+
+  --lgui-border-1: rgba(100,220,120,0.05);
+  --lgui-border-2: rgba(100,220,120,0.09);
+  --lgui-border-3: rgba(100,220,120,0.14);
+  --lgui-border-4: rgba(100,220,120,0.22);
+  --lgui-border-5: rgba(100,220,120,0.32);
+  --lgui-border-6: rgba(100,220,120,0.48);
+
+  --lgui-text-1: rgba(232,255,234,0.92);
+  --lgui-text-2: rgba(200,240,210,0.82);
+  --lgui-text-3: rgba(180,220,185,0.72);
+  --lgui-text-4: #EAFFF0;
+
+  --lgui-shadow-sm:  0 0.0625rem 0.1875rem rgba(0,0,0,0.50);
+  --lgui-shadow-md:  0 0.125rem 0.375rem  rgba(0,0,0,0.45);
+  --lgui-shadow-lg:  0 0.5rem 1rem        rgba(0,0,0,0.50);
+  --lgui-shadow-xl:  0 0.5rem 1.5rem      rgba(0,0,0,0.60);
+
+  --vibe-bg-quiet:  rgba(186,192,204,0.12);
+  --vibe-bg-normal: rgba(239,196,44,0.12);
+  --vibe-bg-lively: rgba(74,213,98,0.20);
+  --vibe-bg-packed: rgba(254,86,107,0.12);
+
+  --type-social-bg:    rgba(74,144,217,0.18);
+  --type-intensive-bg: rgba(208,122,46,0.18);
+  --type-congress-bg:  rgba(123,82,171,0.18);
+
+  --lgui-red-100:    rgba(254, 86, 107, 0.15);
+  --lgui-yellow-100: rgba(239, 196, 44, 0.15);
+  --lgui-green-100:  rgba(74, 213, 98, 0.22);
+  --lgui-blue-100:   rgba(100, 167, 255, 0.15);
+
+  --ion-background-color:     #070F08;
+  --ion-background-color-rgb: 7,15,8;
+  --ion-text-color:           #EAFFF0;
+  --ion-text-color-rgb:       234,255,240;
+  --ion-card-background:      #0F1C10;
+  --ion-item-background:      #0F1C10;
+  --ion-toolbar-background:   #0F1C10;
+  --ion-toolbar-color:        #EAFFF0;
+  --ion-tab-bar-background:   #0F1C10;
+  --ion-tab-bar-border-color: rgba(100,220,120,0.09);
+  --ion-color-medium-contrast:     #ffffff;
+  --ion-color-medium-contrast-rgb: 255,255,255;
+}
+
+/* Copper — vintage jazz bar */
+:root[data-theme="copper"] {
+  --lgui-surface-1: #1C1508;
+  --lgui-surface-2: #0E0A05;
+  --lgui-surface-3: #28200E;
+  --lgui-surface-4: #352B16;
+  --lgui-surface-5: #42361E;
+  --lgui-surface-6: #5E4E2E;
+  --lgui-surface-7: #8E7248;
+
+  --lgui-border-1: rgba(200,150,80,0.05);
+  --lgui-border-2: rgba(200,150,80,0.09);
+  --lgui-border-3: rgba(200,150,80,0.14);
+  --lgui-border-4: rgba(200,150,80,0.22);
+  --lgui-border-5: rgba(200,150,80,0.32);
+  --lgui-border-6: rgba(200,150,80,0.48);
+
+  --lgui-text-1: rgba(255,244,224,0.92);
+  --lgui-text-2: rgba(240,210,160,0.82);
+  --lgui-text-3: rgba(220,190,140,0.72);
+  --lgui-text-4: #FFF4E0;
+
+  --lgui-shadow-sm:  0 0.0625rem 0.1875rem rgba(0,0,0,0.50);
+  --lgui-shadow-md:  0 0.125rem 0.375rem  rgba(0,0,0,0.45);
+  --lgui-shadow-lg:  0 0.5rem 1rem        rgba(0,0,0,0.50);
+  --lgui-shadow-xl:  0 0.5rem 1.5rem      rgba(0,0,0,0.60);
+
+  --vibe-bg-quiet:  rgba(186,192,204,0.12);
+  --vibe-bg-normal: rgba(239,196,44,0.18);
+  --vibe-bg-lively: rgba(74,213,98,0.12);
+  --vibe-bg-packed: rgba(254,86,107,0.12);
+
+  --type-social-bg:    rgba(74,144,217,0.18);
+  --type-intensive-bg: rgba(208,122,46,0.25);
+  --type-congress-bg:  rgba(123,82,171,0.18);
+
+  --lgui-red-100:    rgba(254, 86, 107, 0.15);
+  --lgui-yellow-100: rgba(239, 196, 44, 0.22);
+  --lgui-green-100:  rgba(74, 213, 98, 0.15);
+  --lgui-blue-100:   rgba(100, 167, 255, 0.15);
+
+  --ion-background-color:     #0E0A05;
+  --ion-background-color-rgb: 14,10,5;
+  --ion-text-color:           #FFF4E0;
+  --ion-text-color-rgb:       255,244,224;
+  --ion-card-background:      #1C1508;
+  --ion-item-background:      #1C1508;
+  --ion-toolbar-background:   #1C1508;
+  --ion-toolbar-color:        #FFF4E0;
+  --ion-tab-bar-background:   #1C1508;
+  --ion-tab-bar-border-color: rgba(200,150,80,0.09);
+  --ion-color-medium-contrast:     #ffffff;
+  --ion-color-medium-contrast-rgb: 255,255,255;
+}
+
+/* ─────────────────────────────────────────────────────
+   9. DARK THEME — automático (prefers-color-scheme: dark)
+   Fallback when no data-theme is set
    ───────────────────────────────────────────────────── */
 @media (prefers-color-scheme: dark) {
-  :root {
-    /* Surfaces — dark navy scale */
-    --lgui-surface-1: #1E2336;
-    --lgui-surface-2: #161B2C;
-    --lgui-surface-3: #262D44;
-    --lgui-surface-4: #2F3754;
-    --lgui-surface-5: #394265;
-    --lgui-surface-6: #464E72;
-    --lgui-surface-7: #50587C;
+  :root:not([data-theme]) {
+    /* Surfaces — true noir scale */
+    --lgui-surface-1: #1C1C1E;
+    --lgui-surface-2: #0F0F0F;
+    --lgui-surface-3: #2C2C2E;
+    --lgui-surface-4: #3A3A3C;
+    --lgui-surface-5: #48484A;
+    --lgui-surface-6: #636366;
+    --lgui-surface-7: #8E8E93;
 
     /* Borders — white with opacity */
     --lgui-border-1: rgba(255,255,255,0.05);
@@ -250,8 +641,8 @@
 
     /* Text */
     --lgui-text-1: rgba(255,255,255,0.92);
-    --lgui-text-2: rgba(255,255,255,0.50);
-    --lgui-text-3: rgba(255,255,255,0.38);
+    --lgui-text-2: rgba(255,255,255,0.72);
+    --lgui-text-3: rgba(255,255,255,0.60);
     --lgui-text-4: #FFFFFF;
 
     /* Shadows — más sutiles en oscuro */
@@ -278,15 +669,15 @@
     --lgui-blue-100:   rgba(100, 167, 255, 0.15);
 
     /* Ionic overrides */
-    --ion-background-color:     #161B2C;
-    --ion-background-color-rgb: 22,27,44;
+    --ion-background-color:     #0F0F0F;
+    --ion-background-color-rgb: 15,15,15;
     --ion-text-color:           #FFFFFF;
     --ion-text-color-rgb:       255,255,255;
-    --ion-card-background:      #1E2336;
-    --ion-item-background:      #1E2336;
+    --ion-card-background:      #1C1C1E;
+    --ion-item-background:      #1C1C1E;
     --ion-toolbar-background:   var(--lgui-surface-1);
     --ion-toolbar-color:        #FFFFFF;
-    --ion-tab-bar-background:   #1E2336;
+    --ion-tab-bar-background:   #1C1C1E;
     --ion-tab-bar-border-color: rgba(255,255,255,0.09);
 
     /* Medium color contrast — ensure chip/badge text is white on medium background */

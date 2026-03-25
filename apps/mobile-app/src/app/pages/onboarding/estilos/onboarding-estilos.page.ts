@@ -6,7 +6,7 @@ import { HttpClient } from '@angular/common/http';
 import {
   IonContent, IonHeader, IonToolbar, IonTitle, IonFooter, IonButton,
   IonChip, IonLabel, IonItem, IonInput, IonList, IonToast, IonProgressBar,
-  IonSelect, IonSelectOption, IonSpinner, IonButtons, IonBackButton,
+  IonSelect, IonSelectOption, IonSpinner, IonButtons,
 } from '@ionic/angular/standalone';
 import { DanceStyle, Academia } from '@shared/types';
 import { OnboardingStateService } from '../../../services/onboarding-state.service';
@@ -21,7 +21,7 @@ import { FormFieldComponent } from '../../../components/form-field/form-field.co
   imports: [
     CommonModule, FormsModule, IonContent, IonHeader, IonToolbar, IonTitle, IonFooter,
     IonButton, IonItem, IonInput, IonList, IonToast, IonProgressBar,
-    IonSelect, IonSelectOption, IonButtons, IonBackButton,
+    IonSelect, IonSelectOption, IonButtons,
     StyleChipGridComponent, FormFieldComponent,
   ],
   styles: [`
@@ -48,7 +48,6 @@ import { FormFieldComponent } from '../../../components/form-field/form-field.co
     <ion-header>
       <ion-toolbar>
         <ion-buttons slot="start">
-          <ion-back-button defaultHref="/onboarding/nivel" text=""></ion-back-button>
           <span class="breadcrumb">Estilos</span>
         </ion-buttons>
       </ion-toolbar>

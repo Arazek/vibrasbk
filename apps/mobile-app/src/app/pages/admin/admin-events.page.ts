@@ -1,10 +1,11 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
-  IonHeader, IonToolbar, IonTitle, IonContent, IonButtons,
+  IonContent,
   IonList, IonItem, IonLabel, IonButton, IonFab, IonFabButton, IonIcon,
-  IonToast, IonSpinner, IonBackButton, ModalController, AlertController, NavController, LoadingController,
+  IonToast, IonSpinner, ModalController, AlertController, NavController, LoadingController,
 } from '@ionic/angular/standalone';
+import { NavbarComponent } from '../../components/navbar/navbar.component';
 import { addIcons } from 'ionicons';
 import { add, trash, pencil, camera, chevronBack } from 'ionicons/icons';
 import { WeeklyEvent, Venue } from '@shared/types';
@@ -19,19 +20,12 @@ const DAY_NAMES = ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado'
   standalone: true,
   imports: [
     CommonModule,
-    IonHeader, IonToolbar, IonTitle, IonContent, IonButtons,
+    IonContent,
     IonList, IonItem, IonLabel, IonButton, IonFab, IonFabButton, IonIcon,
-    IonToast, IonSpinner, IonBackButton,
+    IonToast, IonSpinner, NavbarComponent,
   ],
   template: `
-    <ion-header>
-      <ion-toolbar>
-        <ion-buttons slot="start">
-          <ion-back-button defaultHref="/admin" text=""></ion-back-button>
-          <span class="breadcrumb">Eventos</span>
-        </ion-buttons>
-      </ion-toolbar>
-    </ion-header>
+    <app-navbar></app-navbar>
     <ion-content>
       <div *ngIf="loading" class="ion-text-center ion-padding">
         <ion-spinner color="primary"></ion-spinner>

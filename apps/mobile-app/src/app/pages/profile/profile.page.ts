@@ -4,11 +4,13 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import {
-  IonHeader, IonToolbar, IonTitle, IonContent, IonButtons,
+  IonContent,
   IonButton, IonSpinner, IonText, IonList, IonItem, IonLabel,
   IonSelect, IonSelectOption, IonChip, IonToast, IonIcon,
   AlertController,
 } from '@ionic/angular/standalone';
+import { NavbarComponent } from '../../components/navbar/navbar.component';
+import { ThemeService, THEMES, AppTheme } from '../../services/theme.service';
 import { addIcons } from 'ionicons';
 import { logOutOutline } from 'ionicons/icons';
 import { UserProfile, Level, DanceStyle, Academia } from '@shared/types';
@@ -30,57 +32,82 @@ const LEVEL_OPTIONS: { value: Level; label: string }[] = [
   standalone: true,
   imports: [
     CommonModule, FormsModule,
-    IonHeader, IonToolbar, IonTitle, IonContent, IonButtons,
+    IonContent,
     IonButton, IonSpinner, IonText, IonList, IonItem, IonLabel,
     IonSelect, IonSelectOption, IonChip, IonToast, IonIcon,
-    StyleChipGridComponent,
+    StyleChipGridComponent, NavbarComponent,
   ],
   styles: [`
     .identity-card {
-      background: var(--ion-color-primary);
-      border-radius: var(--lgui-radius-default);
+      background: transparent;
       padding: var(--lgui-pad-lg) var(--lgui-pad-md);
       margin-bottom: var(--lgui-gap-xl);
       display: flex;
+      flex-direction: column;
       align-items: center;
-      gap: var(--lgui-gap-lg);
-      box-shadow: var(--lgui-shadow-accent-md);
+      gap: var(--lgui-gap-md);
     }
     .avatar {
-      width: 4rem;
-      height: 4rem;
+      width: 4.5rem;
+      height: 4.5rem;
       border-radius: 50%;
-      background: rgba(255,255,255,0.22);
-      border: 0.125rem solid rgba(255,255,255,0.4);
+      background: rgba(var(--ion-color-primary-rgb), 0.15);
+      border: 0.125rem solid var(--ion-color-primary);
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: var(--lgui-fs-display);
       font-weight: var(--lgui-fw-bold);
-      color: #fff;
+      color: var(--ion-color-primary);
       flex-shrink: 0;
       letter-spacing: -0.0313rem;
     }
-    .identity-info { flex: 1; min-width: 0; }
+    .identity-info { text-align: center; min-width: 0; }
     .identity-alias {
       font-size: 1.25rem;
       font-weight: var(--lgui-fw-bold);
-      color: #fff;
+      color: var(--lgui-text-4);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
-    .identity-meta { font-size: var(--lgui-fs-body); color: rgba(255,255,255,0.75); margin-top: 0.1875rem; }
+    .identity-meta { font-size: var(--lgui-fs-body); color: var(--lgui-text-3); margin-top: 0.1875rem; }
     .bottom-space { height: var(--lgui-space-8); }
+
+    .theme-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--lgui-gap-lg);
+      margin-bottom: var(--lgui-gap-xl);
+    }
+    .theme-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.375rem;
+      cursor: pointer;
+    }
+    .theme-swatch {
+      width: 2.75rem;
+      height: 2.75rem;
+      border-radius: 50%;
+      border: 0.1875rem solid transparent;
+      transition: border-color 0.15s;
+    }
+    .theme-card.active .theme-swatch {
+      border-color: var(--ion-color-primary);
+    }
+    .theme-label {
+      font-size: var(--lgui-fs-caption);
+      font-weight: var(--lgui-fw-semibold);
+      color: var(--lgui-text-3);
+    }
+    .theme-card.active .theme-label {
+      color: var(--lgui-text-4);
+    }
   `],
   template: `
-    <ion-header>
-      <ion-toolbar>
-        <ion-buttons slot="start">
-          <span class="breadcrumb">Perfil</span>
-        </ion-buttons>
-      </ion-toolbar>
-    </ion-header>
+    <app-navbar></app-navbar>
 
     <ion-content class="ion-padding">
       <div *ngIf="loading" class="ion-text-center" class="loading-container">
@@ -144,6 +171,19 @@ const LEVEL_OPTIONS: { value: Level; label: string }[] = [
           {{ saving ? 'Guardando...' : 'Guardar cambios' }}
         </ion-button>
 
+        <!-- Theme picker -->
+        <div class="section-title">Apariencia</div>
+        <div class="theme-grid">
+          <div
+            *ngFor="let t of themes"
+            class="theme-card"
+            [class.active]="activeTheme === t.id"
+            (click)="setTheme(t.id)">
+            <div class="theme-swatch" [style.background]="t.preview"></div>
+            <div class="theme-label">{{ t.label }}</div>
+          </div>
+        </div>
+
         <!-- Logout -->
         <ion-button
           expand="block"
@@ -181,14 +221,19 @@ export class ProfilePage implements OnInit {
   styleOptions: DanceStyle[] = [];
   academias: Academia[] = [];
 
+  themes = THEMES;
+  activeTheme: AppTheme = 'noir';
+
   constructor(
     private profileService: ProfileService,
     private authService: AuthService,
     public router: Router,
     private alertCtrl: AlertController,
     private http: HttpClient,
+    private readonly themeService: ThemeService,
   ) {
     addIcons({ logOutOutline });
+    this.activeTheme = this.themeService.getTheme();
   }
 
   ngOnInit() {
@@ -264,6 +309,11 @@ export class ProfilePage implements OnInit {
       ],
     });
     await alert.present();
+  }
+
+  setTheme(theme: AppTheme) {
+    this.activeTheme = theme;
+    this.themeService.setTheme(theme);
   }
 
   logout() {

@@ -1,21 +1,21 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import {
-  IonContent, IonHeader, IonToolbar,
-  IonButton, IonButtons, IonProgressBar,
+  IonContent,
+  IonButton, IonProgressBar,
 } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-onboarding-ciudad',
   standalone: true,
-  imports: [IonContent, IonHeader, IonToolbar, IonButton, IonButtons, IonProgressBar],
+  imports: [IonContent, IonButton, IonProgressBar],
   styles: [`
     .hero {
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      min-height: 70vh;
+      height: 100%;
       padding: 2rem 1.5rem;
       text-align: center;
     }
@@ -40,28 +40,9 @@ import {
       border-radius: 1.25rem;
       margin: 1rem 0 2rem;
     }
-    .login-link {
-      margin-top: 1rem;
-      font-size: var(--lgui-fs-body-lg);
-      color: var(--ion-color-medium);
-    }
-    .login-link span {
-      color: var(--ion-color-primary, #E84855);
-      font-weight: var(--lgui-fw-semibold);
-      cursor: pointer;
-    }
   `],
   template: `
-    <ion-header>
-      <ion-toolbar>
-        <ion-buttons slot="start">
-          <span class="breadcrumb">Bienvenido</span>
-        </ion-buttons>
-      </ion-toolbar>
-      <ion-progress-bar value="0.25" color="secondary"></ion-progress-bar>
-    </ion-header>
-
-    <ion-content>
+    <ion-content fullscreen="true">
       <div class="hero">
         <img src="assets/vibrasbk.png" class="hero-logo" alt="VibraSBK" />
         <div class="hero-subtitle">
@@ -73,10 +54,6 @@ import {
         <ion-button expand="block" color="primary" style="margin: 0.5rem; width: 100%" (click)="next()">
           Crear perfil — Soy nuevo
         </ion-button>
-        <div class="login-link">
-          ¿Ya tienes cuenta?
-          <span (click)="goToLogin()">Iniciar sesión</span>
-        </div>
       </div>
     </ion-content>
   `,
@@ -86,9 +63,5 @@ export class OnboardingCiudadPage {
 
   next() {
     this.router.navigate(['/onboarding/rol']);
-  }
-
-  goToLogin() {
-    this.router.navigate(['/login']);
   }
 }

@@ -4,10 +4,11 @@ import { Router, NavigationEnd } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import {
-  IonHeader, IonToolbar, IonTitle, IonContent,
-  IonSpinner, IonText, IonButton, IonButtons, IonRefresher, IonRefresherContent,
+  IonContent,
+  IonSpinner, IonText, IonButton, IonRefresher, IonRefresherContent,
   IonChip, IonLabel, IonIcon,
 } from '@ionic/angular/standalone';
+import { NavbarComponent } from '../../components/navbar/navbar.component';
 import { addIcons } from 'ionicons';
 import { listOutline, calendarOutline, chevronBack, chevronForward } from 'ionicons/icons';
 import { WeeklyEvent, EventType } from '@shared/types';
@@ -47,23 +48,30 @@ const VIEW_KEY = 'vibrasbk_home_view';
   selector: 'app-home',
   standalone: true,
   imports: [
-    CommonModule, IonHeader, IonToolbar, IonTitle, IonContent,
-    IonSpinner, IonText, IonButton, IonButtons, IonIcon,
+    CommonModule, IonContent,
+    IonSpinner, IonText, IonButton, IonIcon,
     IonRefresher, IonRefresherContent,
     IonChip, IonLabel,
-    EventCardComponent,
+    EventCardComponent, NavbarComponent,
   ],
   styles: [`
     /* ── Filter bar ─────────────────────────────────────────────── */
+    .filter-bar-wrap {
+      display: flex;
+      align-items: center;
+      border-bottom: 0.0625rem solid var(--lgui-border-2);
+      background: var(--lgui-surface-1);
+    }
     .filter-bar {
       display: flex;
       gap: var(--lgui-gap-sm);
       padding: var(--lgui-space-3) var(--lgui-pad-md);
       overflow-x: auto;
       overflow-y: hidden;
-      border-bottom: 0.0625rem solid var(--lgui-border-2);
-      background: var(--lgui-surface-1);
       scrollbar-width: none;
+      flex: 1;
+      -webkit-mask-image: linear-gradient(to right, black calc(100% - 2.5rem), transparent 100%);
+      mask-image: linear-gradient(to right, black calc(100% - 2.5rem), transparent 100%);
     }
     .filter-bar::-webkit-scrollbar { display: none; }
     .filter-chip {
@@ -90,11 +98,11 @@ const VIEW_KEY = 'vibrasbk_home_view';
     /* ── View toggle ─────────────────────────────────────────────── */
     .view-toggle {
       display: inline-flex;
-      margin-left: auto;
       border-radius: var(--lgui-radius-pill);
       overflow: hidden;
       background: var(--lgui-surface-3);
       flex-shrink: 0;
+      margin-right: var(--lgui-pad-md);
     }
     .view-btn {
       display: flex;
@@ -209,29 +217,25 @@ const VIEW_KEY = 'vibrasbk_home_view';
     .bottom-space { height: var(--lgui-space-8); }
   `],
   template: `
-    <ion-header>
-      <ion-toolbar>
-        <ion-buttons slot="start">
-          <span class="breadcrumb">Agenda</span>
-        </ion-buttons>
-      </ion-toolbar>
-    </ion-header>
+    <app-navbar></app-navbar>
 
     <ion-content>
       <!-- Type chips + view toggle -->
-      <div class="filter-bar">
-        <button class="filter-chip" [class.active]="!selectedType" (click)="setType(null)">
-          Todos
-        </button>
-        <button class="filter-chip type-social" [class.active]="selectedType === 'social'" (click)="setType('social')">
-          Social
-        </button>
-        <button class="filter-chip type-intensive" [class.active]="selectedType === 'intensive'" (click)="setType('intensive')">
-          Intensivo
-        </button>
-        <button class="filter-chip type-congress" [class.active]="selectedType === 'congress'" (click)="setType('congress')">
-          Congreso
-        </button>
+      <div class="filter-bar-wrap">
+        <div class="filter-bar">
+          <button class="filter-chip" [class.active]="!selectedType" (click)="setType(null)">
+            Todos
+          </button>
+          <button class="filter-chip type-social" [class.active]="selectedType === 'social'" (click)="setType('social')">
+            Social
+          </button>
+          <button class="filter-chip type-intensive" [class.active]="selectedType === 'intensive'" (click)="setType('intensive')">
+            Intensivo
+          </button>
+          <button class="filter-chip type-congress" [class.active]="selectedType === 'congress'" (click)="setType('congress')">
+            Congreso
+          </button>
+        </div>
         <div class="view-toggle">
           <button class="view-btn" [class.active]="activeView === 'list'" (click)="setView('list')">
             <ion-icon name="list-outline"></ion-icon>

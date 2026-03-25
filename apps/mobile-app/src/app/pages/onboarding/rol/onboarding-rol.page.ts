@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import {
   IonContent, IonHeader, IonToolbar, IonTitle, IonFooter,
-  IonButton, IonProgressBar, IonButtons, IonBackButton,
+  IonButton, IonProgressBar, IonButtons,
 } from '@ionic/angular/standalone';
 import { DancingRole } from '@shared/types';
 import { OnboardingStateService } from '../../../services/onboarding-state.service';
@@ -17,7 +17,7 @@ const ROLES: { value: DancingRole; label: string; description: string; emoji: st
 @Component({
   selector: 'app-onboarding-rol',
   standalone: true,
-  imports: [CommonModule, IonContent, IonHeader, IonToolbar, IonTitle, IonFooter, IonButton, IonProgressBar, IonButtons, IonBackButton],
+  imports: [CommonModule, IonContent, IonHeader, IonToolbar, IonTitle, IonFooter, IonButton, IonProgressBar, IonButtons],
   styles: [`
     .question {
       font-size: var(--lgui-fs-display);
@@ -67,7 +67,6 @@ const ROLES: { value: DancingRole; label: string; description: string; emoji: st
     <ion-header>
       <ion-toolbar>
         <ion-buttons slot="start">
-          <ion-back-button defaultHref="/onboarding/ciudad" text=""></ion-back-button>
           <span class="breadcrumb">Tu rol</span>
         </ion-buttons>
       </ion-toolbar>

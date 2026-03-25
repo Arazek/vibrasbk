@@ -3,20 +3,18 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import {
-  IonContent, IonHeader, IonToolbar, IonTitle, IonFooter,
-  IonButton, IonItem, IonInput, IonList, IonToast, IonBackButton, IonButtons,
+  IonContent, IonFooter, IonToolbar,
+  IonButton, IonItem, IonInput, IonList, IonToast,
 } from '@ionic/angular/standalone';
 import { AuthService } from '../../services/auth.service';
-import { FormFieldComponent } from '../../components/form-field/form-field.component';
 
 @Component({
   selector: 'app-login',
   standalone: true,
   imports: [
     CommonModule, FormsModule,
-    IonContent, IonHeader, IonToolbar, IonTitle, IonFooter,
-    IonButton, IonItem, IonInput, IonList, IonToast, IonBackButton, IonButtons,
-    FormFieldComponent,
+    IonContent, IonFooter, IonToolbar,
+    IonButton, IonItem, IonInput, IonList, IonToast,
   ],
   styles: [`
     .login-container {
@@ -24,14 +22,14 @@ import { FormFieldComponent } from '../../components/form-field/form-field.compo
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      min-height: 70vh;
+      height: 100%;
       padding: 2rem 1.5rem;
       text-align: center;
     }
-    .login-emoji {
-      font-size: 3.5rem;
+    .login-logo {
+      height: 3.5rem;
+      width: auto;
       margin-bottom: 1.5rem;
-      line-height: 1;
     }
     .login-title {
       font-size: 1.625rem;
@@ -45,45 +43,55 @@ import { FormFieldComponent } from '../../components/form-field/form-field.compo
       margin-bottom: 2rem;
       line-height: 1.5;
     }
+    .register-link {
+      margin-top: 1rem;
+      font-size: var(--lgui-fs-body-lg);
+      color: var(--lgui-text-3);
+    }
+    .register-link span {
+      color: var(--ion-color-primary);
+      font-weight: var(--lgui-fw-semibold);
+      cursor: pointer;
+    }
   `],
   template: `
-    <ion-header>
-      <ion-toolbar>
-        <ion-buttons slot="start">
-          <ion-back-button defaultHref="/onboarding/ciudad" text=""></ion-back-button>
-          <span class="breadcrumb">Iniciar sesión</span>
-        </ion-buttons>
-      </ion-toolbar>
-    </ion-header>
-
-    <ion-content>
+    <ion-content fullscreen="true">
       <div class="login-container">
-        <div class="login-emoji">🎶</div>
+        <img src="assets/vibrasbk.png" class="login-logo" alt="VibraSBK" />
         <div class="login-title">¡Bienvenido de vuelta!</div>
         <div class="login-subtitle">
           Introduce tu email y contraseña para volver a la pista.
         </div>
 
-        <app-form-field label="Email">
-          <ion-input
-            type="email"
-            [(ngModel)]="email"
-            placeholder="tu@email.com"
-            autocomplete="email"
-            (keyup.enter)="passwordInput.setFocus()">
-          </ion-input>
-        </app-form-field>
+        <ion-list lines="none" class="form-list">
+          <ion-item>
+            <ion-input
+              type="email"
+              [(ngModel)]="email"
+              placeholder="Email"
+              autocomplete="email"
+              (keyup.enter)="passwordInput.setFocus()">
+            </ion-input>
+          </ion-item>
+        </ion-list>
 
-        <app-form-field label="Contraseña">
-          <ion-input
-            #passwordInput
-            type="password"
-            [(ngModel)]="password"
-            placeholder="••••••"
-            autocomplete="current-password"
-            (keyup.enter)="login()">
-          </ion-input>
-        </app-form-field>
+        <ion-list lines="none" class="form-list">
+          <ion-item>
+            <ion-input
+              #passwordInput
+              type="password"
+              [(ngModel)]="password"
+              placeholder="Contraseña"
+              autocomplete="current-password"
+              (keyup.enter)="login()">
+            </ion-input>
+          </ion-item>
+        </ion-list>
+
+        <div class="register-link">
+          ¿Aún no tienes cuenta?
+          <span (click)="goToRegister()">Crear cuenta</span>
+        </div>
 
       </div>
 
@@ -123,6 +131,10 @@ export class LoginPage {
     private authService: AuthService,
     private router: Router,
   ) {}
+
+  goToRegister(): void {
+    this.router.navigate(['/onboarding/ciudad']);
+  }
 
   login(): void {
     if (!this.canSubmit || this.loading) return;
