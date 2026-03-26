@@ -51,9 +51,9 @@ const BALANCE_LABEL: Record<string, string> = {
 };
 
 const BALANCE_COLOR: Record<string, string> = {
-  balanced:        '#4AD562',  /* --lgui-green-400  */
-  need_leaders:    '#EFC42C',  /* --lgui-yellow-400 */
-  need_followers:  '#EFC42C',  /* --lgui-yellow-400 */
+  balanced:        'var(--vibe-lively)',
+  need_leaders:    'var(--vibe-normal)',
+  need_followers:  'var(--vibe-normal)',
 };
 
 @Component({
@@ -83,14 +83,14 @@ const BALANCE_COLOR: Record<string, string> = {
       margin-bottom: var(--lgui-gap-lg);
     }
     .vibe-emoji {
-      font-size: 2rem;
+      font-size: var(--lgui-fs-display);
       line-height: 1;
       flex-shrink: 0;
     }
     .vibe-name {
       font-size: var(--lgui-fs-heading);
       font-weight: var(--lgui-fw-bold);
-      line-height: 1.2;
+      line-height: var(--lgui-lh-tight);
     }
     .vibe-count {
       font-size: var(--lgui-fs-caption);
@@ -130,7 +130,7 @@ const BALANCE_COLOR: Record<string, string> = {
     .role-fill {
       height: 100%;
       border-radius: var(--lgui-radius-sm);
-      transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: width var(--lgui-duration-slow) var(--lgui-ease-inout);
     }
     .leader-fill   { background: var(--type-social-color); }
     .follower-fill { background: var(--ion-color-primary); }
@@ -172,7 +172,7 @@ const BALANCE_COLOR: Record<string, string> = {
     }
     .recommendation-text {
       font-size: var(--lgui-fs-body);
-      line-height: 1.55;
+      line-height: var(--lgui-lh-relaxed);
       margin: 0;
       color: var(--lgui-text-4);
     }
@@ -253,7 +253,7 @@ export class AnalyticsPanelComponent {
   get vibeEmoji(): string { return VIBE_EMOJI[this.analytics.vibe]; }
   get vibeLabel(): string { return VIBE_LABEL[this.analytics.vibe]; }
   get balanceLabel(): string { return BALANCE_LABEL[this.analytics.roleBalance.balance] ?? ''; }
-  get balanceColor(): string { return BALANCE_COLOR[this.analytics.roleBalance.balance] ?? '#9e9e9e'; }
+  get balanceColor(): string { return BALANCE_COLOR[this.analytics.roleBalance.balance] ?? 'var(--lgui-text-3)'; }
 
   getBar(level: Level): number {
     return (this.analytics.levelDistribution[level] ?? 0) / 100;

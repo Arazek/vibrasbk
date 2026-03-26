@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import {
   IonContent, IonHeader, IonToolbar, IonTitle, IonFooter,
-  IonButton, IonProgressBar, IonButtons,
+  IonButton, IonProgressBar, IonButtons, IonBackButton,
 } from '@ionic/angular/standalone';
 import { Level } from '@shared/types';
 import { OnboardingStateService } from '../../../services/onboarding-state.service';
@@ -19,14 +19,20 @@ const LEVELS: { value: Level; label: string; description: string; emoji: string 
 @Component({
   selector: 'app-onboarding-nivel',
   standalone: true,
-  imports: [CommonModule, IonContent, IonHeader, IonToolbar, IonTitle, IonFooter, IonButton, IonProgressBar, IonButtons],
+  imports: [CommonModule, IonContent, IonHeader, IonToolbar, IonTitle, IonFooter, IonButton, IonProgressBar, IonButtons, IonBackButton],
   styles: [`
     .question {
       font-size: var(--lgui-fs-display);
       font-weight: var(--lgui-fw-bold);
       color: var(--lgui-text-4);
-      margin-bottom: 1.5rem;
+      margin-bottom: var(--lgui-gap-xl);
     }
+    .level-emoji {
+      font-size: var(--lgui-fs-display);
+      line-height: 1;
+      flex-shrink: 0;
+    }
+    .level-content { flex: 1; }
     .level-card {
       display: flex;
       align-items: center;
@@ -37,7 +43,7 @@ const LEVELS: { value: Level; label: string; description: string; emoji: string 
       margin-bottom: var(--lgui-gap-sm);
       cursor: pointer;
       background: var(--lgui-surface-1);
-      transition: border-color 0.15s, background 0.15s, transform 0.1s;
+      transition: border-color var(--lgui-transition-fast), background var(--lgui-transition-fast), transform var(--lgui-duration-fast) var(--lgui-ease-out);
     }
     .level-card:active {
       transform: scale(0.98);
@@ -57,10 +63,10 @@ const LEVELS: { value: Level; label: string; description: string; emoji: string 
     .level-desc {
       font-size: var(--lgui-fs-caption);
       color: var(--lgui-text-3);
-      margin-top: 0.125rem;
+      margin-top: var(--lgui-space-0);
     }
     .check {
-      font-size: 1.25rem;
+      font-size: var(--lgui-fs-subheading);
       color: var(--ion-color-primary);
       flex-shrink: 0;
     }
@@ -69,8 +75,9 @@ const LEVELS: { value: Level; label: string; description: string; emoji: string 
     <ion-header>
       <ion-toolbar>
         <ion-buttons slot="start">
-          <span class="breadcrumb">Tu nivel</span>
+          <ion-back-button defaultHref="/onboarding/rol" text="Atrás"></ion-back-button>
         </ion-buttons>
+        <ion-title>Tu nivel</ion-title>
       </ion-toolbar>
       <ion-progress-bar value="0.75" color="secondary"></ion-progress-bar>
     </ion-header>
@@ -83,8 +90,8 @@ const LEVELS: { value: Level; label: string; description: string; emoji: string 
         class="level-card"
         [class.selected]="selected === n.value"
         (click)="selected = n.value">
-        <span style="font-size:1.75rem; line-height:1; flex-shrink:0;">{{ n.emoji }}</span>
-        <div style="flex:1;">
+        <span class="level-emoji" aria-hidden="true">{{ n.emoji }}</span>
+        <div class="level-content">
           <div class="level-label">{{ n.label }}</div>
           <div class="level-desc">{{ n.description }}</div>
         </div>
@@ -95,7 +102,7 @@ const LEVELS: { value: Level; label: string; description: string; emoji: string 
 
     <ion-footer>
       <ion-toolbar>
-        <ion-button expand="block" color="primary" style="margin: 0.5rem" [disabled]="!!(!selected)" (click)="next()">
+        <ion-button expand="block" color="primary" style="margin: var(--lgui-gap-sm)" [disabled]="!!(!selected)" (click)="next()">
           Siguiente
         </ion-button>
       </ion-toolbar>

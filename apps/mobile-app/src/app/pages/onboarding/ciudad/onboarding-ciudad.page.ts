@@ -16,29 +16,44 @@ import {
       align-items: center;
       justify-content: center;
       height: 100%;
-      padding: 2rem 1.5rem;
+      padding: var(--lgui-pad-xl) var(--lgui-pad-lg);
       text-align: center;
     }
     .hero-logo {
-      height: 3.5rem;
+      height: var(--lgui-space-7);
       width: auto;
-      margin-bottom: 1.5rem;
+      margin-bottom: var(--lgui-gap-xl);
     }
     .hero-subtitle {
       font-size: var(--lgui-fs-subheading);
       color: var(--ion-color-medium);
-      line-height: 1.6;
-      margin-bottom: 0.5rem;
+      line-height: var(--lgui-lh-relaxed);
+      margin-bottom: var(--lgui-gap-sm);
     }
     .city-badge {
       display: inline-block;
-      background: var(--ion-color-primary, #E84855);
-      color: #fff;
+      background: var(--ion-color-primary);
+      color: var(--ion-color-primary-contrast);
       font-weight: var(--lgui-fw-semibold);
       font-size: var(--lgui-fs-body-lg);
       padding: 0.375rem 1rem;
-      border-radius: 1.25rem;
-      margin: 1rem 0 2rem;
+      border-radius: var(--lgui-radius-lg);
+      margin: var(--lgui-gap-lg) 0 var(--lgui-gap-xl);
+    }
+    .cta-btn {
+      margin: var(--lgui-gap-sm);
+      width: 100%;
+    }
+    .login-link {
+      margin-top: var(--lgui-gap-lg);
+      font-size: var(--lgui-fs-body);
+      color: var(--lgui-text-3);
+    }
+    .login-link a {
+      color: var(--ion-color-primary);
+      font-weight: var(--lgui-fw-semibold);
+      text-decoration: none;
+      cursor: pointer;
     }
   `],
   template: `
@@ -51,9 +66,12 @@ import {
           y el balance de roles.
         </div>
         <div class="city-badge">📍 Cartagena</div>
-        <ion-button expand="block" color="primary" style="margin: 0.5rem; width: 100%" (click)="next()">
+        <ion-button expand="block" color="primary" class="cta-btn" (click)="next()">
           Crear perfil — Soy nuevo
         </ion-button>
+        <p class="login-link">
+          ¿Ya tienes cuenta? <a (click)="goToLogin()">Iniciar sesión</a>
+        </p>
       </div>
     </ion-content>
   `,
@@ -63,5 +81,9 @@ export class OnboardingCiudadPage {
 
   next() {
     this.router.navigate(['/onboarding/rol']);
+  }
+
+  goToLogin() {
+    this.router.navigate(['/login']);
   }
 }

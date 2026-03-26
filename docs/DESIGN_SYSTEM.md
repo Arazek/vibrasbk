@@ -54,17 +54,19 @@ Use these in components. They remap automatically in dark mode.
 
 ### Surfaces
 
-| Token | Light | Dark | Use |
-|-------|-------|------|-----|
-| `--lgui-surface-1` | `#FFFFFF` | `#1E2336` | Cards, dialogs, modals |
-| `--lgui-surface-2` | `#F7F8FA` | `#161B2C` | Page background |
-| `--lgui-surface-3` | `#F0F2F5` | `#262D44` | Hover / pressed state |
-| `--lgui-surface-4` | `#BAC0CC` | `#2F3754` | Disabled fills |
-| `--lgui-surface-5` | `#666F8D` | `#394265` | Subtle fills |
-| `--lgui-surface-6` | `#353E5C` | `#464E72` | Dark fills |
-| `--lgui-surface-7` | `#19213D` | `#50587C` | Darkest fills |
+| Token | Light | Dark (Noir) | Use |
+|-------|-------|-------------|-----|
+| `--lgui-surface-1` | `#FFFFFF` | `#1C1C1E` | Cards, dialogs, modals |
+| `--lgui-surface-2` | `#F5F5F5` | `#0F0F0F` | Page background |
+| `--lgui-surface-3` | `#EBEBEB` | `#2C2C2E` | Hover / pressed state |
+| `--lgui-surface-4` | `#A3A3A3` | `#3A3A3C` | Disabled fills |
+| `--lgui-surface-5` | `#6B6B6B` | `#48484A` | Subtle fills |
+| `--lgui-surface-6` | `#2C2C2C` | `#636366` | Dark fills |
+| `--lgui-surface-7` | `#141414` | `#8E8E93` | Darkest fills |
 
 ### Borders
+
+Dark mode borders use `rgba(255,255,255, opacity)` — opacity values: 0.05 / 0.09 / 0.14 / 0.22 / 0.32 / 0.48.
 
 | Token | Use |
 |-------|-----|
@@ -77,12 +79,12 @@ Use these in components. They remap automatically in dark mode.
 
 ### Text
 
-| Token | Light | Dark | Use |
-|-------|-------|------|-----|
+| Token | Light | Dark (Noir) | Use |
+|-------|-------|-------------|-----|
 | `--lgui-text-1` | `#FFFFFF` | `rgba(255,255,255,0.92)` | On dark/primary backgrounds |
-| `--lgui-text-2` | `#BAC0CC` | `rgba(255,255,255,0.50)` | Placeholder text |
-| `--lgui-text-3` | `#666F8D` | `rgba(255,255,255,0.38)` | Secondary / hint text |
-| `--lgui-text-4` | `#19213D` | `#FFFFFF` | Primary body text |
+| `--lgui-text-2` | `#A3A3A3` | `rgba(255,255,255,0.72)` | Placeholder text |
+| `--lgui-text-3` | `#6B6B6B` | `rgba(255,255,255,0.60)` | Secondary / hint text (≥3:1 contrast) |
+| `--lgui-text-4` | `#141414` | `#FFFFFF` | Primary body text |
 
 ---
 
@@ -92,32 +94,32 @@ Use these in components. They remap automatically in dark mode.
 
 | Token | Value | Named alias | Use |
 |-------|-------|-------------|-----|
-| `--lgui-space-0` | `0.2rem` | — | Micro offsets |
-| `--lgui-space-1` | `0.6rem` | `--lgui-gap-xs` | Icon gaps |
-| `--lgui-space-2` | `0.8rem` | `--lgui-gap-sm`, `--lgui-pad-xs` | Tight padding |
-| `--lgui-space-3` | `1.2rem` | `--lgui-gap-md`, `--lgui-pad-sm` | Default gap |
-| `--lgui-space-4` | `1.6rem` | `--lgui-gap-lg`, `--lgui-pad-md` | Standard padding |
-| `--lgui-space-5` | `2.4rem` | `--lgui-gap-xl`, `--lgui-pad-lg` | Section spacing |
-| `--lgui-space-6` | `3.2rem` | `--lgui-pad-xl` | Large section gap |
-| `--lgui-space-7` | `4rem` | — | |
-| `--lgui-space-8` | `4.8rem` | — | |
-| `--lgui-space-9` | `6.4rem` | — | Page-level padding |
-| `--lgui-space-10` | `8rem` | — | |
-| `--lgui-space-11` | `12rem` | — | Hero sections |
+| `--lgui-space-0` | `0.125rem` | — | Micro offsets |
+| `--lgui-space-1` | `0.375rem` | `--lgui-gap-xs` | Icon gaps |
+| `--lgui-space-2` | `0.5rem` | `--lgui-gap-sm`, `--lgui-pad-xs` | Tight padding |
+| `--lgui-space-3` | `0.75rem` | `--lgui-gap-md`, `--lgui-pad-sm` | Default gap |
+| `--lgui-space-4` | `1rem` | `--lgui-gap-lg`, `--lgui-pad-md` | Standard padding |
+| `--lgui-space-5` | `1.5rem` | `--lgui-gap-xl`, `--lgui-pad-lg` | Section spacing |
+| `--lgui-space-6` | `2rem` | `--lgui-pad-xl` | Large section gap |
+| `--lgui-space-7` | `2.5rem` | — | |
+| `--lgui-space-8` | `3rem` | — | |
+| `--lgui-space-9` | `4rem` | — | Page-level padding |
+| `--lgui-space-10` | `5rem` | — | |
+| `--lgui-space-11` | `7.5rem` | — | Hero sections |
 
 ### Border Radius
 
 | Token | Value | Use |
 |-------|-------|-----|
 | `--lgui-radius-none` | `0` | Flat / flush |
-| `--lgui-radius-xs` | `0.2rem` | Micro elements |
-| `--lgui-radius-sm` | `0.4rem` | Buttons (compact) |
-| `--lgui-radius-md` | `0.8rem` | Chips, tags, badges |
-| `--lgui-radius-default` | `1.6rem` | Cards, modals, sheets |
-| `--lgui-radius-lg` | `2.4rem` | Large cards |
-| `--lgui-radius-xl` | `3.2rem` | Hero sections |
-| `--lgui-radius-2xl` | `4.8rem` | Extra-large panels |
-| `--lgui-radius-pill` | `20rem` | Fully-rounded badges, buttons |
+| `--lgui-radius-xs` | `0.125rem` | Micro elements |
+| `--lgui-radius-sm` | `0.25rem` | Buttons (compact) |
+| `--lgui-radius-md` | `0.5rem` | Chips, tags, badges |
+| `--lgui-radius-default` | `1rem` | Cards, modals, sheets |
+| `--lgui-radius-lg` | `1.5rem` | Large cards |
+| `--lgui-radius-xl` | `2rem` | Hero sections |
+| `--lgui-radius-2xl` | `3rem` | Extra-large panels |
+| `--lgui-radius-pill` | `12.5rem` | Fully-rounded badges, buttons |
 
 ### Shadows
 
@@ -186,12 +188,12 @@ Always use the `-bg-*` variant for backgrounds/chips and the base token for dots
 
 ## Units — rem Scale
 
-`:root` has `font-size: 10px`, so **1rem = 10px**. This makes px → rem trivial: divide by 10.
+The app uses browser default `font-size: 16px`, so **1rem = 16px**.
 
 ```
-16px  →  1.6rem
-12px  →  1.2rem
-24px  →  2.4rem
+16px  →  1rem
+12px  →  0.75rem
+24px  →  1.5rem
 ```
 
 **Rules:**
@@ -207,7 +209,7 @@ Always use the `-bg-*` variant for backgrounds/chips and the base token for dots
 
 The type scale follows LanguageGUI's Display/Body hierarchy but font weights and specific sizes are applied inline in components (no separate CSS classes). Guidelines:
 
-Use `--lgui-fs-*` tokens for all font sizes and `--lgui-fw-*` tokens for all font weights. Never hardcode numeric values.
+Use `--lgui-fs-*` tokens for all font sizes, `--lgui-fw-*` for weights, and `--lgui-lh-*` for line-heights. Never hardcode numeric values.
 
 | Token | Value | Role |
 |-------|-------|------|
@@ -221,12 +223,132 @@ Use `--lgui-fs-*` tokens for all font sizes and `--lgui-fw-*` tokens for all fon
 
 | Token | Value | Role |
 |-------|-------|------|
-| `--lgui-fw-regular` | `400` | Body text |
-| `--lgui-fw-medium` | `500` | Chips, secondary labels |
-| `--lgui-fw-semibold` | `600` | Subheadings, field labels |
-| `--lgui-fw-bold` | `700` | Headings, display text |
+| `--lgui-fw-regular` | `300` | Light body text |
+| `--lgui-fw-medium` | `400` | Default body / chips |
+| `--lgui-fw-semibold` | `500` | Subheadings, field labels |
+| `--lgui-fw-bold` | `600` | Headings, display text |
+
+| Token | Value | Use |
+|-------|-------|-----|
+| `--lgui-lh-tight` | `1.2` | Headings, display text |
+| `--lgui-lh-snug` | `1.35` | Subheadings, labels |
+| `--lgui-lh-normal` | `1.5` | Default body text (WCAG AA) |
+| `--lgui-lh-relaxed` | `1.65` | Long-form reading |
+| `--lgui-lh-loose` | `1.8` | Captions, helper text |
 
 Decorative emoji sizes (3rem+) are the only accepted exception to the token rule — they are intentional one-offs.
+
+---
+
+---
+
+## Layer 2 — Z-Index Scale
+
+Define layering explicitly. Never use arbitrary values in components.
+
+| Token | Value | Use |
+|-------|-------|-----|
+| `--lgui-z-base` | `0` | Default document flow |
+| `--lgui-z-raised` | `10` | Sticky elements, raised cards |
+| `--lgui-z-dropdown` | `20` | Dropdowns, autocomplete |
+| `--lgui-z-sticky` | `40` | Sticky headers, filter bars |
+| `--lgui-z-overlay` | `100` | Modal backdrops, scrims |
+| `--lgui-z-modal` | `200` | Modals, drawers, sheets |
+| `--lgui-z-toast` | `400` | Toasts, snackbars |
+| `--lgui-z-tooltip` | `800` | Tooltips, popovers |
+
+---
+
+## Layer 2 — Animation Tokens
+
+All motion must use these tokens so the app feels consistent.
+
+### Durations
+
+| Token | Value | Use |
+|-------|-------|-----|
+| `--lgui-duration-instant` | `80ms` | Press feedback (opacity/scale) |
+| `--lgui-duration-fast` | `150ms` | State changes, chip toggles |
+| `--lgui-duration-normal` | `220ms` | Micro-interactions (default) |
+| `--lgui-duration-moderate` | `300ms` | Page elements entering/exiting |
+| `--lgui-duration-slow` | `400ms` | Complex transitions, sheets |
+
+### Easing
+
+| Token | Value | Use |
+|-------|-------|-----|
+| `--lgui-ease-in` | `cubic-bezier(0.4, 0, 1, 1)` | Exiting elements |
+| `--lgui-ease-out` | `cubic-bezier(0, 0, 0.2, 1)` | Entering elements |
+| `--lgui-ease-inout` | `cubic-bezier(0.4, 0, 0.2, 1)` | State changes (default) |
+| `--lgui-ease-spring` | `cubic-bezier(0.34, 1.56, 0.64, 1)` | Playful / elastic (chip toggles, theme swatches) |
+
+### Shorthands
+
+```css
+/* Enter */
+transition: transform var(--lgui-duration-normal) var(--lgui-ease-out);
+/* Exit */
+transition: transform var(--lgui-duration-fast) var(--lgui-ease-in);
+/* State change */
+transition: color var(--lgui-transition-fast);
+```
+
+**Rules:**
+- Always include `@media (prefers-reduced-motion: reduce)` to disable or reduce animations
+- Animate only `transform` and `opacity` — never `width`, `height`, `top`, or `left`
+- Press/tap feedback must be ≤80ms to feel instantaneous
+
+---
+
+## Layer 2 — Focus & Interaction
+
+Accessibility-critical tokens (WCAG 2.4.7 — Focus Visible).
+
+| Token | Value | Use |
+|-------|-------|-----|
+| `--lgui-focus-ring` | `0 0 0 3px rgba(217,30,92,0.55)` | Keyboard focus ring (primary-tinted) |
+| `--lgui-focus-ring-inset` | `inset 0 0 0 2px rgba(217,30,92,0.55)` | Inset variant for inputs |
+| `--lgui-scrim` | `rgba(0,0,0,0.48)` | Modal backdrop (WCAG-safe 48%) |
+| `--lgui-scrim-heavy` | `rgba(0,0,0,0.64)` | Action sheets, full-screen overlays |
+
+```css
+/* ✅ Use :focus-visible (keyboard only — not mouse) */
+*:focus-visible { box-shadow: var(--lgui-focus-ring); }
+```
+
+---
+
+## Layer 3 — Brand Gradients
+
+Derived from the VibraSBK logo gradient (E52030 → D91E5C → D41870).
+
+| Token | Value | Use |
+|-------|-------|-----|
+| `--vibe-gradient-primary` | `linear-gradient(135deg, #E52030, #D91E5C, #D41870)` | Primary CTA backgrounds, hero accents |
+| `--vibe-gradient-warm` | `linear-gradient(135deg, #D91E5C, #F4A261)` | Secondary highlights |
+| `--vibe-gradient-cool` | `linear-gradient(135deg, #D91E5C, #2A9D8F)` | Contrast accent (use sparingly) |
+
+---
+
+## Theme System
+
+7 dark themes selectable by the user, applied via `data-theme` on `<html>`. Managed by `ThemeService`.
+
+| Theme | Mood | Surface 2 (BG) |
+|-------|------|----------------|
+| `noir` | True black | `#0F0F0F` |
+| `purple` | Midnight violet | `#0D0B1A` |
+| `warm` | Charcoal amber | `#100E09` |
+| `crimson` | Deep red underground | `#150808` |
+| `electric` | Cobalt midnight | `#060810` |
+| `emerald` | Dark Havana | `#070F08` |
+| `copper` | Vintage jazz bar | `#0E0A05` |
+
+**Rules:**
+- All named themes fully remap `--lgui-surface-*`, `--lgui-border-*`, `--lgui-text-*`, shadows, and vibe/type backgrounds
+- Brand colors (`--ion-color-primary`, secondary, tertiary) do **not** change per theme — they are fixed brand identity
+- Automatic dark mode fallback (`@media (prefers-color-scheme: dark)`) uses Noir values when no `data-theme` is set
+- `ThemeService` persists the selection to `localStorage` and restores it on startup via `app.component.ts`
 
 ---
 

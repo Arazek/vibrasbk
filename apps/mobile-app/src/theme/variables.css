@@ -131,7 +131,7 @@
 
 /* ─────────────────────────────────────────────────────
    6. TYPOGRAPHY SCALE
-   Font-size and font-weight tokens.
+   Font-size, font-weight, and line-height tokens.
    Base: browser default 16px (1rem = 16px)
    ───────────────────────────────────────────────────── */
 :root {
@@ -149,6 +149,67 @@
   --lgui-fw-medium:   400;
   --lgui-fw-semibold: 500;
   --lgui-fw-bold:     600;
+
+  /* Line-height scale */
+  --lgui-lh-tight:    1.2;  /* Headings, display text */
+  --lgui-lh-snug:     1.35; /* Subheadings, labels */
+  --lgui-lh-normal:   1.5;  /* Default body text (WCAG AA) */
+  --lgui-lh-relaxed:  1.65; /* Long-form reading */
+  --lgui-lh-loose:    1.8;  /* Captions, helper text */
+}
+
+/* ─────────────────────────────────────────────────────
+   6b. Z-INDEX SCALE
+   Layering system to prevent stacking context conflicts
+   ───────────────────────────────────────────────────── */
+:root {
+  --lgui-z-base:    0;    /* Default flow */
+  --lgui-z-raised:  10;   /* Sticky elements, raised cards */
+  --lgui-z-dropdown: 20;  /* Dropdowns, autocomplete */
+  --lgui-z-sticky:  40;   /* Sticky headers, filter bars */
+  --lgui-z-overlay: 100;  /* Modal backdrops, scrims */
+  --lgui-z-modal:   200;  /* Modals, drawers, sheets */
+  --lgui-z-toast:   400;  /* Toasts, snackbars */
+  --lgui-z-tooltip: 800;  /* Tooltips, popovers */
+}
+
+/* ─────────────────────────────────────────────────────
+   6c. ANIMATION TOKENS
+   Durations and easing functions for consistent motion
+   ───────────────────────────────────────────────────── */
+:root {
+  /* Durations */
+  --lgui-duration-instant:  80ms;   /* Press feedback (opacity/scale) */
+  --lgui-duration-fast:     150ms;  /* State changes, chip toggles */
+  --lgui-duration-normal:   220ms;  /* Micro-interactions (default) */
+  --lgui-duration-moderate: 300ms;  /* Page elements entering/exiting */
+  --lgui-duration-slow:     400ms;  /* Complex transitions, sheets */
+
+  /* Easing functions */
+  --lgui-ease-in:     cubic-bezier(0.4, 0, 1, 1);     /* Exiting elements */
+  --lgui-ease-out:    cubic-bezier(0, 0, 0.2, 1);     /* Entering elements */
+  --lgui-ease-inout:  cubic-bezier(0.4, 0, 0.2, 1);   /* State changes */
+  --lgui-ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1); /* Playful / elastic */
+  --lgui-ease-linear: linear;
+
+  /* Composite transition shorthands */
+  --lgui-transition-fast:    var(--lgui-duration-fast) var(--lgui-ease-inout);
+  --lgui-transition-normal:  var(--lgui-duration-normal) var(--lgui-ease-inout);
+  --lgui-transition-slow:    var(--lgui-duration-slow) var(--lgui-ease-out);
+}
+
+/* ─────────────────────────────────────────────────────
+   6d. FOCUS & INTERACTION TOKENS
+   Accessibility-first focus rings and overlays
+   ───────────────────────────────────────────────────── */
+:root {
+  /* Focus ring — keyboard navigation (WCAG 2.4.7) */
+  --lgui-focus-ring:       0 0 0 3px rgba(217, 30, 92, 0.55);  /* Primary-tinted */
+  --lgui-focus-ring-inset: inset 0 0 0 2px rgba(217, 30, 92, 0.55);
+
+  /* Scrim / overlay backdrop */
+  --lgui-scrim:            rgba(0, 0, 0, 0.48);  /* Modal scrim (48% — WCAG safe) */
+  --lgui-scrim-heavy:      rgba(0, 0, 0, 0.64);  /* Action sheets */
 }
 
 /* ─────────────────────────────────────────────────────
@@ -200,6 +261,11 @@
   /* Toolbar — matches surface (no primary color) */
   --ion-toolbar-background: var(--lgui-surface-1);
   --ion-toolbar-color:      var(--lgui-text-4);
+
+  /* Brand gradients — from logo (E52030 → D91E5C → D41870) */
+  --vibe-gradient-primary:  linear-gradient(135deg, #E52030 0%, #D91E5C 50%, #D41870 100%);
+  --vibe-gradient-warm:     linear-gradient(135deg, #D91E5C 0%, #F4A261 100%);
+  --vibe-gradient-cool:     linear-gradient(135deg, #D91E5C 0%, #2A9D8F 100%);
 }
 
 /* ─────────────────────────────────────────────────────

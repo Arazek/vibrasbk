@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import {
   IonContent, IonHeader, IonToolbar, IonTitle, IonFooter,
-  IonButton, IonProgressBar, IonButtons,
+  IonButton, IonProgressBar, IonButtons, IonBackButton,
 } from '@ionic/angular/standalone';
 import { DancingRole } from '@shared/types';
 import { OnboardingStateService } from '../../../services/onboarding-state.service';
@@ -17,13 +17,13 @@ const ROLES: { value: DancingRole; label: string; description: string; emoji: st
 @Component({
   selector: 'app-onboarding-rol',
   standalone: true,
-  imports: [CommonModule, IonContent, IonHeader, IonToolbar, IonTitle, IonFooter, IonButton, IonProgressBar, IonButtons],
+  imports: [CommonModule, IonContent, IonHeader, IonToolbar, IonTitle, IonFooter, IonButton, IonProgressBar, IonButtons, IonBackButton],
   styles: [`
     .question {
       font-size: var(--lgui-fs-display);
       font-weight: var(--lgui-fw-bold);
       color: var(--lgui-text-4);
-      margin-bottom: 1.5rem;
+      margin-bottom: var(--lgui-gap-xl);
     }
     .role-card {
       display: flex;
@@ -35,7 +35,7 @@ const ROLES: { value: DancingRole; label: string; description: string; emoji: st
       margin-bottom: var(--lgui-gap-sm);
       cursor: pointer;
       background: var(--lgui-surface-1);
-      transition: border-color 0.15s, background 0.15s, transform 0.1s;
+      transition: border-color var(--lgui-transition-fast), background var(--lgui-transition-fast), transform var(--lgui-duration-fast) var(--lgui-ease-out);
     }
     .role-card:active {
       transform: scale(0.98);
@@ -43,10 +43,9 @@ const ROLES: { value: DancingRole; label: string; description: string; emoji: st
     .role-card.selected {
       border-color: var(--ion-color-primary);
       background: var(--ion-color-primary);
-      color: #fff;
     }
     .role-emoji {
-      font-size: 2.25rem;
+      font-size: var(--lgui-fs-display);
       line-height: 1;
       flex-shrink: 0;
     }
@@ -55,20 +54,21 @@ const ROLES: { value: DancingRole; label: string; description: string; emoji: st
       font-weight: var(--lgui-fw-semibold);
       color: var(--lgui-text-4);
     }
-    .role-card.selected .role-label { color: #fff; }
+    .role-card.selected .role-label { color: var(--ion-color-primary-contrast); }
     .role-desc {
       font-size: var(--lgui-fs-body);
-      margin-top: 0.125rem;
+      margin-top: var(--lgui-space-0);
       color: var(--lgui-text-3);
     }
-    .role-card.selected .role-desc { color: rgba(255,255,255,0.78); }
+    .role-card.selected .role-desc { color: var(--ion-color-primary-contrast); opacity: 0.78; }
   `],
   template: `
     <ion-header>
       <ion-toolbar>
         <ion-buttons slot="start">
-          <span class="breadcrumb">Tu rol</span>
+          <ion-back-button defaultHref="/onboarding/ciudad" text="Atrás"></ion-back-button>
         </ion-buttons>
+        <ion-title>Tu rol</ion-title>
       </ion-toolbar>
       <ion-progress-bar value="0.5" color="secondary"></ion-progress-bar>
     </ion-header>
@@ -81,7 +81,7 @@ const ROLES: { value: DancingRole; label: string; description: string; emoji: st
         class="role-card"
         [class.selected]="selected === r.value"
         (click)="selected = r.value">
-        <div class="role-emoji">{{ r.emoji }}</div>
+        <div class="role-emoji" aria-hidden="true">{{ r.emoji }}</div>
         <div>
           <div class="role-label">{{ r.label }}</div>
           <div class="role-desc">{{ r.description }}</div>
@@ -92,7 +92,7 @@ const ROLES: { value: DancingRole; label: string; description: string; emoji: st
 
     <ion-footer>
       <ion-toolbar>
-        <ion-button expand="block" color="primary" style="margin: 0.5rem" [disabled]="!!(!selected)" (click)="next()">
+        <ion-button expand="block" color="primary" style="margin: var(--lgui-gap-sm)" [disabled]="!!(!selected)" (click)="next()">
           Siguiente
         </ion-button>
       </ion-toolbar>

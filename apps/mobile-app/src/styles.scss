@@ -119,11 +119,35 @@ ion-toggle {
   --handle-background: #fff;
 }
 
-/* Action sheet — text contrast for option buttons */
+/* Action sheet — full theme override for consistent contrast */
 ion-action-sheet {
-  --color: var(--lgui-text-4);
+  --background: var(--lgui-surface-2);
+  --backdrop-opacity: 0.48;
+  --color: var(--lgui-text-3);
   --button-color: var(--lgui-text-4);
-  --background: var(--lgui-surface-1);
+  --button-background: transparent;
+  --button-color-selected: var(--ion-color-primary);
+  --button-background-selected: rgba(var(--ion-color-primary-rgb), 0.08);
+  --button-background-selected-opacity: 1;
+  --button-background-activated: rgba(var(--ion-color-primary-rgb), 0.05);
+  --button-background-activated-opacity: 1;
+  --button-color-activated: var(--lgui-text-4);
+  --cancel-button-color: var(--lgui-text-3);
+}
+
+/* Direct override: Ionic renders action sheet buttons in light DOM with scoped classes.
+   The host-level --button-color variable loses to Ionic's own .sc-ion-action-sheet-md-h
+   class rule (higher specificity) which sets --button-color via --ion-color-step-850.
+   We override at the button element level instead. */
+.action-sheet-button.sc-ion-action-sheet-md {
+  color: var(--lgui-text-4);
+}
+.action-sheet-selected.sc-ion-action-sheet-md {
+  color: var(--ion-color-primary);
+  background: rgba(var(--ion-color-primary-rgb), 0.08);
+}
+.action-sheet-cancel.sc-ion-action-sheet-md {
+  color: var(--lgui-text-3);
 }
 
 /* Toolbar — align start padding with ion-content's ion-padding (16px) */
@@ -211,4 +235,99 @@ ion-alert {
 ion-alert .alert-message,
 ion-alert .alert-title {
   color: var(--lgui-text-4);
+}
+
+/* ─── Modal & popover theming ────────────────────────────────────────────── */
+
+ion-modal {
+  --background: var(--lgui-surface-2);
+  --backdrop-opacity: 0.48;
+}
+
+ion-popover {
+  --background: var(--lgui-surface-1);
+  --box-shadow: var(--lgui-shadow-lg);
+  --border-radius: var(--lgui-radius-default);
+}
+
+/* ─── Accessibility: focus-visible ring ─────────────────────────────────── */
+
+/* Global focus ring for keyboard navigation (WCAG 2.4.7)
+   Uses :focus-visible so mouse clicks are unaffected. */
+*:focus-visible {
+  outline: none;
+  box-shadow: var(--lgui-focus-ring);
+  border-radius: var(--lgui-radius-sm);
+}
+
+/* For elements that already have border-radius from their own styles,
+   the ring must not look misaligned — override at component level if needed */
+ion-button:focus-visible,
+ion-chip:focus-visible {
+  box-shadow: var(--lgui-focus-ring);
+}
+
+/* ─── Transitions: interactive element tap feedback ─────────────────────── */
+
+/* Subtle scale + opacity on press for tappable cards and buttons
+   Respects prefers-reduced-motion (WCAG 2.3.3) */
+ion-button,
+ion-chip,
+ion-item {
+  transition: opacity var(--lgui-transition-fast);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  button.filter-chip,
+  button.view-btn,
+  .theme-swatch {
+    transition: transform var(--lgui-duration-fast) var(--lgui-ease-spring),
+                opacity var(--lgui-transition-fast),
+                box-shadow var(--lgui-transition-fast);
+  }
+
+  button.filter-chip:active,
+  button.view-btn:active {
+    transform: scale(0.95);
+  }
+
+  .theme-swatch:active {
+    transform: scale(0.92);
+  }
+}
+
+/* ─── Skeleton / shimmer loading ────────────────────────────────────────── */
+
+@keyframes lgui-shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--lgui-surface-3) 25%,
+    var(--lgui-surface-4) 50%,
+    var(--lgui-surface-3) 75%
+  );
+  background-size: 200% 100%;
+  border-radius: var(--lgui-radius-md);
+  animation: lgui-shimmer 1.4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    animation: none;
+    background: var(--lgui-surface-3);
+  }
+}
+
+/* Skeleton size helpers */
+.skeleton-text     { height: 0.875rem; margin-bottom: var(--lgui-gap-sm); }
+.skeleton-heading  { height: 1.125rem; margin-bottom: var(--lgui-gap-md); }
+.skeleton-avatar   { width: 2.75rem; height: 2.75rem; border-radius: 50%; }
+.skeleton-card     {
+  height: 6rem;
+  border-radius: var(--lgui-radius-default);
+  margin-bottom: var(--lgui-gap-md);
 }

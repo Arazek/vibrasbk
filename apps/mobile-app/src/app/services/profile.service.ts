@@ -24,4 +24,10 @@ export class ProfileService {
   updateProfile(payload: UpdateProfilePayload): Observable<UserProfile> {
     return this.http.patch<UserProfile>(`${this.base}/profile`, payload);
   }
+
+  uploadPhoto(file: File): Observable<UserProfile> {
+    const form = new FormData();
+    form.append('file', file);
+    return this.http.post<UserProfile>(`${this.base}/profile/photo`, form);
+  }
 }

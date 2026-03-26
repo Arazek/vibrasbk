@@ -5,7 +5,7 @@ import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import {
   IonContent,
-  IonSpinner, IonText, IonButton, IonRefresher, IonRefresherContent,
+  IonText, IonButton, IonRefresher, IonRefresherContent,
   IonChip, IonLabel, IonIcon,
 } from '@ionic/angular/standalone';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
@@ -49,7 +49,7 @@ const VIEW_KEY = 'vibrasbk_home_view';
   standalone: true,
   imports: [
     CommonModule, IonContent,
-    IonSpinner, IonText, IonButton, IonIcon,
+    IonText, IonButton, IonIcon,
     IonRefresher, IonRefresherContent,
     IonChip, IonLabel,
     EventCardComponent, NavbarComponent,
@@ -84,16 +84,16 @@ const VIEW_KEY = 'vibrasbk_home_view';
       font-weight: var(--lgui-fw-semibold);
       cursor: pointer;
       flex-shrink: 0;
-      transition: background 0.15s, color 0.15s;
+      transition: background var(--lgui-transition-fast), color var(--lgui-transition-fast);
       background: var(--lgui-surface-3);
       color: var(--lgui-text-3);
       border: none;
       user-select: none;
     }
-    .filter-chip.active                { background: var(--ion-color-primary); color: #fff; }
-    .filter-chip.active.type-social    { background: var(--type-social-color, #4A90D9); }
-    .filter-chip.active.type-intensive { background: var(--type-intensive-color, #D07A2E); }
-    .filter-chip.active.type-congress  { background: var(--type-congress-color, #7B52AB); }
+    .filter-chip.active                { background: var(--ion-color-primary); color: var(--ion-color-primary-contrast); }
+    .filter-chip.active.type-social    { background: var(--type-social-color); color: var(--lgui-text-1); }
+    .filter-chip.active.type-intensive { background: var(--type-intensive-color); color: var(--lgui-text-1); }
+    .filter-chip.active.type-congress  { background: var(--type-congress-color); color: var(--lgui-text-1); }
 
     /* ── View toggle ─────────────────────────────────────────────── */
     .view-toggle {
@@ -108,17 +108,17 @@ const VIEW_KEY = 'vibrasbk_home_view';
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 2rem;
-      height: 1.875rem;
+      width: 2.75rem;
+      height: 2.75rem;
       background: transparent;
       border: none;
       cursor: pointer;
       color: var(--lgui-text-3);
-      font-size: 1rem;
-      transition: background 0.15s, color 0.15s;
+      font-size: var(--lgui-fs-body-lg);
+      transition: background var(--lgui-transition-fast), color var(--lgui-transition-fast);
       -webkit-tap-highlight-color: transparent;
     }
-    .view-btn.active { background: var(--ion-color-primary); color: #fff; }
+    .view-btn.active { background: var(--ion-color-primary); color: var(--ion-color-primary-contrast); }
 
     /* ── List view ───────────────────────────────────────────────── */
     .day-header {
@@ -168,9 +168,10 @@ const VIEW_KEY = 'vibrasbk_home_view';
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 0.1875rem 0 0.25rem;
+      padding: var(--lgui-space-0) 0 var(--lgui-space-1);
       cursor: pointer;
       -webkit-tap-highlight-color: transparent;
+      min-height: 2.75rem; /* 44pt minimum touch target */
     }
     .cal-cell.out-month .day-num { opacity: 0.28; }
     .day-num {
@@ -183,10 +184,11 @@ const VIEW_KEY = 'vibrasbk_home_view';
       font-size: var(--lgui-fs-body);
       font-weight: var(--lgui-fw-medium);
       color: var(--lgui-text-4);
-      transition: background 0.12s;
+      line-height: var(--lgui-lh-tight);
+      transition: background var(--lgui-duration-fast) var(--lgui-ease-out);
     }
     .cal-cell.today    .day-num { background: var(--lgui-surface-3); font-weight: var(--lgui-fw-bold); }
-    .cal-cell.selected .day-num { background: var(--ion-color-primary); color: #fff; font-weight: var(--lgui-fw-bold); }
+    .cal-cell.selected .day-num { background: var(--ion-color-primary); color: var(--ion-color-primary-contrast); font-weight: var(--lgui-fw-bold); }
     .cal-cell.selected.today .day-num { background: var(--ion-color-primary); }
     .dots-row {
       display: flex;
@@ -237,11 +239,13 @@ const VIEW_KEY = 'vibrasbk_home_view';
           </button>
         </div>
         <div class="view-toggle">
-          <button class="view-btn" [class.active]="activeView === 'list'" (click)="setView('list')">
-            <ion-icon name="list-outline"></ion-icon>
+          <button class="view-btn" [class.active]="activeView === 'list'" (click)="setView('list')"
+                  aria-label="Vista de lista" [attr.aria-pressed]="activeView === 'list'">
+            <ion-icon name="list-outline" aria-hidden="true"></ion-icon>
           </button>
-          <button class="view-btn" [class.active]="activeView === 'calendar'" (click)="setView('calendar')">
-            <ion-icon name="calendar-outline"></ion-icon>
+          <button class="view-btn" [class.active]="activeView === 'calendar'" (click)="setView('calendar')"
+                  aria-label="Vista de calendario" [attr.aria-pressed]="activeView === 'calendar'">
+            <ion-icon name="calendar-outline" aria-hidden="true"></ion-icon>
           </button>
         </div>
       </div>
@@ -261,8 +265,8 @@ const VIEW_KEY = 'vibrasbk_home_view';
         <ion-refresher-content></ion-refresher-content>
       </ion-refresher>
 
-      <div *ngIf="loading" class="loading-container">
-        <ion-spinner color="primary"></ion-spinner>
+      <div *ngIf="loading">
+        <div *ngFor="let i of skeletonCards" class="skeleton-card"></div>
       </div>
 
       <div *ngIf="error" class="ion-padding">
@@ -333,6 +337,7 @@ const VIEW_KEY = 'vibrasbk_home_view';
 export class HomePage implements OnDestroy {
   loading = true;
   error = '';
+  skeletonCards = [1, 2, 3, 4];
   grouped: { dayName: string; events: WeeklyEvent[] }[] = [];
   selectedType: EventType | null = null;
   selectedCity: string | null = null;
@@ -475,7 +480,7 @@ export class HomePage implements OnDestroy {
     for (const ev of this.filteredEvents) {
       if ((ev.dayOfWeek ?? -1) === norm && !seen.has(ev.type)) {
         seen.add(ev.type);
-        colors.push(TYPE_DOT_COLOR[ev.type] ?? '#BAC0CC');
+        colors.push(TYPE_DOT_COLOR[ev.type] ?? 'var(--lgui-surface-5)');
       }
     }
     return colors;

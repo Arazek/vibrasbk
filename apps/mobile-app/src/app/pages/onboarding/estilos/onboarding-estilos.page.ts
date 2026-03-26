@@ -6,7 +6,7 @@ import { HttpClient } from '@angular/common/http';
 import {
   IonContent, IonHeader, IonToolbar, IonTitle, IonFooter, IonButton,
   IonChip, IonLabel, IonItem, IonInput, IonList, IonToast, IonProgressBar,
-  IonSelect, IonSelectOption, IonSpinner, IonButtons,
+  IonSelect, IonSelectOption, IonSpinner, IonButtons, IonBackButton,
 } from '@ionic/angular/standalone';
 import { DanceStyle, Academia } from '@shared/types';
 import { OnboardingStateService } from '../../../services/onboarding-state.service';
@@ -21,7 +21,7 @@ import { FormFieldComponent } from '../../../components/form-field/form-field.co
   imports: [
     CommonModule, FormsModule, IonContent, IonHeader, IonToolbar, IonTitle, IonFooter,
     IonButton, IonItem, IonInput, IonList, IonToast, IonProgressBar,
-    IonSelect, IonSelectOption, IonButtons,
+    IonSelect, IonSelectOption, IonButtons, IonBackButton,
     StyleChipGridComponent, FormFieldComponent,
   ],
   styles: [`
@@ -34,22 +34,23 @@ import { FormFieldComponent } from '../../../components/form-field/form-field.co
     .subtitle {
       font-size: var(--lgui-fs-body-lg);
       color: var(--lgui-text-3);
-      margin-bottom: 1.25rem;
+      margin-bottom: var(--lgui-gap-lg);
     }
     .form-heading {
       font-size: var(--lgui-fs-subheading);
       font-weight: var(--lgui-fw-bold);
       color: var(--lgui-text-4);
-      margin: 1.5rem 0 0.75rem;
-      padding-left: 0.25rem;
+      margin: var(--lgui-gap-xl) 0 var(--lgui-gap-md);
+      padding-left: var(--lgui-space-1);
     }
   `],
   template: `
     <ion-header>
       <ion-toolbar>
         <ion-buttons slot="start">
-          <span class="breadcrumb">Estilos</span>
+          <ion-back-button defaultHref="/onboarding/nivel" text="Atrás"></ion-back-button>
         </ion-buttons>
+        <ion-title>Estilos</ion-title>
       </ion-toolbar>
       <ion-progress-bar value="1.0" color="secondary"></ion-progress-bar>
     </ion-header>
@@ -121,7 +122,7 @@ import { FormFieldComponent } from '../../../components/form-field/form-field.co
         <ion-button
           expand="block"
           color="primary"
-          style="margin: 0.5rem"
+          style="margin: var(--lgui-gap-sm)"
           [disabled]="!!(!canSubmit || loading)"
           (click)="finish()">
           {{ loading ? 'Creando perfil...' : 'Entrar a la app 🎵' }}

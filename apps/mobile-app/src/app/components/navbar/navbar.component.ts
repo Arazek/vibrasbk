@@ -28,7 +28,8 @@ import { EventsService } from '../../services/events.service';
     }
 
     .nav-logo {
-      height: 1.6rem;
+      height: var(--lgui-fs-display);
+      width: auto;
       cursor: pointer;
       flex-shrink: 0;
     }
@@ -57,14 +58,17 @@ import { EventsService } from '../../services/events.service';
 
     .search-dropdown {
       position: fixed;
-      top: calc(56px + env(safe-area-inset-top, 0px));
+      top: calc(3.5rem + env(safe-area-inset-top, 0px));
       left: var(--lgui-pad-md);
       right: var(--lgui-pad-md);
       background: var(--lgui-surface-1);
       border-radius: var(--lgui-radius-default);
       box-shadow: var(--lgui-shadow-lg);
       overflow: hidden;
-      z-index: 9999;
+      z-index: var(--lgui-z-dropdown);
+      opacity: 1;
+      transform: translateY(0);
+      transition: opacity var(--lgui-transition-fast), transform var(--lgui-transition-fast);
     }
 
     .search-item {
@@ -113,8 +117,9 @@ import { EventsService } from '../../services/events.service';
       cursor: pointer;
       flex-shrink: 0;
       color: var(--lgui-text-4);
-      font-size: 1.125rem;
+      font-size: var(--lgui-fs-heading);
       -webkit-tap-highlight-color: transparent;
+      transition: background var(--lgui-transition-fast);
     }
 
     .nav-profile-btn:active {
@@ -136,6 +141,7 @@ import { EventsService } from '../../services/events.service';
             <input
               class="search-input"
               type="search"
+              aria-label="Buscar eventos"
               placeholder="Buscar eventos..."
               [value]="query"
               (focus)="onFocus()"
@@ -144,8 +150,8 @@ import { EventsService } from '../../services/events.service';
             />
           </div>
 
-          <button class="nav-profile-btn" (click)="goProfile()">
-            <ion-icon name="person-outline"></ion-icon>
+          <button class="nav-profile-btn" (click)="goProfile()" aria-label="Perfil">
+            <ion-icon name="person-outline" aria-hidden="true"></ion-icon>
           </button>
         </div>
       </ion-toolbar>

@@ -66,6 +66,9 @@ export class User {
   @Column({ name: 'academy_id', nullable: true })
   academyId?: string;
 
+  @Column({ name: 'photo_url', nullable: true, type: 'text' })
+  photoUrl: string | null;
+
   @Column({ name: 'fcm_token', nullable: true })
   fcmToken: string;
 

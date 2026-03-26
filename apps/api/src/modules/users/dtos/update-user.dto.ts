@@ -22,4 +22,9 @@ export class UpdateUserDto {
   @IsOptional()
   @IsString()
   fcmToken?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  photoUrl?: string;
 }

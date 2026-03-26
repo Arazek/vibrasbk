@@ -36,6 +36,7 @@ export interface UserProfile {
   level: Level;
   styles: string[];
   academyId?: string;
+  photoUrl?: string | null;
   createdAt: Date;
   updatedAt: Date;
 }

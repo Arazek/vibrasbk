@@ -3,8 +3,10 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
   IonContent,
-  IonSpinner, IonText, IonChip, IonLabel, IonToast, IonButton,
+  IonSpinner, IonText, IonChip, IonLabel, IonToast, IonButton, IonIcon,
 } from '@ionic/angular/standalone';
+import { addIcons } from 'ionicons';
+import { lockClosedOutline } from 'ionicons/icons';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
 import { WeeklyEvent, EventAnalytics, VoteStatus } from '@shared/types';
 import { EventsService } from '../../services/events.service';
@@ -27,7 +29,7 @@ const TYPE_LABEL: Record<string, string> = {
   imports: [
     CommonModule,
     IonContent,
-    IonSpinner, IonText, IonChip, IonLabel, IonToast, IonButton,
+    IonSpinner, IonText, IonChip, IonLabel, IonToast, IonButton, IonIcon,
     AnalyticsPanelComponent, ReplacePipe, NavbarComponent,
   ],
   styles: [`
@@ -53,7 +55,7 @@ const TYPE_LABEL: Record<string, string> = {
       font-weight: var(--lgui-fw-bold);
       color: var(--lgui-text-4);
       margin-bottom: var(--lgui-space-1);
-      line-height: 1.2;
+      line-height: var(--lgui-lh-tight);
     }
     .event-when {
       font-size: var(--lgui-fs-body-lg);
@@ -111,21 +113,35 @@ const TYPE_LABEL: Record<string, string> = {
     }
     .vote-btn {
       flex: 1;
-      padding: 0.625rem 0.375rem;
+      padding: var(--lgui-pad-sm) var(--lgui-pad-xs);
       border-radius: var(--lgui-radius-default);
-      border: 0.0938rem solid var(--lgui-border-3);
+      border: 0.0625rem solid var(--lgui-border-3);
       background: var(--lgui-surface-2);
       color: var(--lgui-text-3);
       font-size: var(--lgui-fs-body);
       font-weight: var(--lgui-fw-semibold);
       cursor: pointer;
-      transition: background 0.15s, color 0.15s, border-color 0.15s;
+      transition: background var(--lgui-transition-fast),
+                  color var(--lgui-transition-fast),
+                  border-color var(--lgui-transition-fast);
       -webkit-tap-highlight-color: transparent;
     }
     .vote-btn:disabled { opacity: 0.45; cursor: default; }
-    .vote-btn.active-going     { background: #E84855; border-color: #E84855; color: #fff; }
-    .vote-btn.active-maybe     { background: #EFC42C; border-color: #EFC42C; color: #fff; }
-    .vote-btn.active-not-going { background: #BAC0CC; border-color: #BAC0CC; color: #fff; }
+    .vote-btn.active-going {
+      background: var(--vibe-packed);
+      border-color: var(--vibe-packed);
+      color: var(--lgui-text-1);
+    }
+    .vote-btn.active-maybe {
+      background: var(--vibe-normal);
+      border-color: var(--vibe-normal);
+      color: var(--lgui-text-1);
+    }
+    .vote-btn.active-not-going {
+      background: var(--lgui-surface-5);
+      border-color: var(--lgui-surface-5);
+      color: var(--lgui-text-1);
+    }
     .no-edit-note {
       font-size: var(--lgui-fs-caption);
       color: var(--lgui-text-3);
@@ -142,24 +158,44 @@ const TYPE_LABEL: Record<string, string> = {
       margin-top: var(--lgui-gap-lg);
     }
     .lock-icon {
-      font-size: 1.75rem;
+      font-size: var(--lgui-fs-display);
       flex-shrink: 0;
+      color: var(--lgui-text-3);
     }
     .lock-text {
       font-size: var(--lgui-fs-body);
       color: var(--lgui-text-3);
-      line-height: 1.5;
+      line-height: var(--lgui-lh-normal);
     }
     .bottom-space {
       height: var(--lgui-space-8);
+    }
+    .event-meta-line {
+      font-size: var(--lgui-fs-body);
+      color: var(--lgui-text-3);
+      margin-bottom: var(--lgui-gap-xs);
+    }
+    .event-title-line {
+      font-size: var(--lgui-fs-subheading);
+      font-weight: var(--lgui-fw-semibold);
+      color: var(--lgui-text-4);
+      margin-bottom: var(--lgui-gap-xs);
+    }
+    .share-row {
+      margin-top: var(--lgui-gap-sm);
     }
   `],
   template: `
     <app-navbar></app-navbar>
 
     <ion-content class="ion-padding">
-      <div *ngIf="loading" class="loading-container">
-        <ion-spinner color="primary"></ion-spinner>
+      <div *ngIf="loading">
+        <div class="skeleton skeleton-card" style="height: 8.125rem; border-radius: var(--lgui-radius-default); margin-bottom: var(--lgui-gap-lg);"></div>
+        <div class="skeleton skeleton-heading" style="width: 60%;"></div>
+        <div class="skeleton skeleton-text" style="width: 40%;"></div>
+        <div class="skeleton skeleton-text" style="width: 30%; margin-top: var(--lgui-gap-lg);"></div>
+        <div class="skeleton skeleton-text"></div>
+        <div class="skeleton skeleton-text" style="width: 80%;"></div>
       </div>
 
       <div *ngIf="event && !loading">
@@ -188,27 +224,27 @@ const TYPE_LABEL: Record<string, string> = {
 
         <!-- Social extras -->
         <ng-container *ngIf="event.type === 'social'">
-          <div *ngIf="event.workshopIncluded" style="font-size: var(--lgui-fs-body); color:var(--lgui-text-3); margin-bottom:0.25rem;">🎓 Incluye taller</div>
-          <div *ngIf="event.entryPrice" style="font-size: var(--lgui-fs-body); color:var(--lgui-text-3); margin-bottom:0.25rem;">🎟 Entrada: {{ event.entryPrice }}€</div>
-          <div *ngIf="event.instructors?.length" style="font-size: var(--lgui-fs-body); color:var(--lgui-text-3); margin-bottom:0.5rem;">🎤 {{ event.instructors!.join(', ') }}</div>
+          <div *ngIf="event.workshopIncluded" class="event-meta-line">Incluye taller</div>
+          <div *ngIf="event.entryPrice" class="event-meta-line">Entrada: {{ event.entryPrice }}€</div>
+          <div *ngIf="event.instructors?.length" class="event-meta-line">{{ event.instructors!.join(', ') }}</div>
         </ng-container>
 
         <!-- Intensive extras -->
         <ng-container *ngIf="event.type === 'intensive'">
-          <div *ngIf="event.title" style="font-size: var(--lgui-fs-subheading); font-weight: var(--lgui-fw-semibold); color:var(--lgui-text-4); margin-bottom:0.25rem;">{{ event.title }}</div>
-          <div *ngIf="event.level" style="font-size: var(--lgui-fs-body); color:var(--lgui-text-3); margin-bottom:0.25rem;">📊 Nivel: {{ event.level | replace:'_':' ' }}</div>
-          <div *ngIf="event.instructors?.length" style="font-size: var(--lgui-fs-body); color:var(--lgui-text-3); margin-bottom:0.25rem;">👨‍🏫 {{ event.instructors!.join(', ') }}</div>
-          <div *ngIf="event.startDate" style="font-size: var(--lgui-fs-body); color:var(--lgui-text-3); margin-bottom:0.25rem;">📅 {{ event.startDate }}<span *ngIf="event.endDate"> → {{ event.endDate }}</span></div>
+          <div *ngIf="event.title" class="event-title-line">{{ event.title }}</div>
+          <div *ngIf="event.level" class="event-meta-line">Nivel: {{ event.level | replace:'_':' ' }}</div>
+          <div *ngIf="event.instructors?.length" class="event-meta-line">{{ event.instructors!.join(', ') }}</div>
+          <div *ngIf="event.startDate" class="event-meta-line">{{ event.startDate }}<span *ngIf="event.endDate"> → {{ event.endDate }}</span></div>
         </ng-container>
 
         <!-- Congress extras -->
         <ng-container *ngIf="event.type === 'congress'">
-          <div *ngIf="event.title" style="font-size: var(--lgui-fs-subheading); font-weight: var(--lgui-fw-semibold); color:var(--lgui-text-4); margin-bottom:0.25rem;">{{ event.title }}</div>
-          <div *ngIf="event.locality" style="font-size: var(--lgui-fs-body); color:var(--lgui-text-3); margin-bottom:0.25rem;">📍 {{ event.locality }}</div>
-          <div *ngIf="event.durationDays" style="font-size: var(--lgui-fs-body); color:var(--lgui-text-3); margin-bottom:0.25rem;">📅 {{ event.durationDays }} días</div>
-          <div *ngIf="event.prices" style="font-size: var(--lgui-fs-body); color:var(--lgui-text-3); margin-bottom:0.25rem;">💶 {{ event.prices }}</div>
-          <div *ngIf="event.websiteUrl" style="margin-bottom:0.5rem;">
-            <ion-button fill="outline" size="small" (click)="openLink(event.websiteUrl!)">🌐 Web oficial</ion-button>
+          <div *ngIf="event.title" class="event-title-line">{{ event.title }}</div>
+          <div *ngIf="event.locality" class="event-meta-line">{{ event.locality }}</div>
+          <div *ngIf="event.durationDays" class="event-meta-line">{{ event.durationDays }} días</div>
+          <div *ngIf="event.prices" class="event-meta-line">{{ event.prices }}</div>
+          <div *ngIf="event.websiteUrl" class="share-row">
+            <ion-button fill="outline" size="small" (click)="openLink(event.websiteUrl!)">Web oficial</ion-button>
           </div>
         </ng-container>
 
@@ -220,9 +256,9 @@ const TYPE_LABEL: Record<string, string> = {
             📍 ¿Cómo llegar?
           </ion-button>
         </div>
-        <div style="margin-top: 0.5rem;">
+        <div class="share-row">
           <ion-button expand="block" fill="outline" color="success" (click)="shareWhatsApp()">
-            📲 Compartir en WhatsApp
+            Compartir en WhatsApp
           </ion-button>
         </div>
 
@@ -236,14 +272,20 @@ const TYPE_LABEL: Record<string, string> = {
             <button class="vote-btn"
               [class.active-not-going]="event.userVote === 'not_going'"
               [disabled]="voting || !canEdit"
+              aria-label="No iré"
+              [attr.aria-pressed]="event.userVote === 'not_going'"
               (click)="vote('not_going')">✕ No iré</button>
             <button class="vote-btn"
               [class.active-maybe]="event.userVote === 'maybe'"
               [disabled]="voting || !canEdit"
+              aria-label="Tal vez"
+              [attr.aria-pressed]="event.userVote === 'maybe'"
               (click)="vote('maybe')">~ Tal vez</button>
             <button class="vote-btn"
               [class.active-going]="event.userVote === 'going'"
               [disabled]="voting || !canEdit"
+              aria-label="Voy"
+              [attr.aria-pressed]="event.userVote === 'going'"
               (click)="vote('going')">♥ Voy</button>
           </div>
 
@@ -260,7 +302,9 @@ const TYPE_LABEL: Record<string, string> = {
         </div>
 
         <div *ngIf="showAnalyticsHint && !analytics && !analyticsLoading" class="lock-hint">
-          <div class="lock-icon">🔒</div>
+          <div class="lock-icon">
+            <ion-icon name="lock-closed-outline" aria-hidden="true"></ion-icon>
+          </div>
           <div class="lock-text">
             Vota <strong>Voy</strong> o <strong>Tal vez</strong> para desbloquear
             la predicción del ambiente.
@@ -293,7 +337,9 @@ export class EventDetailPage implements OnInit {
     private router: Router,
     private eventsService: EventsService,
     private votesService: VotesService
-  ) {}
+  ) {
+    addIcons({ lockClosedOutline });
+  }
 
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id')!;

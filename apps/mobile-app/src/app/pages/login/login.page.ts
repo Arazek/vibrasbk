@@ -3,18 +3,20 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import {
-  IonContent, IonFooter, IonToolbar,
-  IonButton, IonItem, IonInput, IonList, IonToast,
+  IonContent,
+  IonButton, IonItem, IonInput, IonList, IonToast, IonIcon, IonSpinner,
 } from '@ionic/angular/standalone';
 import { AuthService } from '../../services/auth.service';
+import { addIcons } from 'ionicons';
+import { eyeOutline, eyeOffOutline } from 'ionicons/icons';
 
 @Component({
   selector: 'app-login',
   standalone: true,
   imports: [
     CommonModule, FormsModule,
-    IonContent, IonFooter, IonToolbar,
-    IonButton, IonItem, IonInput, IonList, IonToast,
+    IonContent,
+    IonButton, IonItem, IonInput, IonList, IonToast, IonIcon, IonSpinner,
   ],
   styles: [`
     .login-container {
@@ -23,28 +25,38 @@ import { AuthService } from '../../services/auth.service';
       align-items: center;
       justify-content: center;
       height: 100%;
-      padding: 2rem 1.5rem;
+      padding: var(--lgui-pad-xl) var(--lgui-pad-lg);
       text-align: center;
     }
     .login-logo {
-      height: 3.5rem;
+      height: var(--lgui-space-7);
       width: auto;
-      margin-bottom: 1.5rem;
+      margin-bottom: var(--lgui-gap-xl);
     }
     .login-title {
-      font-size: 1.625rem;
+      font-size: var(--lgui-fs-display);
       font-weight: var(--lgui-fw-bold);
       color: var(--lgui-text-4);
-      margin-bottom: 0.5rem;
+      margin-bottom: var(--lgui-gap-sm);
+      line-height: var(--lgui-lh-tight);
     }
     .login-subtitle {
       font-size: var(--lgui-fs-body-lg);
       color: var(--lgui-text-3);
-      margin-bottom: 2rem;
-      line-height: 1.5;
+      margin-bottom: var(--lgui-pad-xl);
+      line-height: var(--lgui-lh-normal);
+    }
+    .form-list {
+      width: 21rem;
+      max-width: 100%;
+    }
+    .login-submit-btn {
+      margin: var(--lgui-gap-lg) 0 var(--lgui-gap-sm);
+      width: 21rem;
+      max-width: 100%;
     }
     .register-link {
-      margin-top: 1rem;
+      margin-top: var(--lgui-gap-lg);
       font-size: var(--lgui-fs-body-lg);
       color: var(--lgui-text-3);
     }
@@ -52,6 +64,13 @@ import { AuthService } from '../../services/auth.service';
       color: var(--ion-color-primary);
       font-weight: var(--lgui-fw-semibold);
       cursor: pointer;
+    }
+    .eye-btn {
+      --padding-start: var(--lgui-gap-sm);
+      --padding-end: var(--lgui-gap-sm);
+      --color: var(--lgui-text-3);
+      height: 2.75rem;
+      margin: 0;
     }
   `],
   template: `
@@ -79,14 +98,31 @@ import { AuthService } from '../../services/auth.service';
           <ion-item>
             <ion-input
               #passwordInput
-              type="password"
+              [type]="showPassword ? 'text' : 'password'"
               [(ngModel)]="password"
               placeholder="Contraseña"
               autocomplete="current-password"
               (keyup.enter)="login()">
             </ion-input>
+            <ion-button
+              slot="end"
+              fill="clear"
+              class="eye-btn"
+              [attr.aria-label]="showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+              (click)="showPassword = !showPassword">
+              <ion-icon [name]="showPassword ? 'eye-off-outline' : 'eye-outline'" aria-hidden="true"></ion-icon>
+            </ion-button>
           </ion-item>
         </ion-list>
+
+        <ion-button
+          expand="block"
+          class="login-submit-btn"
+          [disabled]="!!(!canSubmit || loading)"
+          (click)="login()">
+          <ion-spinner *ngIf="loading" name="crescent" slot="start"></ion-spinner>
+          {{ loading ? 'Entrando...' : 'Entrar' }}
+        </ion-button>
 
         <div class="register-link">
           ¿Aún no tienes cuenta?
@@ -103,18 +139,6 @@ import { AuthService } from '../../services/auth.service';
         (didDismiss)="error = ''">
       </ion-toast>
     </ion-content>
-
-    <ion-footer>
-      <ion-toolbar>
-        <ion-button
-          expand="block"
-          style="margin: 0.5rem"
-          [disabled]="!!(!canSubmit || loading)"
-          (click)="login()">
-          {{ loading ? 'Entrando...' : 'Entrar' }}
-        </ion-button>
-      </ion-toolbar>
-    </ion-footer>
   `,
 })
 export class LoginPage {
@@ -122,6 +146,7 @@ export class LoginPage {
   password = '';
   loading = false;
   error = '';
+  showPassword = false;
 
   get canSubmit(): boolean {
     return this.email.trim().includes('@') && this.password.length >= 6;
@@ -130,10 +155,12 @@ export class LoginPage {
   constructor(
     private authService: AuthService,
     private router: Router,
-  ) {}
+  ) {
+    addIcons({ eyeOutline, eyeOffOutline });
+  }
 
   goToRegister(): void {
-    this.router.navigate(['/onboarding/ciudad']);
+    this.router.navigate(['/onboarding/rol']);
   }
 
   login(): void {

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -12,7 +12,7 @@ import {
 import { NavbarComponent } from '../../components/navbar/navbar.component';
 import { ThemeService, THEMES, AppTheme } from '../../services/theme.service';
 import { addIcons } from 'ionicons';
-import { logOutOutline } from 'ionicons/icons';
+import { logOutOutline, cameraOutline } from 'ionicons/icons';
 import { UserProfile, Level, DanceStyle, Academia } from '@shared/types';
 import { ProfileService } from '../../services/profile.service';
 import { AuthService } from '../../services/auth.service';
@@ -47,9 +47,15 @@ const LEVEL_OPTIONS: { value: Level; label: string }[] = [
       align-items: center;
       gap: var(--lgui-gap-md);
     }
+    .avatar-wrap {
+      position: relative;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
     .avatar {
-      width: 4.5rem;
-      height: 4.5rem;
+      --avatar-size: var(--lgui-space-8);
+      width: var(--avatar-size);
+      height: var(--avatar-size);
       border-radius: 50%;
       background: rgba(var(--ion-color-primary-rgb), 0.15);
       border: 0.125rem solid var(--ion-color-primary);
@@ -59,19 +65,48 @@ const LEVEL_OPTIONS: { value: Level; label: string }[] = [
       font-size: var(--lgui-fs-display);
       font-weight: var(--lgui-fw-bold);
       color: var(--ion-color-primary);
-      flex-shrink: 0;
       letter-spacing: -0.0313rem;
+      overflow: hidden;
+    }
+    .avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .avatar-badge {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 1.75rem;
+      height: 1.75rem;
+      border-radius: 50%;
+      background: var(--ion-color-primary);
+      border: 0.125rem solid var(--lgui-surface-1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--ion-color-primary-contrast);
+      font-size: 0.875rem;
+    }
+    .avatar-uploading {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      background: var(--lgui-scrim);
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     .identity-info { text-align: center; min-width: 0; }
     .identity-alias {
-      font-size: 1.25rem;
+      font-size: var(--lgui-fs-heading);
       font-weight: var(--lgui-fw-bold);
       color: var(--lgui-text-4);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
-    .identity-meta { font-size: var(--lgui-fs-body); color: var(--lgui-text-3); margin-top: 0.1875rem; }
+    .identity-meta { font-size: var(--lgui-fs-body); color: var(--lgui-text-3); margin-top: var(--lgui-space-0); }
     .bottom-space { height: var(--lgui-space-8); }
 
     .theme-grid {
@@ -88,11 +123,12 @@ const LEVEL_OPTIONS: { value: Level; label: string }[] = [
       cursor: pointer;
     }
     .theme-swatch {
-      width: 2.75rem;
-      height: 2.75rem;
+      --swatch-size: 2.75rem;
+      width: var(--swatch-size);
+      height: var(--swatch-size);
       border-radius: 50%;
       border: 0.1875rem solid transparent;
-      transition: border-color 0.15s;
+      transition: border-color var(--lgui-transition-fast);
     }
     .theme-card.active .theme-swatch {
       border-color: var(--ion-color-primary);
@@ -109,6 +145,14 @@ const LEVEL_OPTIONS: { value: Level; label: string }[] = [
   template: `
     <app-navbar></app-navbar>
 
+    <!-- Hidden file input for photo picking -->
+    <input
+      #photoInput
+      type="file"
+      accept="image/jpeg,image/png,image/webp"
+      style="display:none"
+      (change)="onPhotoSelected($event)">
+
     <ion-content class="ion-padding">
       <div *ngIf="loading" class="ion-text-center" class="loading-container">
         <ion-spinner color="primary"></ion-spinner>
@@ -117,7 +161,18 @@ const LEVEL_OPTIONS: { value: Level; label: string }[] = [
       <div *ngIf="profile && !loading">
         <!-- Identity card -->
         <div class="identity-card">
-          <div class="avatar">{{ initials }}</div>
+          <div class="avatar-wrap" (click)="photoInput.click()" role="button" aria-label="Cambiar foto de perfil">
+            <div class="avatar">
+              <img *ngIf="photoSrc" [src]="photoSrc" alt="Foto de perfil">
+              <span *ngIf="!photoSrc">{{ initials }}</span>
+            </div>
+            <div class="avatar-badge">
+              <ion-icon name="camera-outline" aria-hidden="true"></ion-icon>
+            </div>
+            <div *ngIf="uploadingPhoto" class="avatar-uploading">
+              <ion-spinner name="crescent" color="light"></ion-spinner>
+            </div>
+          </div>
           <div class="identity-info">
             <div class="identity-alias">{{ profile.alias }}</div>
             <div class="identity-meta">{{ profile.city }} · {{ roleLabel }}</div>
@@ -207,10 +262,13 @@ const LEVEL_OPTIONS: { value: Level; label: string }[] = [
   `,
 })
 export class ProfilePage implements OnInit {
+  @ViewChild('photoInput') photoInput!: ElementRef<HTMLInputElement>;
+
   profile: UserProfile | null = null;
   loading = true;
   loadingStyles = true;
   saving = false;
+  uploadingPhoto = false;
   toastMsg = '';
 
   selectedLevel: Level = 'comfortable';
@@ -232,7 +290,7 @@ export class ProfilePage implements OnInit {
     private http: HttpClient,
     private readonly themeService: ThemeService,
   ) {
-    addIcons({ logOutOutline });
+    addIcons({ logOutOutline, cameraOutline });
     this.activeTheme = this.themeService.getTheme();
   }
 
@@ -266,6 +324,32 @@ export class ProfilePage implements OnInit {
   get roleLabel(): string {
     const map: Record<string, string> = { leader: 'Leader', follower: 'Follower', switch: 'Switch' };
     return map[this.profile?.dancingRole ?? ''] ?? '';
+  }
+
+  get photoSrc(): string | null {
+    const url = this.profile?.photoUrl;
+    if (!url) return null;
+    if (url.startsWith('http')) return url;
+    return environment.socketUrl + url;
+  }
+
+  onPhotoSelected(event: Event): void {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+    this.uploadingPhoto = true;
+    this.profileService.uploadPhoto(file).subscribe({
+      next: (p) => {
+        this.profile = p;
+        this.uploadingPhoto = false;
+        this.toastMsg = 'Foto actualizada.';
+      },
+      error: () => {
+        this.uploadingPhoto = false;
+        this.toastMsg = 'Error al subir la foto.';
+      },
+    });
+    // Reset so the same file can be re-selected
+    (event.target as HTMLInputElement).value = '';
   }
 
   isSelected(slug: string): boolean {
@@ -318,6 +402,6 @@ export class ProfilePage implements OnInit {
 
   logout() {
     this.authService.logout();
-    this.router.navigate(['/onboarding/ciudad'], { replaceUrl: true });
+    this.router.navigate(['/login'], { replaceUrl: true });
   }
 }

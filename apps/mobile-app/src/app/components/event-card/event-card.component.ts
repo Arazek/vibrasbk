@@ -6,12 +6,12 @@ import { ReplacePipe } from '../../pipes/replace.pipe';
 import { WeeklyEvent, Vibe } from '@shared/types';
 import { environment } from '../../../environments/environment';
 
-/* LanguageGUI System Colors — matches CSS variables in theme/variables.css */
+/* CSS variable strings — theme-aware, dark mode safe */
 const VIBE_COLOR: Record<Vibe, string> = {
-  quiet:  '#BAC0CC',
-  normal: '#EFC42C',
-  lively: '#4AD562',
-  packed: '#FE566B',
+  quiet:  'var(--vibe-quiet)',
+  normal: 'var(--vibe-normal)',
+  lively: 'var(--vibe-lively)',
+  packed: 'var(--vibe-packed)',
 };
 
 const VIBE_LABEL: Record<Vibe, string> = {
@@ -35,9 +35,9 @@ const VOTE_LABEL: Record<string, string> = {
 };
 
 const VOTE_COLOR: Record<string, string> = {
-  going:     '#E84855',
-  maybe:     '#EFC42C',
-  not_going: '#BAC0CC',
+  going:     'var(--vibe-packed)',
+  maybe:     'var(--vibe-normal)',
+  not_going: 'var(--lgui-text-3)',
 };
 
 const TYPE_LABEL: Record<string, string> = {
@@ -76,7 +76,8 @@ const TYPE_BG: Record<string, string> = {
       box-shadow: var(--lgui-shadow-md);
       background: var(--lgui-surface-1);
       cursor: pointer;
-      transition: box-shadow 0.15s ease, transform 0.12s ease;
+      transition: box-shadow var(--lgui-transition-fast),
+                  transform var(--lgui-duration-instant) var(--lgui-ease-out);
     }
     .card-wrapper:active {
       box-shadow: var(--lgui-shadow-sm);
@@ -181,9 +182,30 @@ const TYPE_BG: Record<string, string> = {
       margin-top: var(--lgui-space-1);
       background: var(--lgui-surface-3);
     }
-    .rm-leader   { background: #4A90D9; }
-    .rm-follower { background: #E84855; }
-    .rm-switch   { background: #F4A261; }
+    .rm-leader   { background: var(--type-social-color); }
+    .rm-follower { background: var(--vibe-packed); }
+    .rm-switch   { background: var(--ion-color-secondary); }
+    /* Inline style overrides extracted to class */
+    .card-header-meta {
+      flex: 1;
+      min-width: 0;
+    }
+    .card-header-badges {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: var(--lgui-gap-xs);
+      flex-shrink: 0;
+    }
+    .style-chip {
+      height: 1.25rem;
+      margin: 0;
+      --background: rgba(102, 111, 141, 0.10);
+      --color: var(--lgui-text-3);
+      --border-radius: var(--lgui-radius-pill);
+      font-size: var(--lgui-fs-micro);
+      font-weight: var(--lgui-fw-semibold);
+    }
   `],
   template: `
     <div class="card-wrapper" (click)="open()">
@@ -198,11 +220,11 @@ const TYPE_BG: Record<string, string> = {
         <div class="card-body">
 
           <div class="card-header-row">
-            <div style="flex:1; min-width:0;">
+            <div class="card-header-meta">
               <div class="venue-name">{{ event.venue.name }}</div>
               <div class="event-time">{{ event.startTime?.substring(0, 5) }}</div>
             </div>
-            <div style="display:flex; flex-direction:column; align-items:flex-end; gap:0.25rem; flex-shrink:0;">
+            <div class="card-header-badges">
               <span
                 *ngIf="event.type"
                 class="type-chip"
@@ -221,8 +243,8 @@ const TYPE_BG: Record<string, string> = {
           </div>
 
           <div class="chips-row">
-            <ion-chip *ngFor="let e of event.styles" style="height:1.25rem; margin:0; --background: rgba(102,111,141,0.10); --color: var(--lgui-text-3); --border-radius: 12.5rem;">
-              <ion-label style="font-size:var(--lgui-fs-micro); font-weight:var(--lgui-fw-semibold);">{{ e | replace:'_':' ' }}</ion-label>
+            <ion-chip *ngFor="let e of event.styles" class="style-chip">
+              <ion-label>{{ e | replace:'_':' ' }}</ion-label>
             </ion-chip>
           </div>
 
@@ -250,7 +272,7 @@ export class EventCardComponent {
   constructor(private router: Router) {}
 
   get vibeColor(): string {
-    return VIBE_COLOR[this.event.vibeColor] ?? '#9e9e9e';
+    return VIBE_COLOR[this.event.vibeColor] ?? 'var(--lgui-text-3)';
   }
   get vibeLabel(): string {
     return VIBE_LABEL[this.event.vibeColor] ?? '';
@@ -262,7 +284,7 @@ export class EventCardComponent {
     return this.event.userVote ? VOTE_LABEL[this.event.userVote] : '';
   }
   get voteBadgeColor(): string {
-    return this.event.userVote ? VOTE_COLOR[this.event.userVote] : '#666';
+    return this.event.userVote ? VOTE_COLOR[this.event.userVote] : 'var(--lgui-text-3)';
   }
   get voteBadgeBg(): string {
     const c = this.voteBadgeColor;
