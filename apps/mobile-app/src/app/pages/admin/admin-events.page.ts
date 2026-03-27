@@ -7,11 +7,14 @@ import {
 } from '@ionic/angular/standalone';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
 import { addIcons } from 'ionicons';
-import { add, trash, pencil, camera, chevronBack } from 'ionicons/icons';
+import { add, trash, pencil, camera, chevronBack, locationOutline, chevronDownOutline } from 'ionicons/icons';
 import { WeeklyEvent, Venue } from '@shared/types';
 import { AdminService } from '../../services/admin.service';
 import { EventFormModal } from './event-form.modal';
 import { environment } from '../../../environments/environment';
+import { ProfileService } from '../../services/profile.service';
+import { CountryPickerModal } from '../../components/location/country-picker.modal';
+import { CityPickerModal } from '../../components/location/city-picker.modal';
 
 const DAY_NAMES = ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Domingo'];
 
@@ -24,9 +27,37 @@ const DAY_NAMES = ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado'
     IonList, IonItem, IonLabel, IonButton, IonFab, IonFabButton, IonIcon,
     IonToast, IonSpinner, NavbarComponent,
   ],
+  styles: [`
+    .location-row { padding: 0.75rem 1rem 0; }
+    .location-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      height: 2rem;
+      padding: 0 0.75rem;
+      border-radius: 999px;
+      background: var(--lgui-surface-3);
+      border: none;
+      cursor: pointer;
+      font-size: var(--lgui-fs-body);
+      font-weight: var(--lgui-fw-semibold);
+      color: var(--lgui-text-4);
+      transition: background var(--lgui-transition-fast);
+    }
+    .location-btn:active { background: var(--lgui-surface-4); }
+    .location-btn .loc-icon { font-size: 0.875rem; color: var(--ion-color-primary); }
+    .location-btn .loc-chevron { font-size: 0.75rem; color: var(--lgui-text-3); }
+  `],
   template: `
     <app-navbar></app-navbar>
     <ion-content>
+      <div class="location-row">
+        <button class="location-btn" (click)="openLocationPicker()">
+          <ion-icon name="location-outline" class="loc-icon"></ion-icon>
+          <span>{{ locationLabel }}</span>
+          <ion-icon name="chevron-down-outline" class="loc-chevron"></ion-icon>
+        </button>
+      </div>
       <div *ngIf="loading" class="ion-text-center ion-padding">
         <ion-spinner color="primary"></ion-spinner>
       </div>
@@ -73,14 +104,83 @@ export class AdminEventsPage implements OnInit {
   loading = true;
   toast = '';
   selectedEventId: string | null = null;
+  selectedCountryForCreation: string | null = null;
+  selectedCityForCreation: string | null = null;
 
   constructor(
-    private admin: AdminService,
-    private modalCtrl: ModalController,
-    private alertCtrl: AlertController,
-    private navCtrl: NavController,
-    private loadingCtrl: LoadingController,
-  ) { addIcons({ add, trash, pencil, camera, chevronBack }); }
+    private readonly admin: AdminService,
+    private readonly modalCtrl: ModalController,
+    private readonly alertCtrl: AlertController,
+    private readonly navCtrl: NavController,
+    private readonly loadingCtrl: LoadingController,
+    private readonly profile: ProfileService,
+  ) {
+    addIcons({ add, trash, pencil, camera, chevronBack, locationOutline, chevronDownOutline });
+
+    // Load user's country and city for default event creation
+    this.profile.getProfile().subscribe({
+      next: (p) => {
+        this.selectedCountryForCreation = p.country?.name ?? null;
+        this.selectedCityForCreation = p.city?.name ?? null;
+      },
+      error: () => { /* ignore profile load error */ }
+    });
+  }
+
+  get locationLabel(): string {
+    if (this.selectedCityForCreation) return this.selectedCityForCreation;
+    if (this.selectedCountryForCreation) return this.selectedCountryForCreation;
+    return 'Todas las ciudades';
+  }
+
+  async openLocationPicker() {
+    // Build country → cities map from loaded venues
+    const countryMap = new Map<string, Set<string>>();
+    for (const v of this.venues) {
+      const country = v.country ?? 'Sin país';
+      if (!countryMap.has(country)) countryMap.set(country, new Set());
+      if (v.city) countryMap.get(country)?.add(v.city);
+    }
+
+    const countryOptions = Array.from(countryMap.entries())
+      .map(([name, cities]) => ({ name, cityCount: cities.size }))
+      .sort((a, b) => a.name.localeCompare(b.name));
+
+    const countryModal = await this.modalCtrl.create({
+      component: CountryPickerModal,
+      componentProps: { countries: countryOptions, selectedCountry: this.selectedCountryForCreation }
+    });
+    await countryModal.present();
+    const { data } = await countryModal.onDidDismiss();
+    if (!data) return;
+
+    const { country } = data;
+    if (country === null) {
+      this.selectedCountryForCreation = null;
+      this.selectedCityForCreation = null;
+      return;
+    }
+
+    const cities = Array.from(countryMap.get(country) || []).sort((a, b) => a.localeCompare(b));
+    if (!cities.length) {
+      this.selectedCountryForCreation = country;
+      this.selectedCityForCreation = null;
+      return;
+    }
+
+    const cityModal = await this.modalCtrl.create({
+      component: CityPickerModal,
+      componentProps: { country, cities, selectedCity: this.selectedCityForCreation }
+    });
+    await cityModal.present();
+    const cityResult = await cityModal.onDidDismiss();
+
+    if (!cityResult.data) return;
+    if (cityResult.data.goBack) { this.openLocationPicker(); return; }
+
+    this.selectedCountryForCreation = country;
+    this.selectedCityForCreation = cityResult.data.city;
+  }
 
   goBack() { this.navCtrl.navigateBack('/admin'); }
 
@@ -89,7 +189,10 @@ export class AdminEventsPage implements OnInit {
   load() {
     this.loading = true;
     this.admin.getEvents().subscribe({
-      next: (evs) => { this.events = evs; this.loading = false; },
+      next: (evs) => {
+        this.events = evs;
+        this.loading = false;
+      },
       error: () => { this.loading = false; },
     });
     this.admin.getVenues().subscribe({ next: (vs) => { this.venues = vs; } });
@@ -102,11 +205,17 @@ export class AdminEventsPage implements OnInit {
   }
 
   async openCreate() {
+    // Get default venue based on user's location
+    let defaultVenue = this.venues[0];
+    if (this.selectedCityForCreation && this.selectedCountryForCreation) {
+      defaultVenue = this.venues.find(v => v.city === this.selectedCityForCreation && v.country === this.selectedCountryForCreation) || this.venues[0];
+    }
+
     const modal = await this.modalCtrl.create({
       component: EventFormModal,
       componentProps: {
         editingId: null, venues: this.venues,
-        initial: { venueId: this.venues[0]?.id ?? '', type: 'social', dayOfWeek: 0, startTime: '21:00' },
+        initial: { venueId: defaultVenue?.id ?? '', type: 'social', dayOfWeek: 0, startTime: '21:00' },
       },
     });
     await modal.present();

@@ -390,3 +390,46 @@ ion-item {
   border-radius: var(--lgui-radius-default);
   margin-bottom: var(--lgui-gap-md);
 }
+
+/* ── Home location picker sheet (global — renders inside ion-modal portal) ── */
+.home-picker-sheet {
+  padding: var(--lgui-pad-lg) var(--lgui-pad-md) var(--lgui-space-8);
+}
+.home-picker-title {
+  font-size: var(--lgui-fs-heading);
+  font-weight: var(--lgui-fw-bold);
+  color: var(--lgui-text-4);
+  margin-bottom: var(--lgui-gap-lg);
+}
+.home-picker-option {
+  display: flex;
+  align-items: center;
+  gap: var(--lgui-gap-sm);
+  width: 100%;
+  padding: var(--lgui-pad-sm);
+  border-radius: var(--lgui-radius-default);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: var(--lgui-fs-body-lg);
+  color: var(--lgui-text-4);
+  text-align: left;
+  -webkit-tap-highlight-color: transparent;
+  transition: background var(--lgui-transition-fast);
+  &:active { background: var(--lgui-surface-3); }
+  &.selected {
+    background: rgba(var(--ion-color-primary-rgb), 0.1);
+    color: var(--ion-color-primary);
+    font-weight: 600;
+  }
+}
+.home-picker-divider {
+  height: 0.0625rem;
+  background: var(--lgui-border-2);
+  margin: var(--lgui-gap-xs) 0;
+}
+.home-picker-check {
+  margin-left: auto;
+  color: var(--ion-color-primary);
+  font-size: var(--lgui-fs-body-lg);
+}

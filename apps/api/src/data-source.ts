@@ -6,6 +6,8 @@ import { User } from './modules/users/entities/user.entity';
 import { Venue } from './modules/venues/entities/venue.entity';
 import { Academia } from './modules/academias/entities/academia.entity';
 import { DanceStyle } from './modules/dance-styles/entities/dance-style.entity';
+import { Country } from './modules/countries/entities/country.entity';
+import { City } from './modules/countries/entities/city.entity';
 // STI: parent + all child entities must be listed together
 import { RecurringEvent } from './modules/events/entities/recurring-event.entity';
 import { SocialEvent } from './modules/events/entities/social-event.entity';
@@ -15,6 +17,7 @@ import { IntensivoEvent } from './modules/events/entities/intensivo-event.entity
 import { IntentionVote } from './modules/votes/entities/intention-vote.entity';
 import { AttendanceVerification } from './modules/votes/entities/attendance-verification.entity';
 import { ReliabilityMetric } from './modules/votes/entities/reliability-metric.entity';
+import { Friendship } from './modules/friends/entities/friendship.entity';
 
 export const AppDataSource = new DataSource({
   type: 'postgres',
@@ -30,6 +33,8 @@ export const AppDataSource = new DataSource({
     Venue,
     Academia,
     DanceStyle,
+    Country,
+    City,
     RecurringEvent,
     SocialEvent,
     TallerEvent,
@@ -38,6 +43,7 @@ export const AppDataSource = new DataSource({
     IntentionVote,
     AttendanceVerification,
     ReliabilityMetric,
+    Friendship,
   ],
   migrations: [join(__dirname, 'migrations', '*.{ts,js}')],
   migrationsTableName: 'typeorm_migrations',

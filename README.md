@@ -77,7 +77,7 @@ docker compose up -d postgres
 
 | Service | URL |
 |---------|-----|
-| **Frontend** | http://localhost:4200 |
+| **Frontend** | http://localhost:4444 |
 | **Backend API** | http://localhost:3333 |
 | **Health check** | http://localhost:3333/api/health |
 

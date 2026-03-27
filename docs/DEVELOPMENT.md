@@ -291,7 +291,7 @@ npm run test:app
 ```bash
 # Development
 npm run start:api        # Start backend (port 3333)
-npm start                # Start frontend (port 4200)
+npm start                # Start frontend (port 4444)
 
 # Build
 npm run build:api        # Build backend

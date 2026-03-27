@@ -31,7 +31,7 @@ import { VenueFormModal } from './venue-form.modal';
         <ion-item *ngFor="let venue of venues">
           <ion-label>
             <h3>{{ venue.name }}</h3>
-            <p>{{ venue.city }}</p>
+            <p>{{ venue.city }}{{ venue.country ? ', ' + venue.country : '' }}</p>
             <p *ngIf="venue.maxCapacity">Aforo: {{ venue.maxCapacity }}</p>
           </ion-label>
           <ion-button fill="clear" slot="end" (click)="openEdit(venue)">
@@ -57,11 +57,13 @@ export class AdminVenuesPage implements OnInit {
   toast = '';
 
   constructor(
-    private admin: AdminService,
-    private modalCtrl: ModalController,
-    private alertCtrl: AlertController,
-    private navCtrl: NavController,
-  ) { addIcons({ add, trash, pencil, chevronBack }); }
+    private readonly admin: AdminService,
+    private readonly modalCtrl: ModalController,
+    private readonly alertCtrl: AlertController,
+    private readonly navCtrl: NavController,
+  ) {
+    addIcons({ add, trash, pencil, chevronBack });
+  }
 
   goBack() { this.navCtrl.navigateBack('/admin'); }
 
@@ -70,7 +72,10 @@ export class AdminVenuesPage implements OnInit {
   loadVenues() {
     this.loading = true;
     this.admin.getVenues().subscribe({
-      next: (v) => { this.venues = v; this.loading = false; },
+      next: (v) => {
+        this.venues = v;
+        this.loading = false;
+      },
       error: () => { this.toast = 'Error cargando locales'; this.loading = false; },
     });
   }
@@ -94,7 +99,7 @@ export class AdminVenuesPage implements OnInit {
       component: VenueFormModal,
       componentProps: {
         editingId: venue.id,
-        initial: { name: venue.name, city: venue.city, lat: venue.lat, lng: venue.lng, maxCapacity: venue.maxCapacity },
+        initial: { name: venue.name, city: venue.city, country: venue.country, lat: venue.lat, lng: venue.lng, maxCapacity: venue.maxCapacity },
       },
     });
     await modal.present();

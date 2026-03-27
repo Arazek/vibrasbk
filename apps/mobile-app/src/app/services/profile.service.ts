@@ -9,6 +9,8 @@ export interface UpdateProfilePayload {
   styles?: string[];
   academyName?: string;
   fcmToken?: string;
+  countryId?: string;
+  cityId?: string;
 }
 
 @Injectable({ providedIn: 'root' })

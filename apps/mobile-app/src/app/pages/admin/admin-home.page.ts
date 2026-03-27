@@ -6,7 +6,7 @@ import {
 } from '@ionic/angular/standalone';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
 import { addIcons } from 'ionicons';
-import { calendar, location, statsChart, chevronBack, musicalNotes, school } from 'ionicons/icons';
+import { calendar, location, chevronBack, musicalNotes } from 'ionicons/icons';
 
 @Component({
   selector: 'app-admin-home',
@@ -43,17 +43,13 @@ import { calendar, location, statsChart, chevronBack, musicalNotes, school } fro
           <ion-icon name="musical-notes" slot="start" color="primary"></ion-icon>
           <ion-label>Estilos de Baile</ion-label>
         </ion-item>
-        <ion-item button (click)="go('/admin/academias')">
-          <ion-icon name="school" slot="start" color="primary"></ion-icon>
-          <ion-label>Academias</ion-label>
-        </ion-item>
       </ion-list>
     </ion-content>
   `,
 })
 export class AdminHomePage {
-  constructor(private navCtrl: NavController) {
-    addIcons({ calendar, location, statsChart, chevronBack, musicalNotes, school });
+  constructor(private readonly navCtrl: NavController) {
+    addIcons({ calendar, location, chevronBack, musicalNotes });
   }
 
   goBack() {

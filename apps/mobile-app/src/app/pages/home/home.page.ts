@@ -7,13 +7,18 @@ import {
   IonContent,
   IonText, IonButton, IonRefresher, IonRefresherContent,
   IonChip, IonLabel, IonIcon,
+  ModalController,
 } from '@ionic/angular/standalone';
+import { ActionSheetController } from '@ionic/angular';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
 import { addIcons } from 'ionicons';
-import { listOutline, calendarOutline, chevronBack, chevronForward } from 'ionicons/icons';
+import { listOutline, calendarOutline, chevronBack, chevronForward, locationOutline, chevronDownOutline } from 'ionicons/icons';
 import { WeeklyEvent, EventType } from '@shared/types';
 import { EventsService } from '../../services/events.service';
 import { EventCardComponent } from '../../components/event-card/event-card.component';
+import { ProfileService } from '../../services/profile.service';
+import { CountryPickerModal } from '../../components/location/country-picker.modal';
+import { CityPickerModal } from '../../components/location/city-picker.modal';
 
 const DAY_NAMES = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
 const MONTH_NAMES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
@@ -43,6 +48,7 @@ function getMondayOfWeek(date: Date): Date {
 }
 
 const VIEW_KEY = 'vibrasbk_home_view';
+const LOCATION_KEY = 'vibrasbk_location_v2'; // { city: string|null, country: string|null }
 
 @Component({
   selector: 'app-home',
@@ -55,6 +61,31 @@ const VIEW_KEY = 'vibrasbk_home_view';
     EventCardComponent, NavbarComponent,
   ],
   styles: [`
+    /* ── Location pill ───────────────────────────────────────────── */
+    .location-row {
+      padding: var(--lgui-space-3) var(--lgui-pad-md) 0;
+      background: var(--lgui-surface-1);
+    }
+    .location-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--lgui-gap-xs);
+      height: 2rem;
+      padding: 0 var(--lgui-space-3);
+      border-radius: var(--lgui-radius-pill);
+      background: var(--lgui-surface-3);
+      border: none;
+      cursor: pointer;
+      font-size: var(--lgui-fs-body);
+      font-weight: var(--lgui-fw-semibold);
+      color: var(--lgui-text-4);
+      -webkit-tap-highlight-color: transparent;
+      transition: background var(--lgui-transition-fast);
+    }
+    .location-pill:active { background: var(--lgui-surface-4, var(--lgui-surface-3)); }
+    .location-pill .loc-icon { font-size: 0.875rem; color: var(--ion-color-primary); }
+    .location-pill .loc-chevron { font-size: 0.75rem; color: var(--lgui-text-3); }
+
     /* ── Filter bar ─────────────────────────────────────────────── */
     .filter-bar-wrap {
       display: flex;
@@ -222,6 +253,16 @@ const VIEW_KEY = 'vibrasbk_home_view';
     <app-navbar></app-navbar>
 
     <ion-content>
+      <!-- Location context pill -->
+      <div class="location-row">
+        <button class="location-pill" (click)="openLocationPicker()"
+                [attr.aria-label]="'Ubicación: ' + locationLabel">
+          <ion-icon name="location-outline" class="loc-icon" aria-hidden="true"></ion-icon>
+          {{ locationLabel }}
+          <ion-icon name="chevron-down-outline" class="loc-chevron" aria-hidden="true"></ion-icon>
+        </button>
+      </div>
+
       <!-- Type chips + view toggle -->
       <div class="filter-bar-wrap">
         <div class="filter-bar">
@@ -248,17 +289,6 @@ const VIEW_KEY = 'vibrasbk_home_view';
             <ion-icon name="calendar-outline" aria-hidden="true"></ion-icon>
           </button>
         </div>
-      </div>
-
-      <!-- City filter — only if more than 1 city -->
-      <div class="filter-bar" *ngIf="availableCities.length > 1">
-        <button class="filter-chip" [class.active]="!selectedCity" (click)="setCity(null)">
-          📍 Todas
-        </button>
-        <button class="filter-chip" *ngFor="let c of availableCities"
-          [class.active]="selectedCity === c" (click)="setCity(c)">
-          {{ c }}
-        </button>
       </div>
 
       <ion-refresher slot="fixed" (ionRefresh)="load($event)">
@@ -332,6 +362,7 @@ const VIEW_KEY = 'vibrasbk_home_view';
         <div class="bottom-space"></div>
       </div>
     </ion-content>
+
   `,
 })
 export class HomePage implements OnDestroy {
@@ -340,8 +371,13 @@ export class HomePage implements OnDestroy {
   skeletonCards = [1, 2, 3, 4];
   grouped: { dayName: string; events: WeeklyEvent[] }[] = [];
   selectedType: EventType | null = null;
-  selectedCity: string | null = null;
-  availableCities: string[] = [];
+
+  // Location filter
+  locationCityName: string | null = null;
+  locationCountryName: string | null = null;
+  availableEventCities: string[] = [];
+  private locationInitialized = false;
+
   activeView: 'list' | 'calendar' = 'list';
 
   dayHeaders = DAY_HEADERS;
@@ -353,13 +389,126 @@ export class HomePage implements OnDestroy {
   private filteredEvents: WeeklyEvent[] = [];
   private navSub: Subscription;
 
-  constructor(private eventsService: EventsService, private router: Router) {
-    addIcons({ listOutline, calendarOutline, chevronBack, chevronForward });
+  constructor(
+    private eventsService: EventsService,
+    private router: Router,
+    private profileService: ProfileService,
+    private actionSheetCtrl: ActionSheetController,
+    private modalCtrl: ModalController,
+  ) {
+    addIcons({ listOutline, calendarOutline, chevronBack, chevronForward, locationOutline, chevronDownOutline });
     const saved = localStorage.getItem(VIEW_KEY);
     if (saved === 'list' || saved === 'calendar') this.activeView = saved;
+
+    const savedLocation = localStorage.getItem(LOCATION_KEY);
+    if (savedLocation !== null) {
+      try {
+        const parsed = JSON.parse(savedLocation);
+        this.locationCityName = parsed.city ?? null;
+        this.locationCountryName = parsed.country ?? null;
+      } catch { /* ignore malformed */ }
+      this.locationInitialized = true;
+    }
+
     this.navSub = this.router.events.pipe(
       filter(e => e instanceof NavigationEnd && e.urlAfterRedirects === '/tabs/home'),
     ).subscribe(() => this.load(null));
+  }
+
+  get locationLabel(): string {
+    if (this.locationCityName) return this.locationCityName;
+    if (this.locationCountryName) return this.locationCountryName;
+    return 'Todas las ciudades';
+  }
+
+  async openLocationPicker() {
+    // Check if we have events loaded
+    if (this.allLoadedEvents.length === 0) {
+      // Try to load events first
+      this.load(null);
+      return;
+    }
+
+    // Build country → cities map from loaded events
+    const countryMap = new Map<string, Set<string>>();
+    for (const ev of this.allLoadedEvents) {
+      const country = ev.venue?.country ?? 'Sin país';
+      const city = ev.venue?.city;
+      if (!countryMap.has(country)) countryMap.set(country, new Set());
+      if (city) countryMap.get(country)!.add(city);
+    }
+
+    // Convert to country options for the modal
+    const countryOptions = Array.from(countryMap.entries()).map(([name, cities]) => ({
+      name,
+      cityCount: cities.size
+    })).sort((a, b) => a.name.localeCompare(b.name));
+
+    // Show country picker modal
+    const countryModal = await this.modalCtrl.create({
+      component: CountryPickerModal,
+      componentProps: {
+        countries: countryOptions,
+        selectedCountry: this.locationCountryName
+      }
+    });
+
+    await countryModal.present();
+    const { data } = await countryModal.onDidDismiss();
+
+    if (!data) return; // User cancelled
+
+    const { country } = data;
+    
+    // If user selected "All cities"
+    if (country === null) {
+      this.saveLocation(null, null);
+      return;
+    }
+
+    // Show city picker for the selected country
+    const cities = Array.from(countryMap.get(country) || []).sort();
+    
+    // If country has no cities (shouldn't happen but defensive)
+    if (cities.length === 0) {
+      this.saveLocation(null, country);
+      return;
+    }
+    
+    const cityModal = await this.modalCtrl.create({
+      component: CityPickerModal,
+      componentProps: {
+        country,
+        cities,
+        selectedCity: this.locationCityName
+      }
+    });
+
+    await cityModal.present();
+    const cityResult = await cityModal.onDidDismiss();
+
+    if (!cityResult.data) {
+      // User went back from city picker, show country picker again
+      this.openLocationPicker();
+      return;
+    }
+
+    const { city, goBack } = cityResult.data;
+    
+    if (goBack) {
+      // User clicked back button, show country picker again
+      this.openLocationPicker();
+      return;
+    }
+
+    this.saveLocation(city, country);
+  }
+
+  private saveLocation(city: string | null, country: string | null) {
+    localStorage.setItem(LOCATION_KEY, JSON.stringify({ city, country }));
+    this.locationCityName = city;
+    this.locationCountryName = country;
+    this.applyFilters();
   }
 
   ngOnDestroy() { this.navSub.unsubscribe(); }
@@ -374,23 +523,69 @@ export class HomePage implements OnDestroy {
     this.load(null);
   }
 
-  setCity(city: string | null) {
-    this.selectedCity = city;
-    this.applyFilters();
+  load(refresher: any) {
+    if (!this.locationInitialized) {
+      this.loading = true;
+      this.profileService.getProfile().subscribe({
+        next: (p) => {
+          this.locationCityName = p.city?.name ?? null;
+          localStorage.setItem(LOCATION_KEY, JSON.stringify({ city: this.locationCityName, country: null }));
+          this.locationInitialized = true;
+          this.doLoad(refresher);
+        },
+        error: () => {
+          this.locationInitialized = true;
+          this.doLoad(refresher);
+        },
+      });
+      return;
+    }
+    this.doLoad(refresher);
   }
 
-  load(refresher: any) {
+  private doLoad(refresher: any) {
     this.loading = !refresher;
     this.error = '';
     this.eventsService.getWeeklyEvents(this.selectedType ?? undefined).subscribe({
       next: (events) => {
         this.allLoadedEvents = events;
-        this.availableCities = [...new Set(
+        this.availableEventCities = [...new Set(
           events.map(e => e.venue?.city).filter((c): c is string => !!c)
-        )];
-        if (this.selectedCity && !this.availableCities.includes(this.selectedCity)) {
-          this.selectedCity = null;
+        )].sort();
+        
+        // Build country → cities map to validate selections
+        const countryMap = new Map<string, Set<string>>();
+        for (const ev of events) {
+          const country = ev.venue?.country ?? 'Sin país';
+          const city = ev.venue?.city;
+          if (!countryMap.has(country)) countryMap.set(country, new Set());
+          if (city) countryMap.get(country)!.add(city);
         }
+        
+        // Validate current location selection
+        if (this.locationCityName) {
+          // Check if the selected city exists in any country
+          let cityFound = false;
+          for (const cities of countryMap.values()) {
+            if (cities.has(this.locationCityName!)) {
+              cityFound = true;
+              break;
+            }
+          }
+          if (!cityFound) {
+            this.locationCityName = null;
+            this.locationCountryName = null;
+            localStorage.setItem(LOCATION_KEY, JSON.stringify({ city: null, country: null }));
+          }
+        } else if (this.locationCountryName) {
+          // Check if the selected country exists
+          if (!countryMap.has(this.locationCountryName)) {
+            this.locationCityName = null;
+            this.locationCountryName = null;
+            localStorage.setItem(LOCATION_KEY, JSON.stringify({ city: null, country: null }));
+          }
+        }
+        
         this.applyFilters();
         this.loading = false;
         refresher?.complete();
@@ -404,9 +599,13 @@ export class HomePage implements OnDestroy {
   }
 
   private applyFilters() {
-    this.filteredEvents = this.selectedCity
-      ? this.allLoadedEvents.filter(e => e.venue?.city === this.selectedCity)
-      : this.allLoadedEvents;
+    if (this.locationCityName) {
+      this.filteredEvents = this.allLoadedEvents.filter(e => e.venue?.city === this.locationCityName);
+    } else if (this.locationCountryName) {
+      this.filteredEvents = this.allLoadedEvents.filter(e => e.venue?.country === this.locationCountryName);
+    } else {
+      this.filteredEvents = this.allLoadedEvents;
+    }
     this.grouped = this.groupByDay(this.filteredEvents);
     this.buildCells();
   }

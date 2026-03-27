@@ -405,4 +405,4 @@ nvm use 22
 npx nx serve mobile-app
 ```
 
-API runs on port **3333**, frontend on port **4200**.
+API runs on port **3333**, frontend on port **4444**.

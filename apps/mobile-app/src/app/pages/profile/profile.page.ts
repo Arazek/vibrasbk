@@ -7,13 +7,15 @@ import {
   IonContent,
   IonButton, IonSpinner, IonText, IonList, IonItem, IonLabel,
   IonSelect, IonSelectOption, IonInput, IonChip, IonToast, IonIcon,
-  AlertController,
+  AlertController, ModalController,
 } from '@ionic/angular/standalone';
+import { CountryPickerModal } from '../../components/location/country-picker.modal';
+import { CityPickerModal } from '../../components/location/city-picker.modal';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
 import { ThemeService, THEMES, AppTheme } from '../../services/theme.service';
 import { addIcons } from 'ionicons';
-import { logOutOutline, cameraOutline } from 'ionicons/icons';
-import { UserProfile, Level, DanceStyle } from '@shared/types';
+import { logOutOutline, cameraOutline, locationOutline, chevronDownOutline } from 'ionicons/icons';
+import { UserProfile, Level, DanceStyle, Country, City } from '@shared/types';
 import { ProfileService } from '../../services/profile.service';
 import { AuthService } from '../../services/auth.service';
 import { environment } from '../../../environments/environment';
@@ -36,6 +38,7 @@ const LEVEL_OPTIONS: { value: Level; label: string }[] = [
     IonButton, IonSpinner, IonText, IonList, IonItem, IonLabel,
     IonSelect, IonSelectOption, IonInput, IonChip, IonToast, IonIcon,
     StyleChipGridComponent, NavbarComponent,
+    CountryPickerModal, CityPickerModal,
   ],
   styles: [`
     .identity-card {
@@ -201,6 +204,19 @@ const LEVEL_OPTIONS: { value: Level; label: string }[] = [
           </ion-item>
         </ion-list>
 
+        <!-- Location (editable) -->
+        <div class="section-title">Ubicación</div>
+        <ion-list class="form-list" style="margin-bottom: 0;">
+          <ion-item button detail="false" (click)="openLocationPicker()" [disabled]="loadingCountries">
+            <ion-icon slot="start" name="location-outline" color="primary"></ion-icon>
+            <ion-label>
+              <div style="font-size: var(--lgui-fs-body); font-weight: var(--lgui-fw-medium);">{{ locationLabel }}</div>
+              <div style="font-size: var(--lgui-fs-caption); color: var(--lgui-text-3);">{{ loadingCountries ? 'Cargando...' : 'Toca para cambiar' }}</div>
+            </ion-label>
+            <ion-icon slot="end" name="chevron-down-outline" color="medium"></ion-icon>
+          </ion-item>
+        </ion-list>
+
         <!-- Styles (editable, API-driven) -->
         <div class="section-title">Estilos</div>
         <app-style-chip-grid
@@ -274,22 +290,30 @@ export class ProfilePage implements OnInit {
   selectedLevel: Level = 'comfortable';
   selectedStyles: string[] = [];
   academyName = '';
+  selectedCountryId: string = '';
+  selectedCityId: string = '';
+  selectedCountry: Country | null = null;
+  selectedCity: City | null = null;
 
   levelOptions = LEVEL_OPTIONS;
   styleOptions: DanceStyle[] = [];
+  countries: Country[] = [];
+  citiesByCountryId: Record<string, City[]> = {};
+  loadingCountries = true;
 
   themes = THEMES;
   activeTheme: AppTheme = 'noir';
 
   constructor(
-    private profileService: ProfileService,
-    private authService: AuthService,
+    private readonly profileService: ProfileService,
+    private readonly authService: AuthService,
     public router: Router,
-    private alertCtrl: AlertController,
-    private http: HttpClient,
+    private readonly alertCtrl: AlertController,
+    private readonly modalCtrl: ModalController,
+    private readonly http: HttpClient,
     private readonly themeService: ThemeService,
   ) {
-    addIcons({ logOutOutline, cameraOutline });
+    addIcons({ logOutOutline, cameraOutline, locationOutline, chevronDownOutline });
     this.activeTheme = this.themeService.getTheme();
   }
 
@@ -300,6 +324,10 @@ export class ProfilePage implements OnInit {
         this.selectedLevel = p.level;
         this.selectedStyles = [...p.styles];
         this.academyName = p.academyName ?? '';
+        
+        // Load countries
+        this.loadCountries(p.countryId ?? null, p.cityId ?? null);
+        
         this.loading = false;
       },
       error: () => {
@@ -348,6 +376,94 @@ export class ProfilePage implements OnInit {
     (event.target as HTMLInputElement).value = '';
   }
 
+  private countryCodeToFlag(code: string): string {
+    return code.toUpperCase().split('')
+      .map(c => String.fromCodePoint((c.codePointAt(0) ?? 65) - 65 + 127462))
+      .join('');
+  }
+
+  private loadCountries(countryId: string | null, cityId: string | null) {
+    this.http.get<Country[]>(`${environment.apiUrl}/countries`).subscribe({
+      next: (countries) => {
+        this.countries = countries || [];
+        this.loadingCountries = false;
+        if (countryId) {
+          this.selectedCountryId = countryId;
+          this.selectedCountry = countries.find(c => c.id === countryId) ?? null;
+          // Load cities for the current country to resolve the selected city name
+          if (cityId) this.loadCitiesForCountry(countryId, cityId);
+        }
+        // Load city counts in the background (non-blocking)
+        countries.forEach(c => {
+          if (this.citiesByCountryId[c.id]) return; // Already loaded
+          this.http.get<City[]>(`${environment.apiUrl}/countries/${c.id}/cities`).subscribe({
+            next: (cities) => { this.citiesByCountryId[c.id] = cities; }
+          });
+        });
+      },
+      error: () => { this.loadingCountries = false; }
+    });
+  }
+
+  private loadCitiesForCountry(countryId: string, cityId: string) {
+    this.http.get<City[]>(`${environment.apiUrl}/countries/${countryId}/cities`).subscribe({
+      next: (cities) => {
+        this.citiesByCountryId[countryId] = cities;
+        this.selectedCityId = cityId;
+        this.selectedCity = cities.find(c => c.id === cityId) ?? null;
+      }
+    });
+  }
+
+  get locationLabel(): string {
+    if (this.selectedCity && this.selectedCountry) return `${this.selectedCity.name}, ${this.selectedCountry.name}`;
+    if (this.selectedCountry) return this.selectedCountry.name;
+    return 'Sin ubicación';
+  }
+
+  async openLocationPicker() {
+    const countryOptions = this.countries
+      .map(c => ({
+        name: `${this.countryCodeToFlag(c.code)} ${c.name}`,
+        cityCount: this.citiesByCountryId[c.id]?.length ?? 0
+      }))
+      .sort((a, b) => a.name.localeCompare(b.name));
+
+    const selectedLabel = this.selectedCountry
+      ? `${this.countryCodeToFlag(this.selectedCountry.code)} ${this.selectedCountry.name}`
+      : null;
+
+    const countryModal = await this.modalCtrl.create({
+      component: CountryPickerModal,
+      componentProps: { countries: countryOptions, selectedCountry: selectedLabel }
+    });
+    await countryModal.present();
+    const { data } = await countryModal.onDidDismiss();
+    if (!data?.country) return;
+
+    const countryName = data.country.slice(4).trim();
+    const country = this.countries.find(c => c.name === countryName);
+    if (!country) return;
+
+    const cities = this.citiesByCountryId[country.id] ?? [];
+    const cityNames = cities.map(c => c.name).sort((a, b) => a.localeCompare(b));
+
+    const cityModal = await this.modalCtrl.create({
+      component: CityPickerModal,
+      componentProps: { country: country.name, cities: cityNames, selectedCity: this.selectedCity?.name ?? null }
+    });
+    await cityModal.present();
+    const cityResult = await cityModal.onDidDismiss();
+    if (!cityResult.data) return;
+    if (cityResult.data.goBack) { this.openLocationPicker(); return; }
+
+    const city = cities.find(c => c.name === cityResult.data.city) ?? null;
+    this.selectedCountry = country;
+    this.selectedCountryId = country.id;
+    this.selectedCity = city;
+    this.selectedCityId = city?.id ?? '';
+  }
+
   isSelected(slug: string): boolean {
     return this.selectedStyles.includes(slug);
   }
@@ -366,6 +482,8 @@ export class ProfilePage implements OnInit {
       level: this.selectedLevel,
       styles: this.selectedStyles,
       academyName: this.academyName.trim() || undefined,
+      countryId: this.selectedCountryId || undefined,
+      cityId: this.selectedCityId || undefined,
     }).subscribe({
       next: (p) => {
         this.profile = p;

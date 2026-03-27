@@ -11,6 +11,9 @@ export class Venue {
   @Column({ name: 'city', default: 'Cartagena' })
   city: string;
 
+  @Column({ name: 'country', default: 'Colombia', nullable: true })
+  country: string;
+
   @Column({ type: 'decimal', nullable: true })
   lat: number;
 

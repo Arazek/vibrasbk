@@ -7,6 +7,7 @@ import { Venue, WeeklyEvent, EventType, DanceStyle, Academia } from '@shared/typ
 export interface CreateVenuePayload {
   name: string;
   city?: string;
+  country?: string;
   lat?: number;
   lng?: number;
   maxCapacity?: number;

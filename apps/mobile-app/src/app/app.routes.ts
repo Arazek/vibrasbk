@@ -133,13 +133,6 @@ export const routes: Routes = [
             (m) => m.AdminEstilosPage
           ),
       },
-      {
-        path: 'academias',
-        loadComponent: () =>
-          import('./pages/admin/admin-academias.page').then(
-            (m) => m.AdminAcademiasPage
-          ),
-      },
     ],
   },
 

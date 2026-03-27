@@ -13,7 +13,7 @@ NC='\033[0m'
 
 PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BACKEND_PORT=3333
-FRONTEND_PORT=4200
+FRONTEND_PORT=4444
 ENV_FILE="$PROJECT_DIR/.env.local"
 PROD_ENV_FILE="$PROJECT_DIR/.env"
 API_LOG=/tmp/api.log
@@ -123,7 +123,7 @@ cmd_start() {
     echo ""
     cat <<'EOF'
 URLs:
-   Frontend:    http://localhost:4200
+   Frontend:    http://localhost:4444
    API:         http://localhost:3333
    Swagger:     http://localhost:3333/api/docs
    Health:      http://localhost:3333/api/health

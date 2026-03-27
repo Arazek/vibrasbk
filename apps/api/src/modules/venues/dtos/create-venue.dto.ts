@@ -11,6 +11,11 @@ export class CreateVenueDto {
   @IsOptional()
   city?: string;
 
+  @ApiPropertyOptional({ default: 'Colombia' })
+  @IsString()
+  @IsOptional()
+  country?: string;
+
   @ApiPropertyOptional()
   @IsNumber()
   @IsOptional()
