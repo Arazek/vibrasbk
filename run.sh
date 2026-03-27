@@ -287,6 +287,100 @@ cmd_install() {
         || { print_error "Install failed — check device screen for prompts"; exit 1; }
 }
 
+cmd_seed() {
+    check_postgres || { print_error "PostgreSQL must be running to seed locations"; exit 1; }
+
+    if ! command -v jq &>/dev/null; then
+        print_error "jq is required for seeding — install it: sudo apt install jq"
+        exit 1
+    fi
+
+    local schema="${DB_SCHEMA:-vibrasbk}"
+
+    # Spanish-speaking countries we support (ISO codes)
+    local INCLUDED_CODES="AR BO CL CO CR CU DO EC SV GT HN MX NI PA PY PE ES UY VE"
+    # English names as used by countriesnow.space (must match exactly)
+    declare -A ENGLISH_NAMES=(
+        [AR]="Argentina" [BO]="Bolivia" [CL]="Chile" [CO]="Colombia"
+        [CR]="Costa Rica" [CU]="Cuba" [DO]="Dominican Republic" [EC]="Ecuador"
+        [SV]="El Salvador" [GT]="Guatemala" [HN]="Honduras" [MX]="Mexico"
+        [NI]="Nicaragua" [PA]="Panama" [PY]="Paraguay" [PE]="Peru"
+        [ES]="Spain" [UY]="Uruguay" [VE]="Venezuela"
+    )
+
+    print_info "Step 1/4 — Clearing existing countries and cities..."
+    PGPASSWORD="$DB_PASS" psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_NAME" \
+        -c "TRUNCATE ${schema}.cities CASCADE; TRUNCATE ${schema}.countries CASCADE;" \
+        >/dev/null && print_success "Tables cleared"
+
+    print_info "Step 2/4 — Fetching countries from restcountries.com..."
+    local countries_json
+    countries_json=$(curl -sf "https://restcountries.com/v3.1/lang/spa?fields=name,cca2,capital,latlng,translations") \
+        || { print_error "Failed to fetch countries from restcountries.com"; exit 1; }
+
+    local country_count=0
+    while IFS= read -r row; do
+        local code name capital lat lng
+        code=$(echo "$row" | jq -r '.cca2')
+        # Skip if not in our supported list
+        if ! echo "$INCLUDED_CODES" | grep -qw "$code"; then continue; fi
+        name=$(echo "$row" | jq -r '.translations.spa.common // .name.common')
+        capital=$(echo "$row" | jq -r '.capital[0] // ""')
+        lat=$(echo "$row" | jq -r '.latlng[0] // "NULL"')
+        lng=$(echo "$row" | jq -r '.latlng[1] // "NULL"')
+
+        PGPASSWORD="$DB_PASS" psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_NAME" \
+            -c "INSERT INTO ${schema}.countries (id, name, code, capital, lat, lng)
+                VALUES (gen_random_uuid(), \$\$${name}\$\$, '${code}', \$\$${capital}\$\$, ${lat}, ${lng})
+                ON CONFLICT (code) DO NOTHING;" >/dev/null
+        country_count=$((country_count + 1))
+    done < <(echo "$countries_json" | jq -c '.[]')
+    print_success "Seeded ${country_count} countries"
+
+    print_info "Step 3/4 — Fetching cities from countriesnow.space..."
+    local cities_json
+    cities_json=$(curl -sf "https://countriesnow.space/api/v0.1/countries") \
+        || { print_error "Failed to fetch cities from countriesnow.space"; exit 1; }
+
+    print_info "Step 4/4 — Inserting cities (this may take a minute)..."
+    local city_count=0
+    for code in $INCLUDED_CODES; do
+        local english_name="${ENGLISH_NAMES[$code]}"
+        local country_id
+        country_id=$(PGPASSWORD="$DB_PASS" psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_NAME" \
+            -tAc "SELECT id FROM ${schema}.countries WHERE code='${code}';")
+        if [ -z "$country_id" ]; then continue; fi
+
+        # Extract cities for this country
+        local cities
+        cities=$(echo "$cities_json" | jq -r --arg name "$english_name" \
+            '.data[] | select(.country | ascii_downcase == ($name | ascii_downcase)) | .cities[]' 2>/dev/null)
+        if [ -z "$cities" ]; then continue; fi
+
+        # Build batch INSERT
+        local values=""
+        while IFS= read -r city; do
+            city=$(echo "$city" | sed "s/'/''/g")  # escape single quotes
+            [ -z "$city" ] && continue
+            values="${values}(gen_random_uuid(), '${city}', '${country_id}'),"
+        done <<< "$cities"
+
+        values="${values%,}"  # strip trailing comma
+        if [ -n "$values" ]; then
+            PGPASSWORD="$DB_PASS" psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_NAME" \
+                -c "INSERT INTO ${schema}.cities (id, name, country_id) VALUES ${values} ON CONFLICT DO NOTHING;" \
+                >/dev/null
+            local n
+            n=$(echo "$cities" | wc -l)
+            city_count=$((city_count + n))
+            print_success "  ${english_name}: ${n} cities"
+        fi
+    done
+
+    echo ""
+    print_success "Seeding complete — ${country_count} countries, ~${city_count} cities"
+}
+
 cmd_logs() {
     print_info "Streaming logs (Ctrl+C to stop)..."
     tail -f "$API_LOG" "$APP_LOG"
@@ -411,6 +505,7 @@ Development commands:
     install --build  Build the APK first, then install
     logs           Tail API and frontend logs
     status         Show running status of all services
+    seed           Re-seed countries and cities from external APIs (requires jq)
 
 Production — application (requires external infra stack to be running first):
     prod           Build and start the API container (checks infra is up)
@@ -439,6 +534,7 @@ case "${1:-start}" in
     install)        cmd_install "$@" ;;
     logs)           cmd_logs         ;;
     status)         cmd_status       ;;
+    seed)           cmd_seed         ;;
     prod)           cmd_prod_up      ;;
     prod:stop)      cmd_prod_stop    ;;
     prod:rebuild)   cmd_prod_rebuild ;;
