@@ -85,14 +85,14 @@ const TYPE_BG: Record<string, string> = {
     }
     .event-photo {
       width: 100%;
-      height: 8.125rem;
+      height: 13rem;
       object-fit: cover;
       display: block;
       flex-shrink: 0;
     }
     .photo-placeholder {
       width: 100%;
-      height: 6.25rem;
+      height: 13rem;
       display: flex;
       align-items: center;
       justify-content: center;

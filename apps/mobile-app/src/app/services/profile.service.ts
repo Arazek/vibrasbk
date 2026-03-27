@@ -7,7 +7,7 @@ import { UserProfile, Level } from '@shared/types';
 export interface UpdateProfilePayload {
   level?: Level;
   styles?: string[];
-  academyId?: string;
+  academyName?: string;
   fcmToken?: string;
 }
 

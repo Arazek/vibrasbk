@@ -21,11 +21,11 @@ export const routes: Routes = [
 
   // Onboarding flow — blocked if already authenticated
   {
-    path: 'onboarding/ciudad',
+    path: 'onboarding/pais',
     canActivate: [onboardingGuard],
     loadComponent: () =>
-      import('./pages/onboarding/ciudad/onboarding-ciudad.page').then(
-        (m) => m.OnboardingCiudadPage
+      import('./pages/onboarding/pais/onboarding-pais.page').then(
+        (m) => m.OnboardingPaisPage
       ),
   },
   {
@@ -70,11 +70,24 @@ export const routes: Routes = [
           import('./pages/profile/profile.page').then((m) => m.ProfilePage),
       },
       {
+        path: 'friends',
+        loadComponent: () =>
+          import('./pages/friends/friends.page').then((m) => m.FriendsPage),
+      },
+      {
         path: '',
         redirectTo: 'home',
         pathMatch: 'full',
       },
     ],
+  },
+
+  // Add friend — full-screen, no tab bar
+  {
+    path: 'friends/add',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./pages/friends/add-friend.page').then((m) => m.AddFriendPage),
   },
 
   // Event detail — full-screen, no tab bar

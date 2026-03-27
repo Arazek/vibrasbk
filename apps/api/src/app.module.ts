@@ -5,6 +5,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { ScheduleModule } from '@nestjs/schedule';
 
 import { AuthModule } from './modules/auth/auth.module';
+import { CountriesModule } from './modules/countries/countries.module';
 import { UsersModule } from './modules/users/users.module';
 import { VenuesModule } from './modules/venues/venues.module';
 import { EventsModule } from './modules/events/events.module';
@@ -13,6 +14,7 @@ import { AcademiasModule } from './modules/academias/academias.module';
 import { VotesModule } from './modules/votes/votes.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { SchedulerModule } from './modules/scheduler/scheduler.module';
+import { FriendsModule } from './modules/friends/friends.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
@@ -45,6 +47,7 @@ import { AppService } from './app.service';
     }),
     ScheduleModule.forRoot(),
     AuthModule,
+    CountriesModule,
     UsersModule,
     VenuesModule,
     EventsModule,
@@ -53,6 +56,7 @@ import { AppService } from './app.service';
     VotesModule,
     NotificationsModule,
     SchedulerModule,
+    FriendsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

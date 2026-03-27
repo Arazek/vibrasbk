@@ -4,7 +4,11 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
+import { Country } from '../../countries/entities/country.entity';
+import { City } from '../../countries/entities/city.entity';
 
 export enum DancingRole {
   LEADER = 'leader',
@@ -47,8 +51,19 @@ export class User {
   @Column()
   passwordHash: string;
 
-  @Column({ name: 'city', default: 'Cartagena' })
-  city: string;
+  @Column({ name: 'country_id', nullable: true })
+  countryId?: string;
+
+  @ManyToOne(() => Country, { nullable: true, eager: false })
+  @JoinColumn({ name: 'country_id' })
+  country?: Country;
+
+  @Column({ name: 'city_id', nullable: true })
+  cityId?: string;
+
+  @ManyToOne(() => City, { nullable: true, eager: false })
+  @JoinColumn({ name: 'city_id' })
+  city?: City;
 
   @Column({ type: 'enum', enum: DancingRole, name: 'dancing_role', default: DancingRole.LEADER })
   dancingRole: DancingRole;
@@ -62,9 +77,8 @@ export class User {
   @Column({ name: 'styles', type: 'simple-array' })
   styles: string[];
 
-  // UUID referencing the Academia entity
-  @Column({ name: 'academy_id', nullable: true })
-  academyId?: string;
+  @Column({ name: 'academy_name', nullable: true, type: 'text' })
+  academyName?: string;
 
   @Column({ name: 'photo_url', nullable: true, type: 'text' })
   photoUrl: string | null;

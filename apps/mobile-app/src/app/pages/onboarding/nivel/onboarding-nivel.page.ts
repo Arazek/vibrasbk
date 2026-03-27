@@ -74,9 +74,6 @@ const LEVELS: { value: Level; label: string; description: string; emoji: string 
   template: `
     <ion-header>
       <ion-toolbar>
-        <ion-buttons slot="start">
-          <ion-back-button defaultHref="/onboarding/rol" text="Atrás"></ion-back-button>
-        </ion-buttons>
         <ion-title>Tu nivel</ion-title>
       </ion-toolbar>
       <ion-progress-bar value="0.75" color="secondary"></ion-progress-bar>

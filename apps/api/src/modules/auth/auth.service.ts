@@ -11,12 +11,12 @@ export interface AuthResponseData {
   user: {
     id: string;
     alias: string;
-    city: string;
+    countryId?: string;
     dancingRole: string;
     applicationRole: string;
     level: string;
     styles: string[];
-    academyId?: string;
+    academyName?: string;
     createdAt: Date;
     updatedAt: Date;
   };
@@ -59,12 +59,13 @@ export class AuthService {
       alias: dto.alias,
       email: dto.email,
       passwordHash,
-      city: 'Cartagena',
+      countryId: dto.countryId,
+      cityId: dto.cityId,
       dancingRole: dto.dancingRole as DancingRole,
       applicationRole: ApplicationRole.USER,
       level: dto.level as Level,
       styles: dto.styles,
-      academyId: dto.academyId,
+      academyName: dto.academyName,
     });
     await this.usersRepository.save(user);
 
@@ -72,7 +73,7 @@ export class AuthService {
   }
 
   async login(email: string, password: string): Promise<AuthResponseData> {
-    const user = await this.usersRepository.findOne({ where: { email } });
+    const user = await this.usersRepository.findOne({ where: { email }, relations: ['country'] });
     if (!user) {
       throw new UnauthorizedException('Incorrect email or password');
     }
@@ -90,12 +91,12 @@ export class AuthService {
       user: {
         id: user.id,
         alias: user.alias,
-        city: user.city,
+        countryId: user.countryId || undefined,
         dancingRole: user.dancingRole,
         applicationRole: user.applicationRole,
         level: user.level,
         styles: user.styles,
-        academyId: user.academyId || undefined,
+        academyName: user.academyName || undefined,
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
       },

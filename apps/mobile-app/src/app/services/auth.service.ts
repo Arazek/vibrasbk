@@ -11,10 +11,12 @@ export interface RegisterPayload {
   alias: string;
   email: string;
   password: string;
+  countryId?: string;
+  cityId?: string;
   dancingRole: DancingRole;
   level: Level;
   styles: string[];
-  academyId?: string;
+  academyName?: string;
 }
 
 @Injectable({ providedIn: 'root' })

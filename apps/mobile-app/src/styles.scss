@@ -32,6 +32,7 @@ html,
 body {
   margin: 0;
   padding: 0;
+  background: var(--ion-background-color);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -62,6 +63,11 @@ ion-segment-button {
   min-height: 2.25rem;
   font-size: var(--lgui-fs-body);
   font-weight: var(--lgui-fw-semibold);
+}
+
+/* Footer toolbar — remove safe-area bottom padding (keyboard resize handles positioning) */
+ion-footer ion-toolbar:last-child {
+  --padding-bottom: 0;
 }
 
 /* Tab bar polish */
@@ -97,10 +103,27 @@ ion-select::part(text)        { color: var(--lgui-text-4); }
 ion-select::part(placeholder) { color: var(--lgui-text-3); }
 ion-select::part(icon)        { color: var(--lgui-text-3); }
 
-/* ion-input: text and placeholder */
+/* ion-input: text, placeholder, and focus highlight */
 ion-input {
   --color: var(--lgui-text-4);
   --placeholder-color: var(--lgui-text-3);
+  /* Suppress Ionic's default bottom-line highlight — we use a ring on the
+     container instead (see .form-list below). */
+  --highlight-height: 0;
+  --highlight-color-focused: transparent;
+  --highlight-color-valid: transparent;
+  --highlight-color-invalid: transparent;
+}
+
+
+/* When any input inside a .form-list is focused, highlight the whole
+   rounded container. :focus-within is browser-native so it reliably
+   adds/removes as focus moves between fields.
+   The ring is on the .form-list element itself so overflow:hidden
+   inside it does not clip it. */
+.form-list:focus-within {
+  box-shadow: var(--lgui-focus-ring);
+  transition: box-shadow var(--lgui-transition-fast);
 }
 /* ion-textarea */
 ion-textarea {
@@ -119,7 +142,20 @@ ion-toggle {
   --handle-background: #fff;
 }
 
-/* Action sheet — full theme override for consistent contrast */
+/* ─── ion-action-sheet ───────────────────────────────────────────────────────
+   Design system spec:
+   · Sheet background  : --lgui-surface-2  (dark in dark themes, light in light)
+   · Button text       : --lgui-text-4     (high contrast — white in dark themes)
+   · Selected button   : --ion-color-primary + 8% tint background
+   · Cancel button     : --lgui-text-3     (dimmed)
+   · Backdrop opacity  : 0.48
+
+   Root cause of theming failures: Ionic uses --ion-color-step-850 for button text,
+   which is NOT auto-recalculated by CSS when the background changes. Each dark theme
+   in variables.css MUST define --ion-color-step-* (50–950) for this to work. The
+   direct !important overrides below act as a belt-and-suspenders fallback for any
+   theme that forgets to include the step scale.
+   ─────────────────────────────────────────────────────────────────────────── */
 ion-action-sheet {
   --background: var(--lgui-surface-2);
   --backdrop-opacity: 0.48;
@@ -135,19 +171,33 @@ ion-action-sheet {
   --cancel-button-color: var(--lgui-text-3);
 }
 
-/* Direct override: Ionic renders action sheet buttons in light DOM with scoped classes.
-   The host-level --button-color variable loses to Ionic's own .sc-ion-action-sheet-md-h
-   class rule (higher specificity) which sets --button-color via --ion-color-step-850.
-   We override at the button element level instead. */
+/* MD buttons — direct override beats Ionic's own .sc-ion-action-sheet-md-h rule */
 .action-sheet-button.sc-ion-action-sheet-md {
-  color: var(--lgui-text-4);
+  color: var(--lgui-text-4) !important;
+  background: transparent !important;
 }
 .action-sheet-selected.sc-ion-action-sheet-md {
-  color: var(--ion-color-primary);
-  background: rgba(var(--ion-color-primary-rgb), 0.08);
+  color: var(--ion-color-primary) !important;
+  background: rgba(var(--ion-color-primary-rgb), 0.08) !important;
 }
 .action-sheet-cancel.sc-ion-action-sheet-md {
-  color: var(--lgui-text-3);
+  color: var(--lgui-text-3) !important;
+}
+
+/* iOS buttons — same overrides */
+.action-sheet-button.sc-ion-action-sheet-ios {
+  color: var(--lgui-text-4) !important;
+  background: transparent !important;
+}
+.action-sheet-selected.sc-ion-action-sheet-ios {
+  color: var(--ion-color-primary) !important;
+  background: rgba(var(--ion-color-primary-rgb), 0.08) !important;
+}
+.action-sheet-cancel.sc-ion-action-sheet-ios {
+  color: var(--lgui-text-3) !important;
+}
+.action-sheet-group.sc-ion-action-sheet-ios {
+  background: var(--lgui-surface-2) !important;
 }
 
 /* Toolbar — align start padding with ion-content's ion-padding (16px) */
@@ -258,6 +308,15 @@ ion-popover {
   outline: none;
   box-shadow: var(--lgui-focus-ring);
   border-radius: var(--lgui-radius-sm);
+}
+
+/* Suppress the global ring on native inputs inside Ionic components —
+   the .form-list container ring handles focus indication instead. */
+ion-input .native-input:focus-visible,
+ion-textarea .native-textarea:focus-visible,
+ion-searchbar input:focus-visible {
+  box-shadow: none;
+  outline: none;
 }
 
 /* For elements that already have border-radius from their own styles,

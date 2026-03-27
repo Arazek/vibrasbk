@@ -66,7 +66,7 @@ const ROLES: { value: DancingRole; label: string; description: string; emoji: st
     <ion-header>
       <ion-toolbar>
         <ion-buttons slot="start">
-          <ion-back-button defaultHref="/onboarding/ciudad" text="Atrás"></ion-back-button>
+          <ion-back-button defaultHref="/onboarding/pais"></ion-back-button>
         </ion-buttons>
         <ion-title>Tu rol</ion-title>
       </ion-toolbar>

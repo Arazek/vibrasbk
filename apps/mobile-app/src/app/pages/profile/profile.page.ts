@@ -6,14 +6,14 @@ import { HttpClient } from '@angular/common/http';
 import {
   IonContent,
   IonButton, IonSpinner, IonText, IonList, IonItem, IonLabel,
-  IonSelect, IonSelectOption, IonChip, IonToast, IonIcon,
+  IonSelect, IonSelectOption, IonInput, IonChip, IonToast, IonIcon,
   AlertController,
 } from '@ionic/angular/standalone';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
 import { ThemeService, THEMES, AppTheme } from '../../services/theme.service';
 import { addIcons } from 'ionicons';
 import { logOutOutline, cameraOutline } from 'ionicons/icons';
-import { UserProfile, Level, DanceStyle, Academia } from '@shared/types';
+import { UserProfile, Level, DanceStyle } from '@shared/types';
 import { ProfileService } from '../../services/profile.service';
 import { AuthService } from '../../services/auth.service';
 import { environment } from '../../../environments/environment';
@@ -34,7 +34,7 @@ const LEVEL_OPTIONS: { value: Level; label: string }[] = [
     CommonModule, FormsModule,
     IonContent,
     IonButton, IonSpinner, IonText, IonList, IonItem, IonLabel,
-    IonSelect, IonSelectOption, IonChip, IonToast, IonIcon,
+    IonSelect, IonSelectOption, IonInput, IonChip, IonToast, IonIcon,
     StyleChipGridComponent, NavbarComponent,
   ],
   styles: [`
@@ -175,7 +175,7 @@ const LEVEL_OPTIONS: { value: Level; label: string }[] = [
           </div>
           <div class="identity-info">
             <div class="identity-alias">{{ profile.alias }}</div>
-            <div class="identity-meta">{{ profile.city }} · {{ roleLabel }}</div>
+            <div class="identity-meta">{{ profile.city?.name ?? profile.country?.capital ?? profile.country?.name }} · {{ roleLabel }}</div>
           </div>
         </div>
 
@@ -210,15 +210,15 @@ const LEVEL_OPTIONS: { value: Level; label: string }[] = [
           (selectionChange)="selectedStyles = $event">
         </app-style-chip-grid>
 
-        <!-- Academia (dropdown, API-driven) -->
+        <!-- Academia (free text) -->
         <div class="section-title">Academia</div>
         <ion-list class="form-list">
           <ion-item>
-            <ion-label>Academia</ion-label>
-            <ion-select [(ngModel)]="selectedAcademyId" interface="action-sheet">
-              <ion-select-option [value]="null">Sin academia</ion-select-option>
-              <ion-select-option *ngFor="let a of academias" [value]="a.id">{{ a.name }}</ion-select-option>
-            </ion-select>
+            <ion-input
+              [(ngModel)]="academyName"
+              placeholder="Nombre de tu academia"
+              autocomplete="organization">
+            </ion-input>
           </ion-item>
         </ion-list>
 
@@ -273,11 +273,10 @@ export class ProfilePage implements OnInit {
 
   selectedLevel: Level = 'comfortable';
   selectedStyles: string[] = [];
-  selectedAcademyId: string | null = null;
+  academyName = '';
 
   levelOptions = LEVEL_OPTIONS;
   styleOptions: DanceStyle[] = [];
-  academias: Academia[] = [];
 
   themes = THEMES;
   activeTheme: AppTheme = 'noir';
@@ -300,7 +299,7 @@ export class ProfilePage implements OnInit {
         this.profile = p;
         this.selectedLevel = p.level;
         this.selectedStyles = [...p.styles];
-        this.selectedAcademyId = p.academyId ?? null;
+        this.academyName = p.academyName ?? '';
         this.loading = false;
       },
       error: () => {
@@ -311,9 +310,6 @@ export class ProfilePage implements OnInit {
     this.http.get<DanceStyle[]>(`${environment.apiUrl}/dance-styles`).subscribe({
       next: (s) => { this.styleOptions = s; this.loadingStyles = false; },
       error: () => { this.loadingStyles = false; },
-    });
-    this.http.get<Academia[]>(`${environment.apiUrl}/academias`).subscribe({
-      next: (a) => { this.academias = a; },
     });
   }
 
@@ -369,7 +365,7 @@ export class ProfilePage implements OnInit {
     this.profileService.updateProfile({
       level: this.selectedLevel,
       styles: this.selectedStyles,
-      academyId: this.selectedAcademyId ?? undefined,
+      academyName: this.academyName.trim() || undefined,
     }).subscribe({
       next: (p) => {
         this.profile = p;

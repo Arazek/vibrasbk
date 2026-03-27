@@ -12,7 +12,7 @@ export class UsersService {
   ) {}
 
   findById(id: string): Promise<User | null> {
-    return this.usersRepository.findOne({ where: { id } });
+    return this.usersRepository.findOne({ where: { id }, relations: ['country', 'city'] });
   }
 
   findByAlias(alias: string): Promise<User | null> {

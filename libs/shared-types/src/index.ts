@@ -14,6 +14,21 @@ export interface RoleBalanceDetail {
   balance: 'balanced' | 'need_leaders' | 'need_followers';
 }
 
+export interface Country {
+  id: string;
+  name: string;
+  code: string;
+  capital: string;
+  lat?: number | null;
+  lng?: number | null;
+}
+
+export interface City {
+  id: string;
+  name: string;
+  countryId: string;
+}
+
 export interface DanceStyle {
   id: string;
   slug: string;
@@ -30,12 +45,15 @@ export interface Academia {
 export interface UserProfile {
   id: string;
   alias: string;
-  city: string;
+  countryId?: string;
+  country?: Country;
+  cityId?: string;
+  city?: City;
   dancingRole: DancingRole;
   applicationRole: ApplicationRole;
   level: Level;
   styles: string[];
-  academyId?: string;
+  academyName?: string;
   photoUrl?: string | null;
   createdAt: Date;
   updatedAt: Date;
@@ -106,4 +124,19 @@ export interface IntentionVote {
 export interface AuthResponse {
   accessToken: string;
   user: UserProfile;
+}
+
+export type FriendshipStatus = 'pending' | 'accepted' | 'rejected';
+
+export interface FriendRequest {
+  id: string;
+  status: FriendshipStatus;
+  createdAt: Date;
+  requester: Pick<UserProfile, 'id' | 'alias' | 'photoUrl' | 'dancingRole' | 'level'>;
+}
+
+export interface Friend {
+  friendshipId: string;
+  since: Date;
+  user: Pick<UserProfile, 'id' | 'alias' | 'photoUrl' | 'dancingRole' | 'level' | 'country' | 'city'>;
 }

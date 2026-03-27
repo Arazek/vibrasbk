@@ -24,8 +24,8 @@ import { eyeOutline, eyeOffOutline } from 'ionicons/icons';
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      height: 100%;
-      padding: var(--lgui-pad-xl) var(--lgui-pad-lg);
+      min-height: 100%;
+      padding: var(--lgui-pad-xl) var(--lgui-pad-lg) var(--lgui-space-8);
       text-align: center;
     }
     .login-logo {
@@ -160,7 +160,7 @@ export class LoginPage {
   }
 
   goToRegister(): void {
-    this.router.navigate(['/onboarding/rol']);
+    this.router.navigate(['/onboarding/pais']);
   }
 
   login(): void {

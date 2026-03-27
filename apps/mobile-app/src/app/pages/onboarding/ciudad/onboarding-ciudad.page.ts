@@ -14,9 +14,9 @@ import {
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
-      height: 100%;
-      padding: var(--lgui-pad-xl) var(--lgui-pad-lg);
+      justify-content: flex-start;
+      min-height: 100%;
+      padding: var(--lgui-pad-xl) var(--lgui-pad-lg) var(--lgui-space-8);
       text-align: center;
     }
     .hero-logo {
@@ -80,7 +80,7 @@ export class OnboardingCiudadPage {
   constructor(private router: Router) {}
 
   next() {
-    this.router.navigate(['/onboarding/rol']);
+    this.router.navigate(['/onboarding/pais']);
   }
 
   goToLogin() {

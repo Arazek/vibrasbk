@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { DancingRole, Level, Estilo } from '@shared/types';
 
 export interface OnboardingState {
+  countryId: string | null;
+  cityId: string | null;
   dancingRole: DancingRole | null;
   level: Level | null;
   styles: Estilo[];
@@ -11,6 +13,8 @@ export interface OnboardingState {
 @Injectable({ providedIn: 'root' })
 export class OnboardingStateService {
   private state: OnboardingState = {
+    countryId: null,
+    cityId: null,
     dancingRole: null,
     level: null,
     styles: [],
@@ -26,10 +30,10 @@ export class OnboardingStateService {
   }
 
   reset(): void {
-    this.state = { dancingRole: null, level: null, styles: [], academy: '' };
+    this.state = { countryId: null, cityId: null, dancingRole: null, level: null, styles: [], academy: '' };
   }
 
   isComplete(): boolean {
-    return !!this.state.dancingRole && !!this.state.level && this.state.styles.length > 0;
+    return !!this.state.countryId && !!this.state.cityId && !!this.state.dancingRole && !!this.state.level && this.state.styles.length > 0;
   }
 }

@@ -5,10 +5,10 @@ import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import {
   IonContent, IonHeader, IonToolbar, IonTitle, IonFooter, IonButton,
-  IonChip, IonLabel, IonItem, IonInput, IonList, IonToast, IonProgressBar,
-  IonSelect, IonSelectOption, IonSpinner, IonButtons, IonBackButton,
+  IonItem, IonInput, IonList, IonToast, IonProgressBar,
+  IonButtons, IonBackButton,
 } from '@ionic/angular/standalone';
-import { DanceStyle, Academia } from '@shared/types';
+import { DanceStyle } from '@shared/types';
 import { OnboardingStateService } from '../../../services/onboarding-state.service';
 import { AuthService } from '../../../services/auth.service';
 import { environment } from '../../../../environments/environment';
@@ -21,7 +21,7 @@ import { FormFieldComponent } from '../../../components/form-field/form-field.co
   imports: [
     CommonModule, FormsModule, IonContent, IonHeader, IonToolbar, IonTitle, IonFooter,
     IonButton, IonItem, IonInput, IonList, IonToast, IonProgressBar,
-    IonSelect, IonSelectOption, IonButtons, IonBackButton,
+    IonButtons, IonBackButton,
     StyleChipGridComponent, FormFieldComponent,
   ],
   styles: [`
@@ -47,9 +47,6 @@ import { FormFieldComponent } from '../../../components/form-field/form-field.co
   template: `
     <ion-header>
       <ion-toolbar>
-        <ion-buttons slot="start">
-          <ion-back-button defaultHref="/onboarding/nivel" text="Atrás"></ion-back-button>
-        </ion-buttons>
         <ion-title>Estilos</ion-title>
       </ion-toolbar>
       <ion-progress-bar value="1.0" color="secondary"></ion-progress-bar>
@@ -71,10 +68,7 @@ import { FormFieldComponent } from '../../../components/form-field/form-field.co
       </app-form-field>
 
       <app-form-field label="Academia (opcional)">
-        <ion-select [(ngModel)]="selectedAcademyId" placeholder="Sin academia" interface="action-sheet">
-          <ion-select-option [value]="null">Sin academia</ion-select-option>
-          <ion-select-option *ngFor="let a of academias" [value]="a.id">{{ a.name }}</ion-select-option>
-        </ion-select>
+        <ion-input [(ngModel)]="academyName" placeholder="Nombre de tu academia" autocomplete="organization"></ion-input>
       </app-form-field>
 
       <!-- Account credentials -->
@@ -133,9 +127,8 @@ import { FormFieldComponent } from '../../../components/form-field/form-field.co
 })
 export class OnboardingEstilosPage implements OnInit {
   styles: DanceStyle[] = [];
-  academias: Academia[] = [];
   selected: string[] = [];
-  selectedAcademyId: string | null = null;
+  academyName = '';
   alias = '';
   email = '';
   password = '';
@@ -157,9 +150,6 @@ export class OnboardingEstilosPage implements OnInit {
     this.http.get<DanceStyle[]>(`${environment.apiUrl}/dance-styles`).subscribe({
       next: (s) => { this.styles = s; this.loadingStyles = false; },
       error: () => { this.loadingStyles = false; },
-    });
-    this.http.get<Academia[]>(`${environment.apiUrl}/academias`).subscribe({
-      next: (a) => { this.academias = a; },
     });
   }
 
@@ -210,10 +200,12 @@ export class OnboardingEstilosPage implements OnInit {
         alias: this.alias.trim(),
         email: this.email.trim(),
         password: this.password,
+        countryId: onboarding.countryId ?? undefined,
+        cityId: onboarding.cityId ?? undefined,
         dancingRole: onboarding.dancingRole,
         level: onboarding.level,
         styles: this.selected,
-        academyId: this.selectedAcademyId ?? undefined,
+        academyName: this.academyName.trim() || undefined,
       })
       .subscribe({
         next: () => {

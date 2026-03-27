@@ -28,8 +28,18 @@ export class RegisterDto {
   @ArrayMinSize(1)
   styles: string[];
 
-  @ApiPropertyOptional({ description: 'UUID of the Academia entity' })
+  @ApiPropertyOptional({ description: 'Free-text name of the dancer\'s academy' })
   @IsOptional()
   @IsString()
-  academyId?: string;
+  academyName?: string;
+
+  @ApiPropertyOptional({ description: 'UUID of the Country entity' })
+  @IsOptional()
+  @IsString()
+  countryId?: string;
+
+  @ApiPropertyOptional({ description: 'UUID of the City entity' })
+  @IsOptional()
+  @IsString()
+  cityId?: string;
 }

@@ -222,13 +222,69 @@ cmd_apk() {
     print_success "Capacitor sync complete"
 
     print_info "Step 3/3 — Building APK (assembleDebug)..."
-    (cd "$android_dir" && ./gradlew assembleDebug) \
+    (cd "$android_dir" && ./gradlew assembleDebug --rerun-tasks) \
         || { print_error "Gradle build failed"; exit 1; }
     print_success "Gradle build complete"
 
     cp "$apk_src" "$apk_dest"
     print_success "APK ready: vibrasbk-debug.apk"
     print_info   "  Install: adb install -r vibrasbk-debug.apk"
+}
+
+cmd_install() {
+    local build_first=false
+    local apk_path="$PROJECT_DIR/vibrasbk-debug.apk"
+
+    for arg in "$@"; do
+        case "$arg" in
+            --build|-b) build_first=true ;;
+        esac
+    done
+
+    # Check adb is available
+    if ! command -v adb &>/dev/null; then
+        print_error "adb not found — install Android platform-tools and add to PATH"
+        print_info  "  Ubuntu: sudo apt install android-tools-adb"
+        print_info  "  Or download from: https://developer.android.com/tools/releases/platform-tools"
+        exit 1
+    fi
+
+    # Check a device is connected
+    local devices
+    devices=$(adb devices | grep -v '^List' | grep -E 'device$' | wc -l)
+    if [ "$devices" -eq 0 ]; then
+        print_error "No device found via USB"
+        print_info  "  1. Connect your phone via USB"
+        print_info  "  2. Enable USB debugging: Settings → Developer options → USB debugging"
+        print_info  "  3. Accept the RSA key prompt on the device"
+        print_info  "  4. Verify with: adb devices"
+        exit 1
+    fi
+    if [ "$devices" -gt 1 ]; then
+        print_warning "Multiple devices connected — adb will use the first one"
+        adb devices | grep -v '^List'
+        echo ""
+    fi
+
+    # Optionally build first
+    if [ "$build_first" = true ]; then
+        print_info "Building APK before install (--build flag)..."
+        cmd_apk
+        echo ""
+    fi
+
+    # Check APK exists
+    if [ ! -f "$apk_path" ]; then
+        print_error "APK not found at vibrasbk-debug.apk"
+        print_info  "  Build it first: ./run.sh apk"
+        print_info  "  Or build + install in one step: ./run.sh install --build"
+        exit 1
+    fi
+
+    print_info "Installing vibrasbk-debug.apk on device..."
+    adb install -r "$apk_path" \
+        && print_success "App installed successfully" \
+        || { print_error "Install failed — check device screen for prompts"; exit 1; }
 }
 
 cmd_logs() {
@@ -351,6 +407,8 @@ Development commands:
     test <pattern> Run only tests matching a file name pattern
     rebuild        Production build of the Angular app
     apk            Build Android debug APK → vibrasbk-debug.apk in project root
+    install        Install vibrasbk-debug.apk on a USB-connected device (requires adb)
+    install --build  Build the APK first, then install
     logs           Tail API and frontend logs
     status         Show running status of all services
 
@@ -378,6 +436,7 @@ case "${1:-start}" in
     test)           cmd_test "$@"    ;;
     rebuild)        cmd_rebuild      ;;
     apk)            cmd_apk          ;;
+    install)        cmd_install "$@" ;;
     logs)           cmd_logs         ;;
     status)         cmd_status       ;;
     prod)           cmd_prod_up      ;;

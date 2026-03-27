@@ -350,6 +350,30 @@
   --ion-tab-bar-border-color: rgba(255,255,255,0.09);
   --ion-color-medium-contrast:     #ffffff;
   --ion-color-medium-contrast-rgb: 255,255,255;
+
+  /* Ionic step colors — interpolated from #0F0F0F → #FFFFFF.
+     Required for Ionic overlay components (action sheets, alerts, popovers)
+     that compute text/bg shades via --ion-color-step-N. Without these,
+     components default to light-mode step values (dark grey on dark bg). */
+  --ion-color-step-50:  #1B1B1B;
+  --ion-color-step-100: #272727;
+  --ion-color-step-150: #333333;
+  --ion-color-step-200: #3F3F3F;
+  --ion-color-step-250: #4B4B4B;
+  --ion-color-step-300: #575757;
+  --ion-color-step-350: #636363;
+  --ion-color-step-400: #6F6F6F;
+  --ion-color-step-450: #7B7B7B;
+  --ion-color-step-500: #878787;
+  --ion-color-step-550: #939393;
+  --ion-color-step-600: #9F9F9F;
+  --ion-color-step-650: #ABABAB;
+  --ion-color-step-700: #B7B7B7;
+  --ion-color-step-750: #C3C3C3;
+  --ion-color-step-800: #CFCFCF;
+  --ion-color-step-850: #DBDBDB;
+  --ion-color-step-900: #E7E7E7;
+  --ion-color-step-950: #F3F3F3;
 }
 
 /* Purple — midnight violet */
@@ -405,6 +429,27 @@
   --ion-tab-bar-border-color: rgba(180,160,255,0.10);
   --ion-color-medium-contrast:     #ffffff;
   --ion-color-medium-contrast-rgb: 255,255,255;
+
+  /* Ionic step colors — interpolated from #0D0B1A → #F0EEFF */
+  --ion-color-step-50:  #181625;
+  --ion-color-step-100: #242231;
+  --ion-color-step-150: #2F2D3C;
+  --ion-color-step-200: #3A3848;
+  --ion-color-step-250: #464453;
+  --ion-color-step-300: #514F5F;
+  --ion-color-step-350: #5D5B6A;
+  --ion-color-step-400: #686675;
+  --ion-color-step-450: #737181;
+  --ion-color-step-500: #7F7D8D;
+  --ion-color-step-550: #8A8898;
+  --ion-color-step-600: #9593A3;
+  --ion-color-step-650: #A19FAF;
+  --ion-color-step-700: #ACAABA;
+  --ion-color-step-750: #B7B5C6;
+  --ion-color-step-800: #C3C1D1;
+  --ion-color-step-850: #CECCDC;
+  --ion-color-step-900: #D9D7E8;
+  --ion-color-step-950: #E5E3F3;
 }
 
 /* Warm — charcoal amber */
